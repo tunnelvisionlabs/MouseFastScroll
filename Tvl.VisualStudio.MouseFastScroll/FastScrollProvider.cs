@@ -9,7 +9,7 @@
     [ContentType("text")]
     [Name("FastScroll")]
     [TextViewRole(PredefinedTextViewRoles.Interactive)]
-    public class FastScrollProvider : IMouseProcessorProvider
+    internal class FastScrollProvider : IMouseProcessorProvider
     {
         public IMouseProcessor GetAssociatedProcessor(IWpfTextView wpfTextView)
         {
