@@ -1,4 +1,4 @@
-# Mouse Fast Scroll extension for Visual Studio 2010+
+# Mouse Fast Scroll extension for Visual Studio 2012+
 
 [![Build status](https://ci.appveyor.com/api/projects/status/bxcpp55od7oo11si/branch/master?svg=true)](https://ci.appveyor.com/project/sharwell/mousefastscroll/branch/master)
 
