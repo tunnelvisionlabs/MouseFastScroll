@@ -11,7 +11,7 @@
     <ReleaseNotes>https://github.com/tunnelvisionlabs/MouseFastScroll/releases/tag/v3.0.1</ReleaseNotes>
     <!--<Icon></Icon>-->
     <!--<PreviewImage></PreviewImage>-->
-    <!--<Tags></Tags>-->
+    <Tags>mouse, scroll, zoom</Tags>
   </Metadata>
   <Installation>
     <InstallationTarget Version="[11.0,15.0)" Id="Microsoft.VisualStudio.Community" />
