@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="MSBuild.Sdk.Extras/1.2.2">
+
+  <PropertyGroup>
+    <TargetFramework>net452</TargetFramework>
+    <Platforms>x86</Platforms>
+
+    <Description>Mouse Fast Scroll extension for Visual Studio</Description>
+    <Company>Tunnel Vision Laboratories, LLC</Company>
+    <Copyright>Copyright © Sam Harwell 2014</Copyright>
+    <Version>4.2.0.0</Version>
+    <FileVersion>4.2.0.0</FileVersion>
+    <InformationalVersion>4.2.0-dev</InformationalVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Runtime.Remoting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.ExtensionManager" HintPath="..\lib\Microsoft.VisualStudio.ExtensionManager.dll" />
+    <Reference Include="Microsoft.VisualStudio.ExtensionManager.Implementation" HintPath="..\lib\Microsoft.VisualStudio.ExtensionManager.Implementation.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="VSSDK.ComponentModelHost.11" Version="11.0.4" />
+    <PackageReference Include="VSSDK.DTE.8" Version="8.0.4" />
+    <PackageReference Include="VSSDK.Settings.11" Version="11.0.4" />
+    <PackageReference Include="VSSDK.Shell.11" Version="11.0.4" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.1.36" />
+    <PackageReference Include="Microsoft.VisualStudio.Setup.Configuration.Interop" Version="1.16.30" />
+    <PackageReference Include="UIAComWrapper" Version="1.1.0.14" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll\Tvl.VisualStudio.MouseFastScroll.csproj" />
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Tvl.VisualStudio.MouseFastScroll\bin\$(Configuration)\net45\Tvl.VisualStudio.MouseFastScroll.vsix" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\bin\$(Configuration)\net45\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.vsix" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+ </Project>
