@@ -8,6 +8,7 @@ init:
 - git config --global core.autocrlf true
 install:
 - nuget restore
+- '"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.exe" /RootSuffix Exp /ResetSettings General.vssettings /Command File.Exit'
 build:
   verbosity: minimal
 test:
