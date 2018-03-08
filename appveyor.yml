@@ -10,5 +10,10 @@ install:
 - nuget restore
 build:
   verbosity: minimal
+test:
+  categories:
+    except:
+      - VS2012
+      - VS2013
 artifacts:
 - path: '**\*.vsix'

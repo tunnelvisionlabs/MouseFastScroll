@@ -27,6 +27,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(expectedVersion.ToString(), currentVersion);
         }
 
+        [VersionTrait(typeof(VS2012))]
         public sealed class VS2012 : TrivialIntegrationTest
         {
             public VS2012(VisualStudioInstanceFactory instanceFactory)
@@ -35,6 +36,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             }
         }
 
+        [VersionTrait(typeof(VS2013))]
         public sealed class VS2013 : TrivialIntegrationTest
         {
             public VS2013(VisualStudioInstanceFactory instanceFactory)
@@ -43,6 +45,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             }
         }
 
+        [VersionTrait(typeof(VS2015))]
         public sealed class VS2015 : TrivialIntegrationTest
         {
             public VS2015(VisualStudioInstanceFactory instanceFactory)
@@ -51,6 +54,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             }
         }
 
+        [VersionTrait(typeof(VS2017))]
         public sealed class VS2017 : TrivialIntegrationTest
         {
             public VS2017(VisualStudioInstanceFactory instanceFactory)
