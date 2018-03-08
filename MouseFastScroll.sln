@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.IntegrationTestService", "Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.csproj", "{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.UnitTests", "Tvl.VisualStudio.MouseFastScroll.UnitTests\Tvl.VisualStudio.MouseFastScroll.UnitTests.csproj", "{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
