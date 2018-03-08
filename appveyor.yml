@@ -20,4 +20,4 @@ test:
       - VS2012
       - VS2013
 artifacts:
-- path: '**\*.vsix'
+- path: 'Tvl.VisualStudio.MouseFastScroll\**\*.vsix'
