@@ -17,7 +17,9 @@ namespace Tvl.VisualStudio.MouseFastScroll
         public IMouseProcessor GetAssociatedProcessor(IWpfTextView wpfTextView)
         {
             if (wpfTextView == null)
+            {
                 return null;
+            }
 
             wpfTextView.Options.SetOptionValue(DefaultWpfViewOptions.EnableMouseWheelZoomId, false);
             return new FastScrollProcessor(wpfTextView);
