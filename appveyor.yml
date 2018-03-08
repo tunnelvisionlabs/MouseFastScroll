@@ -10,6 +10,5 @@ install:
 - nuget restore
 build:
   verbosity: minimal
-test: off
 artifacts:
 - path: '**\*.vsix'
