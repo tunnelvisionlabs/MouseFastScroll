@@ -80,6 +80,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         Y = 0x59,
         Z = 0x5A,
 
-        Period = 0xBE
+        Period = 0xBE,
     }
 }

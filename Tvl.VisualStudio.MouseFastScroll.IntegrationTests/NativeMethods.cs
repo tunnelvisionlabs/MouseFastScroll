@@ -18,26 +18,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         private const string Ole32 = "ole32.dll";
         private const string User32 = "User32.dll";
 
-        #region kernel32.dll
-
-        [DllImport(Kernel32)]
-        public static extern uint GetCurrentThreadId();
-
-        #endregion
-
-        #region ole32.dll
-
-        [DllImport(Ole32, PreserveSig = false)]
-        public static extern void CreateBindCtx(int reserved, [MarshalAs(UnmanagedType.Interface)] out IBindCtx bindContext);
-
-        [DllImport(Ole32, PreserveSig = false)]
-        public static extern void GetRunningObjectTable(int reserved, [MarshalAs(UnmanagedType.Interface)] out IRunningObjectTable runningObjectTable);
-
-        #endregion
-
-        #region user32.dll
-
-        public static readonly int SizeOf_INPUT = Marshal.SizeOf<INPUT>();
+        public const int RPC_E_CALL_REJECTED = unchecked((int)0x80010001);
+        public const int RPC_E_SERVERCALL_RETRYLATER = unchecked((int)0x8001010A);
 
         public const uint GA_PARENT = 1;
         public const uint GA_ROOT = 2;
@@ -85,54 +67,25 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         public const uint WM_GETTEXT = 0x000D;
         public const uint WM_GETTEXTLENGTH = 0x000E;
 
-        [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Unicode, Pack = 8)]
-        public struct INPUT
-        {
-            [FieldOffset(0)]
-            public uint Type;
+        public const uint MAPVK_VK_TO_VSC = 0;
+        public const uint MAPVK_VSC_TO_VK = 1;
+        public const uint MAPVK_VK_TO_CHAR = 2;
+        public const uint MAPVK_VSC_TO_KV_EX = 3;
 
-            [FieldOffset(4)]
-            public MOUSEINPUT mi;
-
-            [FieldOffset(4)]
-            public KEYBDINPUT ki;
-
-            [FieldOffset(4)]
-            public HARDWAREINPUT hi;
-        }
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 8)]
-        public struct HARDWAREINPUT
-        {
-            public uint uMsg;
-            public ushort wParamL;
-            public ushort wParamH;
-        }
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 8)]
-        public struct KEYBDINPUT
-        {
-            public ushort wVk;
-            public ushort wScan;
-            public uint dwFlags;
-            public uint time;
-            public IntPtr dwExtraInfo;
-        }
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 8)]
-        public struct MOUSEINPUT
-        {
-            public int dx;
-            public int dy;
-            public uint mouseData;
-            public uint dwFlags;
-            public uint time;
-            public IntPtr dwExtraInfo;
-        }
+        public static readonly int SizeOf_INPUT = Marshal.SizeOf<INPUT>();
 
         [UnmanagedFunctionPointer(CallingConvention.Winapi, SetLastError = false)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public delegate bool WNDENUMPROC(IntPtr hWnd, IntPtr lParam);
+
+        [DllImport(Kernel32)]
+        public static extern uint GetCurrentThreadId();
+
+        [DllImport(Ole32, PreserveSig = false)]
+        public static extern void CreateBindCtx(int reserved, [MarshalAs(UnmanagedType.Interface)] out IBindCtx bindContext);
+
+        [DllImport(Ole32, PreserveSig = false)]
+        public static extern void GetRunningObjectTable(int reserved, [MarshalAs(UnmanagedType.Interface)] out IRunningObjectTable runningObjectTable);
 
         [DllImport(User32, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -196,14 +149,52 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [DllImport(User32, CharSet = CharSet.Unicode)]
         public static extern short VkKeyScan(char ch);
 
-        public const uint MAPVK_VK_TO_VSC = 0;
-        public const uint MAPVK_VSC_TO_VK = 1;
-        public const uint MAPVK_VK_TO_CHAR = 2;
-        public const uint MAPVK_VSC_TO_KV_EX = 3;
-
         [DllImport(User32, CharSet = CharSet.Unicode)]
         public static extern uint MapVirtualKey(uint uCode, uint uMapType);
 
-        #endregion
+        [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Unicode, Pack = 8)]
+        public struct INPUT
+        {
+            [FieldOffset(0)]
+            public uint Type;
+
+            [FieldOffset(4)]
+            public MOUSEINPUT mi;
+
+            [FieldOffset(4)]
+            public KEYBDINPUT ki;
+
+            [FieldOffset(4)]
+            public HARDWAREINPUT hi;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 8)]
+        public struct HARDWAREINPUT
+        {
+            public uint uMsg;
+            public ushort wParamL;
+            public ushort wParamH;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 8)]
+        public struct KEYBDINPUT
+        {
+            public ushort wVk;
+            public ushort wScan;
+            public uint dwFlags;
+            public uint time;
+            public IntPtr dwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 8)]
+        public struct MOUSEINPUT
+        {
+            public int dx;
+            public int dy;
+            public uint mouseData;
+            public uint dwFlags;
+            public uint time;
+            public IntPtr dwExtraInfo;
+        }
     }
 }

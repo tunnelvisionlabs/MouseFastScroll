@@ -14,15 +14,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     {
         private readonly VisualStudioInstanceFactory _instanceFactory;
 
-        public VisualStudioInstance Instance
-        {
-            get;
-        }
-
         internal VisualStudioInstanceContext(VisualStudioInstance instance, VisualStudioInstanceFactory instanceFactory)
         {
             Instance = instance;
             _instanceFactory = instanceFactory;
+        }
+
+        public VisualStudioInstance Instance
+        {
+            get;
         }
 
         public void Dispose()

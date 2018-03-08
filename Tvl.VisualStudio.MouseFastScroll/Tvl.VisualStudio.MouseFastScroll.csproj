@@ -4,8 +4,6 @@
 
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <CodeAnalysisRuleSet>..\MouseFastScroll.ruleset</CodeAnalysisRuleSet>
     <Description>Mouse Fast Scroll extension for Visual Studio</Description>
   </PropertyGroup>
 
@@ -36,14 +34,6 @@
       <Link>LICENSE.txt</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="$(CodeAnalysisRuleSet)" Condition="'$(CodeAnalysisRuleSet)' != ''" Link="%(Filename)%(Extension)" />
   </ItemGroup>
 
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />

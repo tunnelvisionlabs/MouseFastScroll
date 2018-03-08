@@ -34,8 +34,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
             _lines = lines.AsReadOnly();
         }
 
-        public char this[int position] => throw new NotImplementedException();
-
         public ITextBuffer TextBuffer => throw new NotImplementedException();
 
         public IContentType ContentType => throw new NotImplementedException();
@@ -47,6 +45,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
         public int LineCount => throw new NotImplementedException();
 
         public IEnumerable<ITextSnapshotLine> Lines => _lines;
+
+        public char this[int position] => throw new NotImplementedException();
 
         public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count)
         {
@@ -93,10 +93,14 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
             foreach (var line in Lines.Reverse())
             {
                 if (line.Start == position)
+                {
                     return line;
+                }
 
                 if (line.ExtentIncludingLineBreak.Contains(position))
+                {
                     return line;
+                }
             }
 
             throw new NotImplementedException($"position {position} not found");

@@ -14,13 +14,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     public class CaptureTestNameAttribute : BeforeAfterTestAttribute
     {
         /// <summary>
-        /// The name of the currently running test, or null if no test is running.
+        /// Gets the name of the currently running test, or null if no test is running.
         /// The format is test_class_name.method_name.
         /// </summary>
         public static string CurrentName
         {
             get;
-            set;
+            private set;
         }
 
         public override void Before(MethodInfo methodUnderTest)

@@ -25,6 +25,66 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
             _textViewLines = new FakeWpfTextViewLineCollection(snapshot);
         }
 
+        public event EventHandler<BackgroundBrushChangedEventArgs> BackgroundBrushChanged
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event EventHandler<ZoomLevelChangedEventArgs> ZoomLevelChanged
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event EventHandler<TextViewLayoutChangedEventArgs> LayoutChanged
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event EventHandler ViewportLeftChanged
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event EventHandler ViewportHeightChanged
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event EventHandler ViewportWidthChanged
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event EventHandler<MouseHoverEventArgs> MouseHover
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event EventHandler Closed
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event EventHandler LostAggregateFocus
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        public event EventHandler GotAggregateFocus
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
         public FrameworkElement VisualElement => throw new NotImplementedException();
 
         public Brush Background
@@ -104,66 +164,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
         public PropertyCollection Properties => throw new NotImplementedException();
 
         ITextViewLineCollection ITextView.TextViewLines => throw new NotImplementedException();
-
-        public event EventHandler<BackgroundBrushChangedEventArgs> BackgroundBrushChanged
-        {
-            add => throw new NotImplementedException();
-            remove => throw new NotImplementedException();
-        }
-
-        public event EventHandler<ZoomLevelChangedEventArgs> ZoomLevelChanged
-        {
-            add => throw new NotImplementedException();
-            remove => throw new NotImplementedException();
-        }
-
-        public event EventHandler<TextViewLayoutChangedEventArgs> LayoutChanged
-        {
-            add => throw new NotImplementedException();
-            remove => throw new NotImplementedException();
-        }
-
-        public event EventHandler ViewportLeftChanged
-        {
-            add => throw new NotImplementedException();
-            remove => throw new NotImplementedException();
-        }
-
-        public event EventHandler ViewportHeightChanged
-        {
-            add => throw new NotImplementedException();
-            remove => throw new NotImplementedException();
-        }
-
-        public event EventHandler ViewportWidthChanged
-        {
-            add => throw new NotImplementedException();
-            remove => throw new NotImplementedException();
-        }
-
-        public event EventHandler<MouseHoverEventArgs> MouseHover
-        {
-            add => throw new NotImplementedException();
-            remove => throw new NotImplementedException();
-        }
-
-        public event EventHandler Closed
-        {
-            add => throw new NotImplementedException();
-            remove => throw new NotImplementedException();
-        }
-
-        public event EventHandler LostAggregateFocus
-        {
-            add => throw new NotImplementedException();
-            remove => throw new NotImplementedException();
-        }
-
-        public event EventHandler GotAggregateFocus
-        {
-            add => throw new NotImplementedException();
-            remove => throw new NotImplementedException();
-        }
 
         public void Close()
         {

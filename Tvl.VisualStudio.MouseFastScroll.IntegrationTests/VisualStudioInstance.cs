@@ -15,44 +15,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 
     public class VisualStudioInstance
     {
-        private const int RPC_E_CALL_REJECTED = unchecked((int)0x80010001);
-        private const int RPC_E_SERVERCALL_RETRYLATER = unchecked((int)0x8001010A);
-
         private readonly IntegrationService _integrationService;
         private readonly IpcClientChannel _integrationServiceChannel;
         private readonly VisualStudio_InProc _inProc;
-
-        internal DTE Dte
-        {
-            get;
-        }
-
-        internal Process HostProcess
-        {
-            get;
-        }
-
-        public Version Version
-        {
-            get;
-        }
-
-        /// <summary>
-        /// The set of Visual Studio packages that are installed into this instance.
-        /// </summary>
-        public ImmutableHashSet<string> SupportedPackageIds
-        {
-            get;
-        }
-
-        /// <summary>
-        /// The path to the root of this installed version of Visual Studio. This is the folder that contains
-        /// Common7\IDE.
-        /// </summary>
-        public string InstallationPath
-        {
-            get;
-        }
 
         public VisualStudioInstance(Process hostProcess, DTE dte, Version version, ImmutableHashSet<string> supportedPackageIds, string installationPath)
         {
@@ -73,8 +38,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             // Create marshal-by-ref object that runs in host-process.
             _inProc = ExecuteInHostProcess<VisualStudio_InProc>(
                 type: typeof(VisualStudio_InProc),
-                methodName: nameof(VisualStudio_InProc.Create)
-            );
+                methodName: nameof(VisualStudio_InProc.Create));
 
             // There is a lot of VS initialization code that goes on, so we want to wait for that to 'settle' before
             // we start executing any actual code.
@@ -83,6 +47,43 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             // Ensure we are in a known 'good' state by cleaning up anything changed by the previous instance
             CleanUp();
         }
+
+        internal DTE Dte
+        {
+            get;
+        }
+
+        internal Process HostProcess
+        {
+            get;
+        }
+
+        public Version Version
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the set of Visual Studio packages that are installed into this instance.
+        /// </summary>
+        public ImmutableHashSet<string> SupportedPackageIds
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the path to the root of this installed version of Visual Studio. This is the folder that contains
+        /// Common7\IDE.
+        /// </summary>
+        public string InstallationPath
+        {
+            get;
+        }
+
+        public int ErrorListErrorCount
+            => _inProc.GetErrorListErrorCount();
+
+        public bool IsRunning => !HostProcess.HasExited;
 
         public void ExecuteInHostProcess(Type type, string methodName)
         {
@@ -115,13 +116,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         public string[] GetAvailableCommands()
             => _inProc.GetAvailableCommands();
 
-        public int ErrorListErrorCount
-            => _inProc.GetErrorListErrorCount();
-
         public void WaitForNoErrorsInErrorList()
             => _inProc.WaitForNoErrorsInErrorList();
-
-        public bool IsRunning => !HostProcess.HasExited;
 
         public void CleanUp()
         {
@@ -168,17 +164,17 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         private void StartRemoteIntegrationService(DTE dte)
         {
             // We use DTE over RPC to start the integration service. All other DTE calls should happen in the host process.
-            if (RetryRpcCall(() => dte.Commands.Item(WellKnownCommandNames.Test_IntegrationTestService_Start).IsAvailable))
+            if (RetryRpcCall(() => dte.Commands.Item(WellKnownCommandNames.IntegrationTestServiceStart).IsAvailable))
             {
-                RetryRpcCall(() => dte.ExecuteCommand(WellKnownCommandNames.Test_IntegrationTestService_Start));
+                RetryRpcCall(() => dte.ExecuteCommand(WellKnownCommandNames.IntegrationTestServiceStart));
             }
         }
 
         private void StopRemoteIntegrationService()
         {
-            if (_inProc.IsCommandAvailable(WellKnownCommandNames.Test_IntegrationTestService_Stop))
+            if (_inProc.IsCommandAvailable(WellKnownCommandNames.IntegrationTestServiceStop))
             {
-                _inProc.ExecuteCommand(WellKnownCommandNames.Test_IntegrationTestService_Stop);
+                _inProc.ExecuteCommand(WellKnownCommandNames.IntegrationTestServiceStop);
             }
         }
 
@@ -191,8 +187,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                     action();
                     return;
                 }
-                catch (COMException exception) when ((exception.HResult == RPC_E_CALL_REJECTED) ||
-                                                     (exception.HResult == RPC_E_SERVERCALL_RETRYLATER))
+                catch (COMException exception) when ((exception.HResult == NativeMethods.RPC_E_CALL_REJECTED) ||
+                                                     (exception.HResult == NativeMethods.RPC_E_SERVERCALL_RETRYLATER))
                 {
                     // We'll just try again in this case
                 }

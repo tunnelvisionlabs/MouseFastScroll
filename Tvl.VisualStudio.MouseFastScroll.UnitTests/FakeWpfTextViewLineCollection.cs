@@ -27,14 +27,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
             _lines = _snapshot.Lines.Select(line => new FakeWpfTextViewLine(line)).ToArray();
         }
 
-        public IWpfTextViewLine this[int index] => _lines[index];
-
-        ITextViewLine IList<ITextViewLine>.this[int index]
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-
         public ReadOnlyCollection<IWpfTextViewLine> WpfTextViewLines => throw new NotImplementedException();
 
         public IWpfTextViewLine FirstVisibleLine => this[_firstVisibleLine];
@@ -52,6 +44,14 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
         ITextViewLine ITextViewLineCollection.FirstVisibleLine => FirstVisibleLine;
 
         ITextViewLine ITextViewLineCollection.LastVisibleLine => LastVisibleLine;
+
+        public IWpfTextViewLine this[int index] => _lines[index];
+
+        ITextViewLine IList<ITextViewLine>.this[int index]
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
         public void Add(ITextViewLine item)
         {

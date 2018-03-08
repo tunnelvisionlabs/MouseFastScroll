@@ -85,7 +85,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             //  * The current instance is not the correct version -or-
             //  * The current instance does not support all the required packages -or-
             //  * The current instance is no longer running
-
             return _currentlyRunningInstance == null
                 || _currentlyRunningInstance.Version.Major != version.Major
                 || (!requiredPackageIds.All(id => _currentlyRunningInstance.SupportedPackageIds.Contains(id)))
@@ -131,8 +130,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                 // We are going to reuse the currently running instance, so ensure that we grab the host Process and Dte
                 // before cleaning up any hooks or remoting services created by the previous instance. We will then
                 // create a new VisualStudioInstance from the previous to ensure that everything is in a 'clean' state.
-
-                Debug.Assert(_currentlyRunningInstance != null);
+                Debug.Assert(_currentlyRunningInstance != null, "Assertion failed: _currentlyRunningInstance != null");
 
                 hostProcess = _currentlyRunningInstance.HostProcess;
                 dte = _currentlyRunningInstance.Dte;
@@ -149,7 +147,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         private static IEnumerable<Tuple<string, Version, ImmutableHashSet<string>, InstanceState>> EnumerateVisualStudioInstances()
         {
             foreach (var result in EnumerateVisualStudioInstancesInRegistry())
+            {
                 yield return Tuple.Create(result.Item1, result.Item2, ImmutableHashSet.Create<string>(), InstanceState.Local | InstanceState.Registered | InstanceState.NoErrors | InstanceState.NoRebootRequired);
+            }
 
             foreach (ISetupInstance2 result in EnumerateVisualStudioInstancesViaInstaller())
             {
@@ -169,11 +169,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                 foreach (string versionKey in visualStudio.GetSubKeyNames())
                 {
                     if (!Version.TryParse(versionKey, out var version))
+                    {
                         continue;
+                    }
 
                     string path = Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\{versionKey}\Setup\VS", "ProductDir", null) as string;
                     if (string.IsNullOrEmpty(path) || !File.Exists(Path.Combine(path, @"Common7\IDE\devenv.exe")))
+                    {
                         continue;
+                    }
 
                     yield return Tuple.Create(path, version);
                 }
@@ -213,7 +217,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                 Debug.WriteLine($"An environment variable named 'VSInstallDir' was found, adding this to the specified requirements. (VSInstallDir: {vsInstallDir})");
             }
 
-            var instances = EnumerateVisualStudioInstances().Where((instance) => {
+            var instances = EnumerateVisualStudioInstances().Where((instance) =>
+            {
                 var isMatch = true;
                 {
                     isMatch &= version.Major == instance.Item2.Major;
@@ -226,6 +231,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                         ////isMatch &= installationPath.Equals(vsInstallDir, StringComparison.OrdinalIgnoreCase);
                     }
                 }
+
                 return isMatch;
             });
 
@@ -291,7 +297,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             // BUG: Currently building with /p:DeployExtension=true does not always cause the MEF cache to recompose...
             //      So, run clearcache and updateconfiguration to workaround https://devdiv.visualstudio.com/DevDiv/_workitems?id=385351.
             if (version.Major >= 12)
+            {
                 Process.Start(vsExeFile, $"/clearcache {VsLaunchArgs}").WaitForExit();
+            }
 
             Process.Start(vsExeFile, $"/updateconfiguration {VsLaunchArgs}").WaitForExit();
             Process.Start(vsExeFile, $"/resetsettings General.vssettings /command \"File.Exit\" {VsLaunchArgs}").WaitForExit();

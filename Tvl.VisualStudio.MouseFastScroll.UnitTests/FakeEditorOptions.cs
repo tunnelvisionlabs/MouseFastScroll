@@ -19,10 +19,18 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
             foreach (var optionDefinition in exportProvider.GetExportedValues<EditorOptionDefinition>())
             {
                 if (!optionDefinition.IsApplicableToScope(scope))
+                {
                     continue;
+                }
 
                 _supportedOptions[optionDefinition.Name] = optionDefinition;
             }
+        }
+
+        public event EventHandler<EditorOptionChangedEventArgs> OptionChanged
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
         }
 
         public IEnumerable<EditorOptionDefinition> SupportedOptions => _supportedOptions.Values;
@@ -33,12 +41,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
         {
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();
-        }
-
-        public event EventHandler<EditorOptionChangedEventArgs> OptionChanged
-        {
-            add => throw new NotImplementedException();
-            remove => throw new NotImplementedException();
         }
 
         public bool ClearOptionValue(string optionId)
@@ -66,7 +68,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
             if (!_values.TryGetValue(optionId, out var value))
             {
                 if (_supportedOptions.TryGetValue(optionId, out var definition))
+                {
                     value = definition.DefaultValue;
+                }
             }
 
             return value;

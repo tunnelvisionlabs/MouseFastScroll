@@ -1,4 +1,7 @@
-﻿namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTestService
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE.txt in the project root for license information.
+
+namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTestService
 {
     using System;
     using System.ComponentModel.Design;
@@ -11,14 +14,14 @@
 
     internal sealed class IntegrationTestServiceCommands : IDisposable
     {
-        public const int cmdidStartIntegrationTestService = 0x5201;
-        public const int cmdidStopIntegrationTestService = 0x5204;
+        public const int CmdIdStartIntegrationTestService = 0x5201;
+        public const int CmdIdStopIntegrationTestService = 0x5204;
 
-        public static readonly Guid guidIntegrationTestCmdSet = new Guid("F3505B05-AF1E-493A-A5A5-ECEB69C42714");
+        public static readonly Guid GuidIntegrationTestCmdSet = new Guid("F3505B05-AF1E-493A-A5A5-ECEB69C42714");
 
         private static readonly BinaryServerFormatterSinkProvider DefaultSinkProvider = new BinaryServerFormatterSinkProvider()
         {
-            TypeFilterLevel = TypeFilterLevel.Full
+            TypeFilterLevel = TypeFilterLevel.Full,
         };
 
         private readonly Package _package;
@@ -34,22 +37,21 @@
         {
             _package = package ?? throw new ArgumentNullException(nameof(package));
 
-
             if (ServiceProvider.GetService(typeof(IMenuCommandService)) is OleMenuCommandService menuCommandService)
             {
-                var startMenuCmdId = new CommandID(guidIntegrationTestCmdSet, cmdidStartIntegrationTestService);
+                var startMenuCmdId = new CommandID(GuidIntegrationTestCmdSet, CmdIdStartIntegrationTestService);
                 _startMenuCmd = new MenuCommand(StartServiceCallback, startMenuCmdId)
                 {
                     Enabled = true,
-                    Visible = true
+                    Visible = true,
                 };
                 menuCommandService.AddCommand(_startMenuCmd);
 
-                var stopMenuCmdId = new CommandID(guidIntegrationTestCmdSet, cmdidStopIntegrationTestService);
+                var stopMenuCmdId = new CommandID(GuidIntegrationTestCmdSet, CmdIdStopIntegrationTestService);
                 _stopMenuCmd = new MenuCommand(StopServiceCallback, stopMenuCmdId)
                 {
                     Enabled = false,
-                    Visible = false
+                    Visible = false,
                 };
                 menuCommandService.AddCommand(_stopMenuCmd);
             }
@@ -82,8 +84,7 @@
                 _serviceChannel = new IpcServerChannel(
                     name: $"Microsoft.VisualStudio.IntegrationTest.ServiceChannel_{Process.GetCurrentProcess().Id}",
                     portName: _service.PortName,
-                    sinkProvider: DefaultSinkProvider
-                );
+                    sinkProvider: DefaultSinkProvider);
 
                 var serviceType = typeof(IntegrationService);
                 _marshalledService = RemotingServices.Marshal(_service, serviceType.FullName, serviceType);

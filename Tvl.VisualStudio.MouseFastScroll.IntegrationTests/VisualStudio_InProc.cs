@@ -19,16 +19,16 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         public static VisualStudio_InProc Create()
             => new VisualStudio_InProc();
 
-        new public void WaitForApplicationIdle()
+        public new void WaitForApplicationIdle()
             => InProcComponent.WaitForApplicationIdle();
 
-        new public void WaitForSystemIdle()
+        public new void WaitForSystemIdle()
             => InProcComponent.WaitForSystemIdle();
 
-        new public bool IsCommandAvailable(string commandName)
+        public new bool IsCommandAvailable(string commandName)
             => InProcComponent.IsCommandAvailable(commandName);
 
-        new public void ExecuteCommand(string commandName, string args = "")
+        public new void ExecuteCommand(string commandName, string args = "")
             => InProcComponent.ExecuteCommand(commandName, args);
 
         public string[] GetAvailableCommands()
@@ -45,14 +45,17 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                         result.Add(commandName);
                     }
                 }
-                finally { }
+                finally
+                {
+                }
             }
 
             return result.ToArray();
         }
 
         public void ActivateMainWindow(bool skipAttachingThreads = false)
-            => InvokeOnUIThread(() => {
+            => InvokeOnUIThread(() =>
+            {
                 var dte = GetDTE();
 
                 var activeVisualStudioWindow = (IntPtr)dte.ActiveWindow.HWnd;

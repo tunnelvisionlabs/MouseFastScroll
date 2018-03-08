@@ -17,25 +17,25 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTestService
     /// </remarks>
     public class IntegrationService : MarshalByRefObject
     {
+        private readonly ConcurrentDictionary<string, ObjRef> _marshalledObjects = new ConcurrentDictionary<string, ObjRef>();
+
+        public IntegrationService()
+        {
+            PortName = GetPortName(Process.GetCurrentProcess().Id);
+            BaseUri = "ipc://" + PortName;
+        }
+
         public string PortName
         {
             get;
         }
 
         /// <summary>
-        /// The base Uri of the service. This resolves to a string such as <c>ipc://IntegrationService_{HostProcessId}"</c>
+        /// Gets the base Uri of the service. This resolves to a string such as <c>ipc://IntegrationService_{HostProcessId}"</c>
         /// </summary>
         public string BaseUri
         {
             get;
-        }
-
-        private readonly ConcurrentDictionary<string, ObjRef> _marshalledObjects = new ConcurrentDictionary<string, ObjRef>();
-
-        public IntegrationService()
-        {
-            PortName = GetPortName(Process.GetCurrentProcess().Id);
-            BaseUri = "ipc://" + this.PortName;
         }
 
         private static string GetPortName(int hostProcessId)

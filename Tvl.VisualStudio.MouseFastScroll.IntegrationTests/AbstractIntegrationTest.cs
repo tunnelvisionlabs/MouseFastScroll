@@ -11,8 +11,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     [Collection(nameof(SharedIntegrationHostFixture))]
     public abstract class AbstractIntegrationTest : IDisposable
     {
-        public readonly VisualStudioInstance VisualStudio;
-
         private VisualStudioInstanceContext _visualStudioContext;
 
         protected AbstractIntegrationTest(VisualStudioInstanceFactory instanceFactory, Version version)
@@ -20,6 +18,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Automation.TransactionTimeout = 20000;
             _visualStudioContext = instanceFactory.GetNewOrUsedInstance(version, SharedIntegrationHostFixture.RequiredPackageIds);
             VisualStudio = _visualStudioContext.Instance;
+        }
+
+        public VisualStudioInstance VisualStudio
+        {
+            get;
         }
 
         public void Dispose()
