@@ -5,17 +5,7 @@
     <TargetFramework>net452</TargetFramework>
     <Platforms>x86</Platforms>
 
-    <Description>Mouse Fast Scroll extension for Visual Studio</Description>
-    <Company>Tunnel Vision Laboratories, LLC</Company>
-    <Copyright>Copyright © Sam Harwell 2014</Copyright>
-    <Version>4.2.0.0</Version>
-    <FileVersion>4.2.0.0</FileVersion>
-    <InformationalVersion>4.2.0-dev</InformationalVersion>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>portable</DebugType>
+    <Description>Mouse Fast Scroll extension for Visual Studio integration tests</Description>
   </PropertyGroup>
 
   <ItemGroup>

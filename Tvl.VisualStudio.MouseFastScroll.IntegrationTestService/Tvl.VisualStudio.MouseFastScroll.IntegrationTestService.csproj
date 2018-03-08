@@ -4,13 +4,7 @@
 
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
-
     <Description>Mouse Fast Scroll integration test service extension for Visual Studio</Description>
-    <Company>Tunnel Vision Laboratories, LLC</Company>
-    <Copyright>Copyright © Sam Harwell 2014</Copyright>
-    <Version>4.2.0.0</Version>
-    <FileVersion>4.2.0.0</FileVersion>
-    <InformationalVersion>4.2.0-dev</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,11 +23,6 @@
       not yet support automatic deployment to Visual Studio 2017, so we deploy it during the build for coverage.
     -->
     <DeployExtension Condition="'$(DeployExtension)' == ''">False</DeployExtension>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>portable</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -59,11 +48,6 @@
   <ItemGroup>
     <EmbeddedResource Update="IntegrationTestServicePackage.resx" MergeWithCTO="true" ManifestResourceName="IntegrationTestServicePackage" Generator="" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\Tvl.VisualStudio.MouseFastScroll\SharedKey.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
 
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
 

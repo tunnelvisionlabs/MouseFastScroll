@@ -4,13 +4,7 @@
 
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
-
     <Description>Mouse Fast Scroll extension for Visual Studio</Description>
-    <Company>Tunnel Vision Laboratories, LLC</Company>
-    <Copyright>Copyright © Sam Harwell 2014</Copyright>
-    <Version>4.2.0.0</Version>
-    <FileVersion>4.2.0.0</FileVersion>
-    <InformationalVersion>4.2.0-dev</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,11 +22,6 @@
     <DeployExtension Condition="'$(DeployExtension)' == ''">False</DeployExtension>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="15.1.192" PrivateAssets="all" />
     <PackageReference Include="VSSDK.CoreUtility" Version="11.0.4" />
@@ -45,11 +34,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
-
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>SharedKey.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
 
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
 
