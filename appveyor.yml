@@ -11,6 +11,10 @@ install:
 build:
   verbosity: minimal
 test:
+  assemblies:
+    only:
+      - '**\*.UnitTests.dll'
+      - '**\*.IntegrationTests.dll'
   categories:
     except:
       - VS2012
