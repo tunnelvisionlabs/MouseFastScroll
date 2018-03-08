@@ -15,14 +15,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests.Fakes
 
     internal class FakeWpfTextView : IWpfTextView
     {
-        private readonly IEditorOptions _editorOptions;
-        private readonly IWpfTextViewLineCollection _textViewLines;
-        private readonly IViewScroller _viewScroller = new FakeViewScroller();
+        private readonly FakeEditorOptions _editorOptions;
+        private readonly FakeWpfTextViewLineCollection _textViewLines;
+        private readonly FakeViewScroller _viewScroller;
 
         public FakeWpfTextView(ExportProvider exportProvider, ITextSnapshot snapshot)
         {
             _editorOptions = new FakeEditorOptions(exportProvider, this);
             _textViewLines = new FakeWpfTextViewLineCollection(snapshot);
+            _viewScroller = new FakeViewScroller(this);
         }
 
         public event EventHandler<BackgroundBrushChangedEventArgs> BackgroundBrushChanged
@@ -93,7 +94,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests.Fakes
             set => throw new NotImplementedException();
         }
 
-        public IWpfTextViewLineCollection TextViewLines => _textViewLines;
+        public FakeWpfTextViewLineCollection TextViewLines => _textViewLines;
+
+        IWpfTextViewLineCollection IWpfTextView.TextViewLines => TextViewLines;
 
         public IFormattedLineSource FormattedLineSource => throw new NotImplementedException();
 

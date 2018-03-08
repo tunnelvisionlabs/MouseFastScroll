@@ -9,6 +9,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests.Fakes
 
     internal class FakeViewScroller : IViewScroller
     {
+        private readonly FakeWpfTextView _wpfTextView;
+
+        public FakeViewScroller(FakeWpfTextView wpfTextView)
+        {
+            _wpfTextView = wpfTextView;
+        }
+
         public void EnsureSpanVisible(SnapshotSpan span)
         {
             throw new NotImplementedException();
@@ -31,17 +38,22 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests.Fakes
 
         public void ScrollViewportVerticallyByLine(ScrollDirection direction)
         {
-            throw new NotImplementedException();
+            ScrollViewportVerticallyByLines(direction, 1);
         }
 
         public void ScrollViewportVerticallyByLines(ScrollDirection direction, int count)
         {
-            throw new NotImplementedException();
+            _wpfTextView.TextViewLines.Scroll(direction, count);
         }
 
         public bool ScrollViewportVerticallyByPage(ScrollDirection direction)
         {
-            throw new NotImplementedException();
+            int lastVisibleLine = _wpfTextView.TextViewLines.LastVisibleLine.Start.GetContainingLine().LineNumber;
+            int firstVisibleLine = _wpfTextView.TextViewLines.FirstVisibleLine.Start.GetContainingLine().LineNumber;
+            int pageSize = lastVisibleLine - firstVisibleLine;
+
+            _wpfTextView.TextViewLines.Scroll(direction, pageSize);
+            return true;
         }
 
         public void ScrollViewportVerticallyByPixels(double distanceToScroll)

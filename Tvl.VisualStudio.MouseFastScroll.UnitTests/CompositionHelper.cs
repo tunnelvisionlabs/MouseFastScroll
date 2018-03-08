@@ -25,10 +25,10 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
             return provider;
         }
 
-        public static IMouseProcessor GetProcessor(out ExportProvider exportProvider, out IWpfTextView wpfTextView)
+        public static IMouseProcessor GetProcessor(string content, out ExportProvider exportProvider, out FakeWpfTextView wpfTextView)
         {
             var provider = GetProvider(out exportProvider);
-            wpfTextView = new FakeWpfTextView(exportProvider, new FakeTextSnapshot(string.Empty));
+            wpfTextView = new FakeWpfTextView(exportProvider, new FakeTextSnapshot(content));
             var processor = provider.GetAssociatedProcessor(wpfTextView);
             Assert.NotNull(processor);
 

@@ -25,11 +25,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests.Fakes
             {
                 int start = lines.Count == 0 ? 0 : lines.Last().EndIncludingLineBreak;
                 int endIncludingLineBreak = i + 1;
-                lines.Add(new FakeTextSnapshotLine(lines.Count, new SnapshotSpan(this, start, endIncludingLineBreak)));
+                lines.Add(new FakeTextSnapshotLine(lines.Count, new SnapshotSpan(this, Span.FromBounds(start, endIncludingLineBreak))));
             }
 
             int lastLineStart = lines.Count == 0 ? 0 : lines.Last().EndIncludingLineBreak;
-            lines.Add(new FakeTextSnapshotLine(lines.Count, new SnapshotSpan(this, lastLineStart, content.Length)));
+            lines.Add(new FakeTextSnapshotLine(lines.Count, new SnapshotSpan(this, Span.FromBounds(lastLineStart, content.Length))));
 
             _lines = lines.AsReadOnly();
         }

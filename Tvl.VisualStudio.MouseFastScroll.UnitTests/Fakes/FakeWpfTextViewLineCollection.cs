@@ -13,25 +13,34 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests.Fakes
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Formatting;
+    using Xunit;
 
     internal class FakeWpfTextViewLineCollection : IWpfTextViewLineCollection
     {
         private readonly ITextSnapshot _snapshot;
-        private readonly IWpfTextViewLine[] _lines;
+        private readonly ReadOnlyCollection<IWpfTextViewLine> _lines;
 
+        private int _viewableLines = 20;
         private int _firstVisibleLine = 0;
 
         public FakeWpfTextViewLineCollection(ITextSnapshot snapshot)
         {
             _snapshot = snapshot;
-            _lines = _snapshot.Lines.Select(line => new FakeWpfTextViewLine(line)).ToArray();
+            _lines = _snapshot.Lines.Select<ITextSnapshotLine, IWpfTextViewLine>(line => new FakeWpfTextViewLine(line)).ToList().AsReadOnly();
         }
 
-        public ReadOnlyCollection<IWpfTextViewLine> WpfTextViewLines => throw new NotImplementedException();
+        public ReadOnlyCollection<IWpfTextViewLine> WpfTextViewLines => _lines;
 
         public IWpfTextViewLine FirstVisibleLine => this[_firstVisibleLine];
 
-        public IWpfTextViewLine LastVisibleLine => throw new NotImplementedException();
+        public IWpfTextViewLine LastVisibleLine
+        {
+            get
+            {
+                int lastVisibleLine = Math.Min(_lines.Count - 1, _firstVisibleLine + _viewableLines - 1);
+                return this[lastVisibleLine];
+            }
+        }
 
         public SnapshotSpan FormattedSpan => throw new NotImplementedException();
 
@@ -49,8 +58,28 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests.Fakes
 
         ITextViewLine IList<ITextViewLine>.this[int index]
         {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
+            get => this[index];
+            set => throw new NotSupportedException();
+        }
+
+        internal void Scroll(ScrollDirection direction, int lines)
+        {
+            Assert.True(lines >= 0, "Assertion failed: lines >= 0");
+
+            if (direction == ScrollDirection.Down)
+            {
+                lines = Math.Min(lines, _lines.Count - _firstVisibleLine - 1);
+                if (lines > 0)
+                {
+                    _firstVisibleLine += lines;
+                }
+            }
+            else
+            {
+                Assert.Equal(ScrollDirection.Up, direction);
+                int newTopLine = Math.Max(0, _firstVisibleLine - lines);
+                _firstVisibleLine = newTopLine;
+            }
         }
 
         public void Add(ITextViewLine item)
@@ -85,7 +114,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests.Fakes
 
         public IEnumerator<ITextViewLine> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return WpfTextViewLines.GetEnumerator();
         }
 
         public int GetIndexOfTextLine(ITextViewLine textLine)
@@ -175,12 +204,12 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests.Fakes
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return GetEnumerator();
         }
 
         ITextViewLine ITextViewLineCollection.GetTextViewLineContainingBufferPosition(SnapshotPoint bufferPosition)
         {
-            throw new NotImplementedException();
+            return GetTextViewLineContainingBufferPosition(bufferPosition);
         }
     }
 }
