@@ -7,8 +7,6 @@ environment:
 init:
 - git config --global core.autocrlf true
 install:
-- appveyor DownloadFile https://aka.ms/vs/15/release/vs_community.exe
-- vs_community.exe update --wait --quiet --norestart --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community"
 - nuget restore
 build:
   verbosity: minimal

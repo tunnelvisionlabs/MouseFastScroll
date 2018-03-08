@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="MSBuild.Sdk.Extras/1.2.2">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
@@ -39,4 +39,4 @@
     <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\bin\$(Configuration)\net45\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.vsix" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
- </Project>
+</Project>
