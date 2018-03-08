@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <Extern href="stdidcmd.h" />
-  <Extern href="vsshlids.h" />
-
   <Commands package="guidIntegrationTestPackage">
-    <Menus>
-      <Menu guid="guidIntegrationTestCmdSet" id="menuidIntegrationTestService" priority="0x0010" type="Menu">
-        <Parent guid="guidIntegrationTestCmdSet" id="grpidTestWindowRunTopLevelMenu" />
-        <Strings>
-          <ButtonText>Integration Test Service</ButtonText>
-        </Strings>
-      </Menu>
-    </Menus>
-
-    <Groups>
-      <Group guid="guidIntegrationTestCmdSet" id="grpidIntegrationTestService" priority="0x0010">
-        <Parent guid="guidIntegrationTestCmdSet" id="menuidIntegrationTestService" />
-      </Group>
-    </Groups>
-
     <Buttons>
       <Button guid="guidIntegrationTestCmdSet" id="cmdidIntegrationTestServiceStart" priority="0x0010" type="Button">
-        <Parent guid="guidIntegrationTestCmdSet" id="grpidIntegrationTestService" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Start</ButtonText>
@@ -31,7 +12,6 @@
         </Strings>
       </Button>
       <Button guid="guidIntegrationTestCmdSet" id="cmdidIntegrationTestServiceStop" priority="0x0020" type="Button">
-        <Parent guid="guidIntegrationTestCmdSet" id="grpidIntegrationTestService" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -49,12 +29,6 @@
     <GuidSymbol name="guidIntegrationTestPackage" value="{78D5A8B5-1634-434B-802D-E3E4A46B1AA6}" />
 
     <GuidSymbol name="guidIntegrationTestCmdSet" value="{F3505B05-AF1E-493A-A5A5-ECEB69C42714}">
-      <IDSymbol name="menuidIntegrationTestService" value="0x5001" />
-
-      <!-- This IDSymbol is shared with the test window -->
-      <IDSymbol name="grpidTestWindowRunTopLevelMenu" value="0x0110"/>
-      <IDSymbol name="grpidIntegrationTestService" value="0x5101" />
-
       <IDSymbol name="cmdidIntegrationTestServiceStart" value="0x5201" />
       <IDSymbol name="cmdidIntegrationTestServiceStop" value="0x5202" />
     </GuidSymbol>
