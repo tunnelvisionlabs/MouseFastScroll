@@ -7,7 +7,14 @@
     <Description>Mouse Fast Scroll extension for Visual Studio unit tests</Description>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <!-- Test projects can automatically generate the necessary binding redirects -->
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="Xunit.StaFact" Version="0.2.9" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" PrivateAssets="all" />
   </ItemGroup>

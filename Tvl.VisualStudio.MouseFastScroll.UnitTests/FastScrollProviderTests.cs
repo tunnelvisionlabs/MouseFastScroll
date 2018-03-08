@@ -19,7 +19,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
         public void AttachesToView()
         {
             var provider = CompositionHelper.GetProvider(out var exportProvider);
-            var wpfTextView = new FakeWpfTextView(exportProvider);
+            var wpfTextView = new FakeWpfTextView(exportProvider, new FakeTextSnapshot(string.Empty));
 
             var processor = provider.GetAssociatedProcessor(wpfTextView);
 
@@ -30,7 +30,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
         public void DisablesZoom()
         {
             var provider = CompositionHelper.GetProvider(out var exportProvider);
-            var wpfTextView = new FakeWpfTextView(exportProvider);
+            var wpfTextView = new FakeWpfTextView(exportProvider, new FakeTextSnapshot(string.Empty));
 
             Assert.True(wpfTextView.Options.GetOptionValue(DefaultWpfViewOptions.EnableMouseWheelZoomId));
 

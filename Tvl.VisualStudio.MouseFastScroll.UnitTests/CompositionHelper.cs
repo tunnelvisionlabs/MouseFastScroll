@@ -23,5 +23,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
 
             return provider;
         }
+
+        public static IMouseProcessor GetProcessor(out ExportProvider exportProvider, out IWpfTextView wpfTextView)
+        {
+            var provider = GetProvider(out exportProvider);
+            wpfTextView = new FakeWpfTextView(exportProvider, new FakeTextSnapshot(string.Empty));
+            var processor = provider.GetAssociatedProcessor(wpfTextView);
+            Assert.NotNull(processor);
+
+            return processor;
+        }
     }
 }

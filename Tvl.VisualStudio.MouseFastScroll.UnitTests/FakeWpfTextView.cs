@@ -16,10 +16,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
     internal class FakeWpfTextView : IWpfTextView
     {
         private readonly IEditorOptions _editorOptions;
+        private readonly IWpfTextViewLineCollection _textViewLines;
+        private readonly IViewScroller _viewScroller = new FakeViewScroller();
 
-        public FakeWpfTextView(ExportProvider exportProvider)
+        public FakeWpfTextView(ExportProvider exportProvider, ITextSnapshot snapshot)
         {
             _editorOptions = new FakeEditorOptions(exportProvider, this);
+            _textViewLines = new FakeWpfTextViewLineCollection(snapshot);
         }
 
         public FrameworkElement VisualElement => throw new NotImplementedException();
@@ -30,7 +33,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
             set => throw new NotImplementedException();
         }
 
-        public IWpfTextViewLineCollection TextViewLines => throw new NotImplementedException();
+        public IWpfTextViewLineCollection TextViewLines => _textViewLines;
 
         public IFormattedLineSource FormattedLineSource => throw new NotImplementedException();
 
@@ -44,7 +47,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
 
         public bool InLayout => throw new NotImplementedException();
 
-        public IViewScroller ViewScroller => throw new NotImplementedException();
+        public IViewScroller ViewScroller => _viewScroller;
 
         public ITextCaret Caret => throw new NotImplementedException();
 
