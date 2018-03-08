@@ -216,6 +216,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             var instances = EnumerateVisualStudioInstances().Where((instance) => {
                 var isMatch = true;
                 {
+                    isMatch &= version.Major == instance.Item2.Major;
                     isMatch &= instance.Item2 >= version;
 
                     if (haveVsInstallDir)
