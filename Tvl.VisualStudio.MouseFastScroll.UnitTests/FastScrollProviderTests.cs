@@ -4,6 +4,7 @@
 namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
 {
     using Microsoft.VisualStudio.Text.Editor;
+    using Tvl.VisualStudio.MouseFastScroll.UnitTests.Fakes;
     using Xunit;
 
     public class FastScrollProviderTests

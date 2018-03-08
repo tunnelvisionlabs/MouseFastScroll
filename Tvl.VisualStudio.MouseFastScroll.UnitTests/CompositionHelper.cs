@@ -6,6 +6,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.UnitTests
     using System.ComponentModel.Composition.Hosting;
     using System.Linq;
     using Microsoft.VisualStudio.Text.Editor;
+    using Tvl.VisualStudio.MouseFastScroll.UnitTests.Fakes;
     using Xunit;
 
     internal static class CompositionHelper
