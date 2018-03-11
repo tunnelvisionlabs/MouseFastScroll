@@ -44,6 +44,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             // we start executing any actual code.
             _inProc.WaitForSystemIdle();
 
+            SendKeys = new SendKeys(this);
+            Editor = new Editor_OutOfProc(this);
+
             // Ensure we are in a known 'good' state by cleaning up anything changed by the previous instance
             CleanUp();
         }
@@ -76,6 +79,16 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         /// Common7\IDE.
         /// </summary>
         public string InstallationPath
+        {
+            get;
+        }
+
+        public SendKeys SendKeys
+        {
+            get;
+        }
+
+        public Editor_OutOfProc Editor
         {
             get;
         }

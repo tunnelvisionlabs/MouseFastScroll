@@ -4,7 +4,9 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
     using System;
+    using System.Threading;
     using Xunit;
+    using vsSaveChanges = EnvDTE.vsSaveChanges;
 
     public abstract class TrivialIntegrationTest : AbstractIntegrationTest
     {
@@ -25,6 +27,14 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             }
 
             Assert.Equal(expectedVersion.ToString(), currentVersion);
+        }
+
+        [Fact]
+        public void OpenDocumentAndType()
+        {
+            var window = VisualStudioInstance.RetryRpcCall(() => VisualStudio.Dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt"));
+            VisualStudio.Editor.SendKeys(Guid.NewGuid().ToString() + "\n" + Guid.NewGuid().ToString());
+            VisualStudioInstance.RetryRpcCall(() => window.Close(vsSaveChanges.vsSaveChangesNo));
         }
 
         [VersionTrait(typeof(VS2012))]
