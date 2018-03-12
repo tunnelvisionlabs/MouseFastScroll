@@ -3,7 +3,33 @@
 
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
+    using System;
+    using Microsoft.VisualStudio.Text.Editor;
+
     internal abstract class TextViewWindow_InProc : InProcComponent
     {
+        protected abstract IWpfTextView GetActiveTextView();
+
+        protected T ExecuteOnActiveView<T>(Func<IWpfTextView, T> action)
+        {
+            return InvokeOnUIThread(
+                () =>
+                {
+                    var view = GetActiveTextView();
+                    return action(view);
+                });
+        }
+
+        protected void ExecuteOnActiveView(Action<IWpfTextView> action)
+            => InvokeOnUIThread(GetExecuteOnActionViewCallback(action));
+
+        protected Action GetExecuteOnActionViewCallback(Action<IWpfTextView> action)
+        {
+            return () =>
+            {
+                var view = GetActiveTextView();
+                action(view);
+            };
+        }
     }
 }

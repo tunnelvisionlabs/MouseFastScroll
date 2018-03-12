@@ -4,7 +4,7 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
     using System;
-    using System.Threading;
+    using System.Linq;
     using Xunit;
     using vsSaveChanges = EnvDTE.vsSaveChanges;
 
@@ -33,7 +33,16 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         public void OpenDocumentAndType()
         {
             var window = VisualStudioInstance.RetryRpcCall(() => VisualStudio.Dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt"));
-            VisualStudio.Editor.SendKeys(Guid.NewGuid().ToString() + "\n" + Guid.NewGuid().ToString());
+
+            string initialText = string.Join(string.Empty, Enumerable.Range(0, 400).Select(i => Guid.NewGuid() + Environment.NewLine));
+            VisualStudio.Editor.SetText(initialText);
+
+            string additionalTypedText = Guid.NewGuid().ToString() + "\n" + Guid.NewGuid().ToString();
+            VisualStudio.Editor.SendKeys(additionalTypedText);
+
+            string expected = initialText + additionalTypedText.Replace("\n", Environment.NewLine);
+            Assert.Equal(expected, VisualStudio.Editor.GetText());
+
             VisualStudioInstance.RetryRpcCall(() => window.Close(vsSaveChanges.vsSaveChangesNo));
         }
 

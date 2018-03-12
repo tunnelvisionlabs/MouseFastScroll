@@ -22,6 +22,12 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         public void Activate()
             => EditorInProc.Activate();
 
+        internal string GetText()
+            => EditorInProc.GetText();
+
+        internal void SetText(string value)
+            => EditorInProc.SetText(value);
+
         /// <summary>
         /// Sends key strokes to the active editor in Visual Studio. Various types are supported by this method:
         /// <see cref="string"/> (each character will be sent separately, <see cref="char"/>, and
