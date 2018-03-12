@@ -57,14 +57,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
             Assert.Equal(firstVisibleLine, VisualStudio.Editor.GetFirstVisibleLine());
 
-            var inputSimulator = new InputSimulator();
-            VisualStudio.ActivateMainWindow();
-            inputSimulator.Keyboard
-                .KeyDown(VirtualKeyCode.CONTROL)
-                .KeyPress(VirtualKeyCode.HOME)
-                .KeyUp(VirtualKeyCode.CONTROL);
-
-            VisualStudio.WaitForApplicationIdle();
+            VisualStudio.SendKeys.Send(inputSimulator =>
+            {
+                inputSimulator.Keyboard
+                    .KeyDown(VirtualKeyCode.CONTROL)
+                    .KeyPress(VirtualKeyCode.HOME)
+                    .KeyUp(VirtualKeyCode.CONTROL);
+            });
 
             Assert.True(VisualStudio.Editor.IsCaretOnScreen());
             firstVisibleLine = VisualStudio.Editor.GetFirstVisibleLine();
@@ -79,43 +78,47 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             int verticalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CYSCREEN);
             point = new ScaleTransform(65535.0 / horizontalResolution, 65535.0 / verticalResolution).Transform(point);
 
-            inputSimulator.Mouse
-                .MoveMouseTo(point.X, point.Y)
-                .VerticalScroll(-1);
-
-            VisualStudio.WaitForApplicationIdle();
+            VisualStudio.SendKeys.Send(inputSimulator =>
+            {
+                inputSimulator.Mouse
+                    .MoveMouseTo(point.X, point.Y)
+                    .VerticalScroll(-1);
+            });
 
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
             Assert.Equal(3, VisualStudio.Editor.GetFirstVisibleLine());
 
-            inputSimulator.Mouse
-                .MoveMouseTo(point.X, point.Y)
-                .VerticalScroll(1);
-
-            VisualStudio.WaitForApplicationIdle();
+            VisualStudio.SendKeys.Send(inputSimulator =>
+            {
+                inputSimulator.Mouse
+                    .MoveMouseTo(point.X, point.Y)
+                    .VerticalScroll(1);
+            });
 
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
             Assert.Equal(0, VisualStudio.Editor.GetFirstVisibleLine());
 
-            inputSimulator
-                .Mouse.MoveMouseTo(point.X, point.Y)
-                .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
-                .Mouse.VerticalScroll(-1)
-                .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
-
-            VisualStudio.WaitForApplicationIdle();
+            VisualStudio.SendKeys.Send(inputSimulator =>
+            {
+                inputSimulator
+                    .Mouse.MoveMouseTo(point.X, point.Y)
+                    .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
+                    .Mouse.VerticalScroll(-1)
+                    .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
+            });
 
             int expectedLastVisibleLine = lastVisibleLine + (lastVisibleLineState == VisibilityState.FullyVisible ? 1 : 0);
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
             Assert.Equal(expectedLastVisibleLine, VisualStudio.Editor.GetFirstVisibleLine());
 
-            inputSimulator
-                .Mouse.MoveMouseTo(point.X, point.Y)
-                .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
-                .Mouse.VerticalScroll(1)
-                .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
-
-            VisualStudio.WaitForApplicationIdle();
+            VisualStudio.SendKeys.Send(inputSimulator =>
+            {
+                inputSimulator
+                    .Mouse.MoveMouseTo(point.X, point.Y)
+                    .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
+                    .Mouse.VerticalScroll(1)
+                    .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
+            });
 
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
             Assert.Equal(0, VisualStudio.Editor.GetFirstVisibleLine());
@@ -142,14 +145,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 
             Assert.Equal(expected.Length, VisualStudio.Editor.GetCaretPosition());
 
-            var inputSimulator = new InputSimulator();
-            VisualStudio.ActivateMainWindow();
-            inputSimulator.Keyboard
-                .KeyDown(VirtualKeyCode.CONTROL)
-                .KeyPress(VirtualKeyCode.HOME)
-                .KeyUp(VirtualKeyCode.CONTROL);
-
-            VisualStudio.WaitForApplicationIdle();
+            VisualStudio.SendKeys.Send(inputSimulator =>
+            {
+                inputSimulator.Keyboard
+                    .KeyDown(VirtualKeyCode.CONTROL)
+                    .KeyPress(VirtualKeyCode.HOME)
+                    .KeyUp(VirtualKeyCode.CONTROL);
+            });
 
             int firstVisibleLine = VisualStudio.Editor.GetFirstVisibleLine();
             Assert.Equal(0, firstVisibleLine);
@@ -165,26 +167,28 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             int verticalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CYSCREEN);
             point = new ScaleTransform(65535.0 / horizontalResolution, 65535.0 / verticalResolution).Transform(point);
 
-            inputSimulator
-                .Mouse.MoveMouseTo(point.X, point.Y)
-                .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
-                .Mouse.VerticalScroll(-1)
-                .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
-
-            VisualStudio.WaitForApplicationIdle();
+            VisualStudio.SendKeys.Send(inputSimulator =>
+            {
+                inputSimulator
+                    .Mouse.MoveMouseTo(point.X, point.Y)
+                    .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
+                    .Mouse.VerticalScroll(-1)
+                    .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
+            });
 
             int expectedLastVisibleLine = lastVisibleLine + (lastVisibleLineState == VisibilityState.FullyVisible ? 1 : 0);
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
             Assert.Equal(expectedLastVisibleLine, VisualStudio.Editor.GetFirstVisibleLine());
             Assert.Equal(zoomLevel, VisualStudio.Editor.GetZoomLevel());
 
-            inputSimulator
-                .Mouse.MoveMouseTo(point.X, point.Y)
-                .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
-                .Mouse.VerticalScroll(1)
-                .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
-
-            VisualStudio.WaitForApplicationIdle();
+            VisualStudio.SendKeys.Send(inputSimulator =>
+            {
+                inputSimulator
+                    .Mouse.MoveMouseTo(point.X, point.Y)
+                    .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
+                    .Mouse.VerticalScroll(1)
+                    .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
+            });
 
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
             Assert.Equal(0, VisualStudio.Editor.GetFirstVisibleLine());
