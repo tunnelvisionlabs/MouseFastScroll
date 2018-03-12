@@ -3,6 +3,7 @@
 
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
+    using System.Windows;
     using WindowsInput.Native;
 
     public class Editor_OutOfProc : TextViewWindow_OutOfProc
@@ -33,6 +34,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         public void MoveCaret(int position)
             => EditorInProc.MoveCaret(position);
 
+        public bool IsCaretOnScreen()
+            => EditorInProc.IsCaretOnScreen();
+
         /// <summary>
         /// Sends key strokes to the active editor in Visual Studio. Various types are supported by this method:
         /// <see cref="string"/> (each character will be sent separately, <see cref="char"/>, and
@@ -43,5 +47,17 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Activate();
             VisualStudioInstance.SendKeys.Send(keys);
         }
+
+        public int GetFirstVisibleLine()
+            => EditorInProc.GetFirstVisibleLine();
+
+        public int GetLastVisibleLine()
+            => EditorInProc.GetLastVisibleLine();
+
+        public Point GetCenterOfEditorOnScreen()
+            => EditorInProc.GetCenterOfEditorOnScreen();
+
+        public double GetZoomLevel()
+            => EditorInProc.GetZoomLevel();
     }
 }

@@ -4,11 +4,8 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Runtime.InteropServices;
     using System.Text;
-    using System.Threading.Tasks;
     using IBindCtx = Microsoft.VisualStudio.OLE.Interop.IBindCtx;
     using IRunningObjectTable = Microsoft.VisualStudio.OLE.Interop.IRunningObjectTable;
 
@@ -71,6 +68,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         public const uint MAPVK_VSC_TO_VK = 1;
         public const uint MAPVK_VK_TO_CHAR = 2;
         public const uint MAPVK_VSC_TO_KV_EX = 3;
+
+        public const int SM_CXSCREEN = 0;
+        public const int SM_CYSCREEN = 1;
 
         public static readonly int SizeOf_INPUT = Marshal.SizeOf<INPUT>();
 
@@ -151,6 +151,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 
         [DllImport(User32, CharSet = CharSet.Unicode)]
         public static extern uint MapVirtualKey(uint uCode, uint uMapType);
+
+        [DllImport(User32, CharSet = CharSet.Unicode)]
+        public static extern int GetSystemMetrics(int nIndex);
 
         [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Unicode, Pack = 8)]
         public struct INPUT

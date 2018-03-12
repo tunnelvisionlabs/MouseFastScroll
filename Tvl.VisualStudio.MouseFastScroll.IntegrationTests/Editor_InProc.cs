@@ -5,6 +5,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
     using System;
     using System.Runtime.InteropServices;
+    using System.Windows;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.TextManager.Interop;
@@ -76,9 +77,45 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                 });
         }
 
+        public bool IsCaretOnScreen()
+        {
+            return ExecuteOnActiveView(
+                view =>
+                {
+                    var caret = view.Caret;
+                    return caret.Left >= view.ViewportLeft
+                        && caret.Right <= view.ViewportRight
+                        && caret.Top >= view.ViewportTop
+                        && caret.Bottom <= view.ViewportBottom;
+                });
+        }
+
         protected override ITextBuffer GetBufferContainingCaret(IWpfTextView view)
         {
             return view.GetBufferContainingCaret();
         }
+
+        public int GetFirstVisibleLine()
+        {
+            return ExecuteOnActiveView(view => view.TextViewLines.FirstVisibleLine.Start.GetContainingLine().LineNumber);
+        }
+
+        public int GetLastVisibleLine()
+        {
+            return ExecuteOnActiveView(view => view.TextViewLines.LastVisibleLine.Start.GetContainingLine().LineNumber);
+        }
+
+        public Point GetCenterOfEditorOnScreen()
+        {
+            return ExecuteOnActiveView(
+                view =>
+                {
+                    var center = new Point(view.VisualElement.ActualWidth / 2, view.VisualElement.ActualHeight / 2);
+                    return view.VisualElement.PointToScreen(center);
+                });
+        }
+
+        public double GetZoomLevel()
+            => ExecuteOnActiveView(view => view.ZoomLevel);
     }
 }
