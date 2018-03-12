@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net452</TargetFramework>
+
+    <Description>Mouse Fast Scroll extension for Visual Studio unit tests</Description>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Test projects can automatically generate the necessary binding redirects -->
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="InputSimulatorPlus" Version="1.0.6" />
+    <PackageReference Include="Xunit.StaFact" Version="0.2.9" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll\Tvl.VisualStudio.MouseFastScroll.csproj" />
+  </ItemGroup>
+
+</Project>

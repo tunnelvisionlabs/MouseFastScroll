@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+
+  <PropertyGroup>
+    <Company>Tunnel Vision Laboratories, LLC</Company>
+    <Copyright>Copyright © Sam Harwell 2014</Copyright>
+    <Version>4.2.0.0</Version>
+    <FileVersion>4.2.0.0</FileVersion>
+    <InformationalVersion>4.2.0-dev</InformationalVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)Tvl.VisualStudio.MouseFastScroll\SharedKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(AssemblyOriginatorKeyFile)" Condition="'$(AssemblyOriginatorKeyFile)' != ''" Link="%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- StyleCop Analyzers configuration -->
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)MouseFastScroll.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta006" PrivateAssets="all" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
+    <None Include="$(CodeAnalysisRuleSet)" Condition="'$(CodeAnalysisRuleSet)' != ''" Link="%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

@@ -1,14 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project>
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
 
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
-    <Description>Mouse Fast Scroll extension for Visual Studio</Description>
+    <Description>Mouse Fast Scroll integration test service extension for Visual Studio</Description>
   </PropertyGroup>
 
   <PropertyGroup>
-    <GeneratePkgDefFile>false</GeneratePkgDefFile>
+    <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <UseCodebase>true</UseCodebase>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
@@ -18,15 +18,20 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
-    <!-- This property disables extension deployment for command line builds; required for AppVeyor -->
+    <!--
+      This extension is deployed on-demand by the integration test harness for Visual Studio 2012-2015. The harness does
+      not yet support automatic deployment to Visual Studio 2017, so we deploy it during the build for coverage.
+    -->
     <DeployExtension Condition="'$(DeployExtension)' == ''">False</DeployExtension>
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="System.Runtime.Remoting" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="15.1.192" PrivateAssets="all" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta006" PrivateAssets="all" />
-    <PackageReference Include="VSSDK.CoreUtility" Version="11.0.4" />
-    <PackageReference Include="VSSDK.Text" Version="11.0.4" />
+    <PackageReference Include="VSSDK.Shell.11" Version="11.0.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +39,14 @@
       <Link>LICENSE.txt</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <VSCTCompile Include="IntegrationTestServiceCommands.vsct" ResourceName="Menus.ctmenu" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="IntegrationTestServicePackage.resx" MergeWithCTO="true" ManifestResourceName="IntegrationTestServicePackage" Generator="" />
   </ItemGroup>
 
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />

@@ -2,12 +2,23 @@ version: 1.0.{build}
 image: Visual Studio 2017
 configuration: Release
 platform: Any CPU
+environment:
+  DeployExtension: true
 init:
 - git config --global core.autocrlf true
 install:
 - nuget restore
+- '"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.exe" /RootSuffix Exp /ResetSettings General.vssettings /Command File.Exit'
 build:
   verbosity: minimal
-test: off
+test:
+  assemblies:
+    only:
+      - '**\*.UnitTests.dll'
+      - '**\*.IntegrationTests.dll'
+  categories:
+    except:
+      - VS2012
+      - VS2013
 artifacts:
-- path: '**\*.vsix'
+- path: 'Tvl.VisualStudio.MouseFastScroll\**\*.vsix'

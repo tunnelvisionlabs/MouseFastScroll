@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Rules for StyleCop.Analyzers" Description="Code analysis rules for StyleCop.Analyzers.csproj." ToolsVersion="15.0">
+<RuleSet Name="Rules for MouseFastScroll" Description="Code analysis rules for MouseFastScroll." ToolsVersion="15.0">
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1001" Action="Warning" />
     <Rule Id="CA1009" Action="Warning" />
@@ -69,12 +69,24 @@
     <Rule Id="CS1591" Action="Hidden" />
     <Rule Id="CS1712" Action="Hidden" />
   </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
+    <!-- IDE0003 duplicates functionality provided by SX1101 -->
+    <Rule Id="IDE0003" Action="None" />
+  </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1101" Action="None" />
-    <Rule Id="SA1305" Action="Warning" />
+    <Rule Id="SA1139" Action="None" /> <!-- https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/2275 -->
+    <Rule Id="SA1202" Action="None" />
+    <Rule Id="SA1204" Action="None" />
+    <Rule Id="SA1309" Action="None" />
     <Rule Id="SA1412" Action="Warning" />
     <Rule Id="SA1600" Action="None" />
-    <Rule Id="SA1609" Action="Warning" />
+    <Rule Id="SA1601" Action="None" />
+    <Rule Id="SA1602" Action="None" />
+    <Rule Id="SA1611" Action="None" />
+    <Rule Id="SA1615" Action="None" />
     <Rule Id="SX1101" Action="Warning" />
+    <Rule Id="SX1309" Action="Warning" />
+    <Rule Id="SX1309S" Action="Warning" />
   </Rules>
 </RuleSet>
