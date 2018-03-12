@@ -13,6 +13,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System.Threading.Tasks;
     using Microsoft.VisualStudio;
     using Microsoft.Win32;
+    using WindowsInput.Native;
     using Directory = System.IO.Directory;
     using DTE = EnvDTE.DTE;
     using IMoniker = Microsoft.VisualStudio.OLE.Interop.IMoniker;
@@ -414,10 +415,10 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 
         private static void AppendVirtualKey(byte virtualKey, StringBuilder builder)
         {
-            if (Enum.IsDefined(typeof(VirtualKey), virtualKey))
+            if (Enum.IsDefined(typeof(VirtualKeyCode), virtualKey))
             {
                 builder.Append('(');
-                builder.Append(Enum.GetName(typeof(VirtualKey), virtualKey));
+                builder.Append(Enum.GetName(typeof(VirtualKeyCode), virtualKey));
                 builder.Append(") ");
             }
         }

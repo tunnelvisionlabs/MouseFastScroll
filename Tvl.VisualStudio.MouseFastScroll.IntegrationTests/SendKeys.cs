@@ -61,7 +61,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                         inputSimulator.Keyboard.TextEntry(c);
                         break;
 
-                    case VirtualKey virtualKey:
+                    case VirtualKeyCode virtualKeyCode:
+                        inputSimulator.Keyboard.KeyPress(virtualKeyCode);
+                        break;
 
                     case null:
                         throw new ArgumentNullException(nameof(keys));

@@ -3,6 +3,8 @@
 
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
+    using WindowsInput.Native;
+
     public class Editor_OutOfProc : TextViewWindow_OutOfProc
     {
         internal Editor_OutOfProc(VisualStudioInstance visualStudioInstance)
@@ -34,7 +36,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         /// <summary>
         /// Sends key strokes to the active editor in Visual Studio. Various types are supported by this method:
         /// <see cref="string"/> (each character will be sent separately, <see cref="char"/>, and
-        /// <see cref="VirtualKey"/>).
+        /// <see cref="VirtualKeyCode"/>).
         /// </summary>
         public void SendKeys(params object[] keys)
         {
