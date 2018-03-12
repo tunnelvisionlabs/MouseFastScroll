@@ -8,6 +8,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System.Windows;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
+    using Microsoft.VisualStudio.Text.Formatting;
     using Microsoft.VisualStudio.TextManager.Interop;
 
     internal class Editor_InProc : TextViewWindow_InProc
@@ -103,6 +104,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         public int GetLastVisibleLine()
         {
             return ExecuteOnActiveView(view => view.TextViewLines.LastVisibleLine.Start.GetContainingLine().LineNumber);
+        }
+
+        public int GetLastVisibleLineState()
+        {
+            return ExecuteOnActiveView(view => (int)view.TextViewLines.LastVisibleLine.VisibilityState);
         }
 
         public Point GetCenterOfEditorOnScreen()

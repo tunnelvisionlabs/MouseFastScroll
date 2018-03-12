@@ -4,6 +4,7 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
     using System.Windows;
+    using Microsoft.VisualStudio.Text.Formatting;
     using WindowsInput.Native;
 
     public class Editor_OutOfProc : TextViewWindow_OutOfProc
@@ -53,6 +54,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 
         public int GetLastVisibleLine()
             => EditorInProc.GetLastVisibleLine();
+
+        public VisibilityState GetLastVisibleLineState()
+            => (VisibilityState)EditorInProc.GetLastVisibleLineState();
 
         public Point GetCenterOfEditorOnScreen()
             => EditorInProc.GetCenterOfEditorOnScreen();

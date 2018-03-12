@@ -7,6 +7,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System.Linq;
     using System.Windows;
     using System.Windows.Media;
+    using Microsoft.VisualStudio.Text.Formatting;
     using WindowsInput;
     using WindowsInput.Native;
     using Xunit;
@@ -70,6 +71,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(0, firstVisibleLine);
 
             int lastVisibleLine = VisualStudio.Editor.GetLastVisibleLine();
+            VisibilityState lastVisibleLineState = VisualStudio.Editor.GetLastVisibleLineState();
             Assert.True(firstVisibleLine < lastVisibleLine);
 
             Point point = VisualStudio.Editor.GetCenterOfEditorOnScreen();
@@ -81,12 +83,16 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                 .MoveMouseTo(point.X, point.Y)
                 .VerticalScroll(-1);
 
+            VisualStudio.WaitForApplicationIdle();
+
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
             Assert.Equal(3, VisualStudio.Editor.GetFirstVisibleLine());
 
             inputSimulator.Mouse
                 .MoveMouseTo(point.X, point.Y)
                 .VerticalScroll(1);
+
+            VisualStudio.WaitForApplicationIdle();
 
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
             Assert.Equal(0, VisualStudio.Editor.GetFirstVisibleLine());
@@ -95,16 +101,21 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                 .Mouse.MoveMouseTo(point.X, point.Y)
                 .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
                 .Mouse.VerticalScroll(-1)
-                .Keyboard.KeyUp(VirtualKeyCode.CONTROL);
+                .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
 
+            VisualStudio.WaitForApplicationIdle();
+
+            int expectedLastVisibleLine = lastVisibleLine + (lastVisibleLineState == VisibilityState.FullyVisible ? 1 : 0);
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
-            Assert.Equal(lastVisibleLine, VisualStudio.Editor.GetFirstVisibleLine());
+            Assert.Equal(expectedLastVisibleLine, VisualStudio.Editor.GetFirstVisibleLine());
 
             inputSimulator
                 .Mouse.MoveMouseTo(point.X, point.Y)
                 .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
                 .Mouse.VerticalScroll(1)
-                .Keyboard.KeyUp(VirtualKeyCode.CONTROL);
+                .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
+
+            VisualStudio.WaitForApplicationIdle();
 
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
             Assert.Equal(0, VisualStudio.Editor.GetFirstVisibleLine());
@@ -144,6 +155,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(0, firstVisibleLine);
 
             int lastVisibleLine = VisualStudio.Editor.GetLastVisibleLine();
+            VisibilityState lastVisibleLineState = VisualStudio.Editor.GetLastVisibleLineState();
             Assert.True(firstVisibleLine < lastVisibleLine);
 
             double zoomLevel = VisualStudio.Editor.GetZoomLevel();
@@ -157,19 +169,20 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                 .Mouse.MoveMouseTo(point.X, point.Y)
                 .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
                 .Mouse.VerticalScroll(-1)
-                .Keyboard.KeyUp(VirtualKeyCode.CONTROL);
+                .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
 
             VisualStudio.WaitForApplicationIdle();
 
+            int expectedLastVisibleLine = lastVisibleLine + (lastVisibleLineState == VisibilityState.FullyVisible ? 1 : 0);
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
-            Assert.Equal(lastVisibleLine, VisualStudio.Editor.GetFirstVisibleLine());
+            Assert.Equal(expectedLastVisibleLine, VisualStudio.Editor.GetFirstVisibleLine());
             Assert.Equal(zoomLevel, VisualStudio.Editor.GetZoomLevel());
 
             inputSimulator
                 .Mouse.MoveMouseTo(point.X, point.Y)
                 .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
                 .Mouse.VerticalScroll(1)
-                .Keyboard.KeyUp(VirtualKeyCode.CONTROL);
+                .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
 
             VisualStudio.WaitForApplicationIdle();
 
