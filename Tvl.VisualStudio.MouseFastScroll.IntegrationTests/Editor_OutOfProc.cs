@@ -28,6 +28,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         internal void SetText(string value)
             => EditorInProc.SetText(value);
 
+        public void MoveCaret(int position)
+            => EditorInProc.MoveCaret(position);
+
         /// <summary>
         /// Sends key strokes to the active editor in Visual Studio. Various types are supported by this method:
         /// <see cref="string"/> (each character will be sent separately, <see cref="char"/>, and

@@ -4,11 +4,25 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
     using System;
+    using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
 
     internal abstract class TextViewWindow_InProc : InProcComponent
     {
         protected abstract IWpfTextView GetActiveTextView();
+
+        protected abstract ITextBuffer GetBufferContainingCaret(IWpfTextView view);
+
+        public int GetCaretPosition()
+        {
+            return ExecuteOnActiveView(
+                view =>
+                {
+                    var subjectBuffer = GetBufferContainingCaret(view);
+                    var bufferPosition = view.Caret.Position.BufferPosition;
+                    return bufferPosition.Position;
+                });
+        }
 
         protected T ExecuteOnActiveView<T>(Func<IWpfTextView, T> action)
         {

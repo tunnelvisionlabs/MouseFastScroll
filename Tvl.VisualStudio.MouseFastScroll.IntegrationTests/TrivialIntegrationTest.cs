@@ -43,6 +43,10 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             string expected = initialText + additionalTypedText.Replace("\n", Environment.NewLine);
             Assert.Equal(expected, VisualStudio.Editor.GetText());
 
+            Assert.Equal(expected.Length, VisualStudio.Editor.GetCaretPosition());
+            VisualStudio.Editor.MoveCaret(0);
+            Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
+
             VisualStudioInstance.RetryRpcCall(() => window.Close(vsSaveChanges.vsSaveChangesNo));
         }
 

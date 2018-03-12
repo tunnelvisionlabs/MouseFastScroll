@@ -17,5 +17,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         }
 
         internal abstract TextViewWindow_InProc CreateInProcComponent(VisualStudioInstance visualStudioInstance);
+
+        public int GetCaretPosition()
+            => TextViewWindowInProc.GetCaretPosition();
     }
 }

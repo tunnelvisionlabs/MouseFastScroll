@@ -63,5 +63,22 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                     view.TextBuffer.Replace(replacementSpan, text);
                 });
         }
+
+        public void MoveCaret(int position)
+        {
+            ExecuteOnActiveView(
+                view =>
+                {
+                    var subjectBuffer = view.GetBufferContainingCaret();
+                    var point = new SnapshotPoint(subjectBuffer.CurrentSnapshot, position);
+
+                    view.Caret.MoveTo(point);
+                });
+        }
+
+        protected override ITextBuffer GetBufferContainingCaret(IWpfTextView view)
+        {
+            return view.GetBufferContainingCaret();
+        }
     }
 }
