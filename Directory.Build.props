@@ -10,8 +10,12 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <!--
+      No special considerations are needed for portable PDBs since this repository doesn't publish or ship any symbol
+      files.
+    -->
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>portable</DebugType>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -21,6 +25,11 @@
 
   <ItemGroup>
     <None Include="$(AssemblyOriginatorKeyFile)" Condition="'$(AssemblyOriginatorKeyFile)' != ''" Link="%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Codecov" Version="1.0.3" IncludeAssets="none" PrivateAssets="all" />
+    <PackageReference Include="OpenCover" Version="4.6.519" IncludeAssets="none" PrivateAssets="all" />
   </ItemGroup>
 
   <!-- StyleCop Analyzers configuration -->

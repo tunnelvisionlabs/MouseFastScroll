@@ -11,14 +11,39 @@ install:
 - '"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.exe" /RootSuffix Exp /ResetSettings General.vssettings /Command File.Exit'
 build:
   verbosity: minimal
-test:
-  assemblies:
-    only:
-      - '**\*.UnitTests.dll'
-      - '**\*.IntegrationTests.dll'
-  categories:
-    except:
-      - VS2012
-      - VS2013
+test_script:
+- ps: |
+    $unitTestAssembly = "Tvl.VisualStudio.MouseFastScroll.UnitTests\bin\$env:CONFIGURATION\net452\Tvl.VisualStudio.MouseFastScroll.UnitTests.dll"
+    $integrationTestAssembly = "Tvl.VisualStudio.MouseFastScroll.IntegrationTests\bin\x86\$env:CONFIGURATION\net452\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.dll"
+    $buildProperties = [xml](Get-Content Directory.Build.props)
+    $openCoverVersion = $buildProperties.SelectSingleNode('/Project/ItemGroup/PackageReference[@Include="OpenCover"]').Version
+    $openCoverConsole = Join-Path (Join-Path $env:UserProfile '.nuget\packages\') "opencover\$openCoverVersion\tools\OpenCover.Console.exe"
+    $codecovVersion = $buildProperties.SelectSingleNode('/Project/ItemGroup/PackageReference[@Include="Codecov"]').Version
+    $codecov = Join-Path (Join-Path $env:UserProfile '.nuget\packages\') "codecov\$codecovVersion\tools\codecov.exe"
+    &$openCoverConsole `
+        -register:user `
+        -returntargetcode `
+        -hideskipped:All `
+        -filter:"+[Tvl*]*" `
+        -excludebyattribute:*.ExcludeFromCodeCoverage* `
+        -excludebyfile:*\*Designer.cs `
+        -output:OpenCover.MouseFastScroll.UnitTests.xml `
+        -target:"$env:xunit20\xunit.console.x86.exe" `
+        -targetargs:"$unitTestAssembly -appveyor -noshadow"
+    if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+    &$openCoverConsole `
+        -register:user `
+        -returntargetcode `
+        -hideskipped:All `
+        -filter:"+[Tvl*]*" `
+        -excludebyattribute:*.ExcludeFromCodeCoverage* `
+        -excludebyfile:*\*Designer.cs `
+        -searchdirs:"Tvl.VisualStudio.MouseFastScroll.UnitTests\bin\$env:CONFIGURATION\net452;Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\bin\$env:CONFIGURATION\net45" `
+        -output:OpenCover.MouseFastScroll.IntegrationTests.xml `
+        -target:"$env:xunit20\xunit.console.x86.exe" `
+        -targetargs:"$integrationTestAssembly -appveyor -noshadow -notrait Category=VS2012 -notrait Category=VS2013"
+    if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+    &$codecov -f OpenCover.MouseFastScroll.UnitTests.xml --flag unit
+    &$codecov -f OpenCover.MouseFastScroll.IntegrationTests.xml --flag integration
 artifacts:
 - path: 'Tvl.VisualStudio.MouseFastScroll\**\*.vsix'
