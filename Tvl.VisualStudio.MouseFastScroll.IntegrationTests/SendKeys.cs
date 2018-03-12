@@ -19,15 +19,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 
         internal void Send(object[] keys)
         {
-            var foregroundWindow = IntPtr.Zero;
-
-            try
+            Send(inputSimulator =>
             {
-                var foreground = GetForegroundWindow();
-                _visualStudioInstance.ActivateMainWindow();
-
-                var inputSimulator = new InputSimulator();
-
                 foreach (var key in keys)
                 {
                     switch (key)
@@ -72,6 +65,24 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                         throw new ArgumentException($"Unexpected type encountered: {key.GetType()}", nameof(keys));
                     }
                 }
+            });
+        }
+
+        internal void Send(Action<InputSimulator> actions)
+        {
+            if (actions == null)
+            {
+                throw new ArgumentNullException(nameof(actions));
+            }
+
+            var foregroundWindow = IntPtr.Zero;
+
+            try
+            {
+                var foreground = GetForegroundWindow();
+                _visualStudioInstance.ActivateMainWindow();
+
+                actions(new InputSimulator());
             }
             finally
             {
