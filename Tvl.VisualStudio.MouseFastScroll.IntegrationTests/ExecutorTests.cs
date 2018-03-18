@@ -39,11 +39,36 @@
             }
 
             [Fact]
-            public void ReturnFromDte()
+            public void CanUseDTE()
             {
-                var file = VisualStudio.ExecuteInHostProcess((DTE dte) => dte.FileName);
+                var version = VisualStudio.ExecuteInHostProcess((DTE dte) => dte.Version);
 
-                Assert.True(File.Exists(file));
+                Assert.NotNull(version);
+            }
+
+            [Theory]
+            [InlineData("Output", true)]
+            [InlineData("XXX", false)]
+            public void CanUseMethodArguments(string name, bool exists)
+            {
+                Assert.Equal(exists, WindowExists(name));
+            }
+
+            private bool WindowExists(string name)
+            {
+                return VisualStudio.ExecuteInHostProcess((DTE dte) =>
+                {
+                    try
+                    {
+                        dte.Windows.Item(name);
+                        return true;
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
+
+                    return false;
+                });
             }
         }
     }
