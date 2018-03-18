@@ -18,6 +18,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         private readonly IntegrationService _integrationService;
         private readonly IpcClientChannel _integrationServiceChannel;
         private readonly VisualStudio_InProc _inProc;
+        private readonly Executor_OutOfProc _executor;
 
         public VisualStudioInstance(Process hostProcess, DTE dte, Version version, ImmutableHashSet<string> supportedPackageIds, string installationPath)
         {
@@ -39,6 +40,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             _inProc = ExecuteInHostProcess<VisualStudio_InProc>(
                 type: typeof(VisualStudio_InProc),
                 methodName: nameof(VisualStudio_InProc.Create));
+
+            // Create marshal-by-ref object that runs lambda expressions host-process.
+            _executor = new Executor_OutOfProc(this);
 
             // There is a lot of VS initialization code that goes on, so we want to wait for that to 'settle' before
             // we start executing any actual code.
@@ -113,6 +117,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             var objectUri = _integrationService.Execute(type.Assembly.Location, type.FullName, methodName) ?? throw new InvalidOperationException("The specified call was expected to return a value.");
             return (T)Activator.GetObject(typeof(T), $"{_integrationService.BaseUri}/{objectUri}");
         }
+
+        public void ExecuteInHostProcess(Action remoteAction)
+            => _executor.Execute(remoteAction);
+
+        public TResult ExecuteInHostProcess<TResult>(Func<TResult> remoteAction)
+            => _executor.Execute(_inProc, remoteAction);
+
+        public TResult ExecuteInHostProcess<T, TResult>(Func<T, TResult> remoteAction)
+            => _executor.Execute(_inProc, remoteAction);
 
         public void ActivateMainWindow(bool skipAttachingThreads = false)
             => _inProc.ActivateMainWindow(skipAttachingThreads);
