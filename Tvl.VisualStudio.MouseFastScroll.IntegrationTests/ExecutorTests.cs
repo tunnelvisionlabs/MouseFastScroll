@@ -46,6 +46,15 @@
                 Assert.NotNull(version);
             }
 
+            // This is to check Windows exist on the AppVeyor instance!
+            [Fact]
+            public void WindowsSanityCheck()
+            {
+                var count = VisualStudio.ExecuteInHostProcess((DTE dte) => dte.Windows.Count);
+
+                Assert.NotEqual(0, count);
+            }
+
             [Theory]
             [InlineData("Output", true)]
             [InlineData("XXX", false)]
