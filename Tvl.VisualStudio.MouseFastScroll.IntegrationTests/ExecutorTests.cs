@@ -16,7 +16,7 @@
         [VersionTrait(typeof(VS2017))]
         public sealed class VS2017 : ExecutorTests
         {
-            ITestOutputHelper _output;
+            private ITestOutputHelper _output;
 
             public VS2017(VisualStudioInstanceFactory instanceFactory, ITestOutputHelper output)
                 : base(instanceFactory, Versions.VisualStudio2015)
@@ -50,29 +50,14 @@
                 Assert.NotNull(version);
             }
 
-            [Fact]
-            public void DumpWindowNames()
-            {
-                var captions = VisualStudio.ExecuteInHostProcess((DTE dte) =>
-                {
-                    var writer = new StringWriter();
-                    foreach (Window window in dte.Windows)
-                    {
-                        writer.WriteLine(window.Caption);
-                    }
-
-                    return writer.ToString();
-                });
-
-                _output.WriteLine(captions);
-            }
-
             [Theory]
-            [InlineData("Output", true)]
+            [InlineData("Solution Explorer", true)]
             [InlineData("XXX", false)]
             public void CanUseMethodArguments(string name, bool exists)
             {
-                Assert.Equal(exists, WindowExists(name));
+                var windowExists = WindowExists(name);
+
+                Assert.Equal(exists, windowExists);
             }
 
             private bool WindowExists(string name)
