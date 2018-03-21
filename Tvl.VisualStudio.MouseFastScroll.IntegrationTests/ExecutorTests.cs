@@ -1,8 +1,10 @@
 ﻿namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
     using System;
+    using System.IO;
     using EnvDTE;
     using Xunit;
+    using Xunit.Abstractions;
 
     public abstract class ExecutorTests : AbstractIntegrationTest
     {
@@ -14,9 +16,12 @@
         [VersionTrait(typeof(VS2017))]
         public sealed class VS2017 : ExecutorTests
         {
-            public VS2017(VisualStudioInstanceFactory instanceFactory)
+            ITestOutputHelper _output;
+
+            public VS2017(VisualStudioInstanceFactory instanceFactory, ITestOutputHelper output)
                 : base(instanceFactory, Versions.VisualStudio2015)
             {
+                _output = output;
             }
 
             [Fact]
@@ -45,13 +50,21 @@
                 Assert.NotNull(version);
             }
 
-            // This is to check Windows exist on the AppVeyor instance!
             [Fact]
-            public void WindowsSanityCheck()
+            public void DumpWindowNames()
             {
-                var count = VisualStudio.ExecuteInHostProcess((DTE dte) => dte.Windows.Count);
+                var captions = VisualStudio.ExecuteInHostProcess((DTE dte) =>
+                {
+                    var writer = new StringWriter();
+                    foreach (Window window in dte.Windows)
+                    {
+                        writer.WriteLine(window.Caption);
+                    }
 
-                Assert.NotEqual(0, count);
+                    return writer.ToString();
+                });
+
+                _output.WriteLine(captions);
             }
 
             [Theory]
