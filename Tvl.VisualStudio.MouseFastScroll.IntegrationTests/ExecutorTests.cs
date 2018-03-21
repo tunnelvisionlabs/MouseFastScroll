@@ -1,7 +1,6 @@
 ﻿namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
     using System;
-    using System.IO;
     using EnvDTE;
     using Xunit;
 
@@ -12,10 +11,10 @@
         {
         }
 
-        [VersionTrait(typeof(VS2015))]
-        public sealed class VS2015 : ExecutorTests
+        [VersionTrait(typeof(VS2017))]
+        public sealed class VS2017 : ExecutorTests
         {
-            public VS2015(VisualStudioInstanceFactory instanceFactory)
+            public VS2017(VisualStudioInstanceFactory instanceFactory)
                 : base(instanceFactory, Versions.VisualStudio2015)
             {
             }
