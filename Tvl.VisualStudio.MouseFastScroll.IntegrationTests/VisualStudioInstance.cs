@@ -177,9 +177,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         private void StartRemoteIntegrationService(DTE dte)
         {
             // We use DTE over RPC to start the integration service. All other DTE calls should happen in the host process.
-            if (RetryRpcCall(() => dte.Commands.Item(WellKnownCommandNames.IntegrationTestServiceStart).IsAvailable))
+            if (dte.Commands.Item(WellKnownCommandNames.IntegrationTestServiceStart).IsAvailable)
             {
-                RetryRpcCall(() => dte.ExecuteCommand(WellKnownCommandNames.IntegrationTestServiceStart));
+                dte.ExecuteCommand(WellKnownCommandNames.IntegrationTestServiceStart);
             }
         }
 
@@ -189,36 +189,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             {
                 _inProc.ExecuteCommand(WellKnownCommandNames.IntegrationTestServiceStop);
             }
-        }
-
-        public static void RetryRpcCall(Action action)
-        {
-            do
-            {
-                try
-                {
-                    action();
-                    return;
-                }
-                catch (COMException exception) when ((exception.HResult == NativeMethods.RPC_E_CALL_REJECTED) ||
-                                                     (exception.HResult == NativeMethods.RPC_E_SERVERCALL_RETRYLATER))
-                {
-                    // We'll just try again in this case
-                }
-            }
-            while (true);
-        }
-
-        public static T RetryRpcCall<T>(Func<T> action)
-        {
-            var result = default(T);
-
-            RetryRpcCall(() =>
-            {
-                result = action();
-            });
-
-            return result;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [WpfFact]
         public void TestOpenAndCloseIDE()
         {
-            var currentVersion = VisualStudioInstance.RetryRpcCall(() => VisualStudio.Dte.Version);
+            var currentVersion = VisualStudio.Dte.Version;
             var expectedVersion = VisualStudio.Version;
             if (expectedVersion.Major >= 15)
             {
@@ -38,7 +38,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [WpfFact]
         public void BasicScrollingBehavior()
         {
-            var window = VisualStudioInstance.RetryRpcCall(() => VisualStudio.Dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt"));
+            var window = VisualStudio.Dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt");
 
             string initialText = string.Join(string.Empty, Enumerable.Range(0, 400).Select(i => Guid.NewGuid() + Environment.NewLine));
             VisualStudio.Editor.SetText(initialText);
@@ -124,7 +124,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
             Assert.Equal(0, VisualStudio.Editor.GetFirstVisibleLine());
 
-            VisualStudioInstance.RetryRpcCall(() => window.Close(vsSaveChanges.vsSaveChangesNo));
+            window.Close(vsSaveChanges.vsSaveChangesNo);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [WpfFact]
         public void ZoomDisabled()
         {
-            var window = VisualStudioInstance.RetryRpcCall(() => VisualStudio.Dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt"));
+            var window = VisualStudio.Dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt");
 
             string initialText = string.Join(string.Empty, Enumerable.Range(0, 400).Select(i => Guid.NewGuid() + Environment.NewLine));
             VisualStudio.Editor.SetText(initialText);
@@ -195,7 +195,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(0, VisualStudio.Editor.GetFirstVisibleLine());
             Assert.Equal(zoomLevel, VisualStudio.Editor.GetZoomLevel());
 
-            VisualStudioInstance.RetryRpcCall(() => window.Close(vsSaveChanges.vsSaveChangesNo));
+            window.Close(vsSaveChanges.vsSaveChangesNo);
         }
 
         [VersionTrait(typeof(VS2012))]
