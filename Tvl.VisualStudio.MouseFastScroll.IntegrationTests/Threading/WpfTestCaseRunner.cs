@@ -1,14 +1,15 @@
-﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE.txt in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading;
-using Xunit.Abstractions;
-using Xunit.Sdk;
-
-namespace Roslyn.Test.Utilities
+namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using System.Threading;
+    using Xunit.Abstractions;
+    using Xunit.Sdk;
+
     public sealed class WpfTestCaseRunner : XunitTestCaseRunner
     {
         public WpfTestSharedData SharedData { get; }

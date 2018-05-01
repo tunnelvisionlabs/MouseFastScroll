@@ -1,20 +1,18 @@
-﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE.txt in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Threading;
-using Microsoft.CodeAnalysis.Editor.Shared.Utilities;
-using Microsoft.CodeAnalysis.Utilities;
-using Roslyn.Utilities;
-using Xunit.Abstractions;
-using Xunit.Sdk;
-
-namespace Roslyn.Test.Utilities
+namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Reflection;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Windows.Threading;
+    using Xunit.Abstractions;
+    using Xunit.Sdk;
+
     /// <summary>
     /// This type is actually responsible for spinning up the STA context to run all of the
     /// tests. 

@@ -1,11 +1,12 @@
-﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE.txt in the project root for license information.
 
-using System.Collections.Generic;
-using Xunit.Abstractions;
-using Xunit.Sdk;
-
-namespace Roslyn.Test.Utilities
+namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 {
+    using System.Collections.Generic;
+    using Xunit.Abstractions;
+    using Xunit.Sdk;
+
     public class WpfFactDiscoverer : FactDiscoverer
     {
         private readonly IMessageSink _diagnosticMessageSink;

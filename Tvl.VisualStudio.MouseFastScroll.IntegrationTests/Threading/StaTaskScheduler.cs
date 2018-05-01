@@ -1,11 +1,12 @@
-﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE.txt in the project root for license information.
 
-using System;
-using System.Threading;
-using System.Windows.Threading;
-
-namespace Roslyn.Test.Utilities
+namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 {
+    using System;
+    using System.Threading;
+    using System.Windows.Threading;
+
     public sealed class StaTaskScheduler : IDisposable
     {
         /// <summary>Gets a <see cref="StaTaskScheduler"/> for the current <see cref="AppDomain"/>.</summary>

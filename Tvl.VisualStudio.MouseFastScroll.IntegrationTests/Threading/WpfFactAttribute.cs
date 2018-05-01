@@ -1,13 +1,14 @@
-﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE.txt in the project root for license information.
 
-using System;
-using Xunit;
-using Xunit.Sdk;
-
-namespace Roslyn.Test.Utilities
+namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 {
+    using System;
+    using Xunit;
+    using Xunit.Sdk;
+
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    [XunitTestCaseDiscoverer("Roslyn.Test.Utilities.WpfFactDiscoverer", "Roslyn.Services.Test.Utilities")]
+    [XunitTestCaseDiscoverer("Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading.WpfFactDiscoverer", "Tvl.VisualStudio.MouseFastScroll.IntegrationTests")]
     public class WpfFactAttribute : FactAttribute
     {
     }
