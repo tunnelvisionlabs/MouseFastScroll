@@ -24,8 +24,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
     /// </summary>
     public sealed class WpfTestRunner : XunitTestRunner
     {
-        private static string s_wpfFactRequirementReason;
-
         public WpfTestSharedData SharedData { get; }
 
         public WpfTestRunner(
@@ -59,15 +57,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
                     {
                         Debug.Assert(SynchronizationContext.Current is DispatcherSynchronizationContext);
 
-                        // Sync up FTAO to the context that we are creating here. 
-                        ForegroundThreadAffinitizedObject.CurrentForegroundThreadData = new ForegroundThreadData(
-                            Thread.CurrentThread,
-                            new SynchronizationContextTaskScheduler(new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher, DispatcherPriority.Background)),
-                            ForegroundThreadDataKind.StaUnitTest);
-
-                        // Reset our flag ensuring that part of this test actually needs WpfFact
-                        s_wpfFactRequirementReason = null;
-
                         // Just call back into the normal xUnit dispatch process now that we are on an STA Thread with no synchronization context.
                         var invoker = new XunitTestInvoker(Test, MessageBus, TestClass, ConstructorArguments, TestMethod, TestMethodArguments, BeforeAfterAttributes, aggregator, CancellationTokenSource);
                         return invoker.RunAsync().JoinUsingDispatcher(CancellationTokenSource.Token);
@@ -81,20 +70,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
             }, CancellationTokenSource.Token, TaskCreationOptions.None, new SynchronizationContextTaskScheduler(sta.DispatcherSynchronizationContext));
 
             return task.Unwrap();
-        }
-
-        /// <summary>
-        /// Asserts that the test is running on a <see cref="WpfFactAttribute"/> or <see cref="WpfTheoryAttribute"/>
-        /// test method, and records the reason for requiring the use of an STA thread.
-        /// </summary>
-        public static void RequireWpfFact(string reason)
-        {
-            if (ForegroundThreadDataInfo.CurrentForegroundThreadDataKind != ForegroundThreadDataKind.StaUnitTest)
-            {
-                throw new Exception($"This test requires {nameof(WpfFactAttribute)} because '{reason}' but is missing {nameof(WpfFactAttribute)}. Either the attribute should be changed, or the reason it needs an STA thread audited.");
-            }
-
-            s_wpfFactRequirementReason = reason;
         }
     }
 }
