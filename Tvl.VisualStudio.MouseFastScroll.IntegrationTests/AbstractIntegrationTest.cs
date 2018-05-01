@@ -4,25 +4,37 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows.Automation;
     using Xunit;
 
     [CaptureTestName]
     [Collection(nameof(SharedIntegrationHostFixture))]
-    public abstract class AbstractIntegrationTest : IDisposable
+    public abstract class AbstractIntegrationTest : IAsyncLifetime, IDisposable
     {
+        private readonly VisualStudioInstanceFactory _instanceFactory;
+        private readonly Version _version;
         private VisualStudioInstanceContext _visualStudioContext;
 
         protected AbstractIntegrationTest(VisualStudioInstanceFactory instanceFactory, Version version)
         {
+            Assert.Equal(ApartmentState.STA, Thread.CurrentThread.GetApartmentState());
+            _instanceFactory = instanceFactory;
+            _version = version;
             Automation.TransactionTimeout = 20000;
-            _visualStudioContext = instanceFactory.GetNewOrUsedInstance(version, SharedIntegrationHostFixture.RequiredPackageIds);
-            VisualStudio = _visualStudioContext.Instance;
         }
 
-        public VisualStudioInstance VisualStudio
+        public VisualStudioInstance VisualStudio => _visualStudioContext?.Instance;
+
+        public virtual async Task InitializeAsync()
         {
-            get;
+            _visualStudioContext = await _instanceFactory.GetNewOrUsedInstanceAsync(_version, SharedIntegrationHostFixture.RequiredPackageIds).ConfigureAwait(false);
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.FromResult<object>(null);
         }
 
         public void Dispose()

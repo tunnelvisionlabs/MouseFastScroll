@@ -8,6 +8,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System.Windows;
     using System.Windows.Media;
     using Microsoft.VisualStudio.Text.Formatting;
+    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading;
     using WindowsInput;
     using WindowsInput.Native;
     using Xunit;
@@ -20,7 +21,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         {
         }
 
-        [Fact]
+        [WpfFact]
         public void TestOpenAndCloseIDE()
         {
             var currentVersion = VisualStudioInstance.RetryRpcCall(() => VisualStudio.Dte.Version);
@@ -34,7 +35,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(expectedVersion.ToString(), currentVersion);
         }
 
-        [Fact]
+        [WpfFact]
         public void BasicScrollingBehavior()
         {
             var window = VisualStudioInstance.RetryRpcCall(() => VisualStudio.Dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt"));
@@ -129,7 +130,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         /// <summary>
         /// Verifies that the Ctrl+Scroll operations do not change the zoom level in the editor.
         /// </summary>
-        [Fact]
+        [WpfFact]
         public void ZoomDisabled()
         {
             var window = VisualStudioInstance.RetryRpcCall(() => VisualStudio.Dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt"));

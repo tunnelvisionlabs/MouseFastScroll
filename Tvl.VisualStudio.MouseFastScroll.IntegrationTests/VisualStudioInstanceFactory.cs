@@ -9,6 +9,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
+    using System.Threading.Tasks;
     using Microsoft.VisualStudio.ExtensionManager;
     using Microsoft.VisualStudio.Settings;
     using Microsoft.VisualStudio.Setup.Configuration;
@@ -55,12 +56,12 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         /// <summary>
         /// Returns a <see cref="VisualStudioInstanceContext"/>, starting a new instance of Visual Studio if necessary.
         /// </summary>
-        public VisualStudioInstanceContext GetNewOrUsedInstance(Version version, ImmutableHashSet<string> requiredPackageIds)
+        public async Task<VisualStudioInstanceContext> GetNewOrUsedInstanceAsync(Version version, ImmutableHashSet<string> requiredPackageIds)
         {
             ThrowExceptionIfAlreadyHasActiveContext();
 
             bool shouldStartNewInstance = ShouldStartNewInstance(version, requiredPackageIds);
-            UpdateCurrentlyRunningInstance(version, requiredPackageIds, shouldStartNewInstance);
+            await UpdateCurrentlyRunningInstanceAsync(version, requiredPackageIds, shouldStartNewInstance).ConfigureAwait(false);
 
             return new VisualStudioInstanceContext(_currentlyRunningInstance, this);
         }
@@ -102,7 +103,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         /// <summary>
         /// Starts up a new <see cref="VisualStudioInstance"/>, shutting down any instances that are already running.
         /// </summary>
-        private void UpdateCurrentlyRunningInstance(Version version, ImmutableHashSet<string> requiredPackageIds, bool shouldStartNewInstance)
+        private async Task UpdateCurrentlyRunningInstanceAsync(Version version, ImmutableHashSet<string> requiredPackageIds, bool shouldStartNewInstance)
         {
             Process hostProcess;
             DTE dte;
@@ -123,7 +124,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                 hostProcess = StartNewVisualStudioProcess(installationPath, version);
 
                 // We wait until the DTE instance is up before we're good
-                dte = IntegrationHelper.WaitForNotNullAsync(() => IntegrationHelper.TryLocateDteForProcess(hostProcess)).Result;
+                dte = await IntegrationHelper.WaitForNotNullAsync(() => IntegrationHelper.TryLocateDteForProcess(hostProcess)).ConfigureAwait(false);
             }
             else
             {
