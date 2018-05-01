@@ -20,12 +20,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
             _synchronizationContext = synchronizationContext ?? throw new ArgumentNullException(nameof(synchronizationContext));
         }
 
-        public override Int32 MaximumConcurrencyLevel => 1;
+        public override int MaximumConcurrencyLevel => 1;
 
         protected override void QueueTask(Task task)
         {
             _synchronizationContext.Post(_postCallback, task);
         }
+
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
             if (SynchronizationContext.Current == _synchronizationContext)

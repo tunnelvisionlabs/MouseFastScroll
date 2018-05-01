@@ -12,8 +12,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 
     public sealed class WpfTestCaseRunner : XunitTestCaseRunner
     {
-        public WpfTestSharedData SharedData { get; }
-
         public WpfTestCaseRunner(
             WpfTestSharedData sharedData,
             IXunitTestCase testCase,
@@ -28,6 +26,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
         {
             SharedData = sharedData;
         }
+
+        public WpfTestSharedData SharedData { get; }
 
         protected override XunitTestRunner CreateTestRunner(ITest test, IMessageBus messageBus, Type testClass, object[] constructorArguments, MethodInfo testMethod, object[] testMethodArguments, string skipReason, IReadOnlyList<BeforeAfterTestAttribute> beforeAfterAttributes, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource)
         {

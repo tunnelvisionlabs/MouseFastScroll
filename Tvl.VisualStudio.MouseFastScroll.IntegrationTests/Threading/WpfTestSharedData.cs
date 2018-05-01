@@ -23,16 +23,18 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
         internal static readonly Guid TestSerializationGateName = Guid.NewGuid();
 
         /// <summary>
-        /// Holds the last 10 test cases executed: more recent test cases will occur later in the 
-        /// list. Useful for debugging deadlocks that occur because state leak between runs. 
+        /// Holds the last 10 test cases executed: more recent test cases will occur later in the
+        /// list. Useful for debugging deadlocks that occur because state leak between runs.
         /// </summary>
         private readonly List<string> _recentTestCases = new List<string>();
 
-        public Semaphore TestSerializationGate = new Semaphore(1, 1, TestSerializationGateName.ToString("N"));
+        private Semaphore _testSerializationGate = new Semaphore(1, 1, TestSerializationGateName.ToString("N"));
 
         private WpfTestSharedData()
         {
         }
+
+        public Semaphore TestSerializationGate => _testSerializationGate;
 
         public void ExecutingTest(ITestMethod testMethod)
         {

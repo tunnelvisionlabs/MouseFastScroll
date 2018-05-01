@@ -26,6 +26,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
         /// Joins a <see cref="Task{TResult}"/> to the current thread with a <see cref="Dispatcher"/> message pump in
         /// place during the join operation.
         /// </summary>
+        /// <typeparam name="TResult">The type of value resulting from the asynchronous operation.</typeparam>
         public static TResult JoinUsingDispatcher<TResult>(this Task<TResult> task, CancellationToken cancellationToken)
         {
             JoinUsingDispatcherNoResult(task, cancellationToken);

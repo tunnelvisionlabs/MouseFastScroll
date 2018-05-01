@@ -12,17 +12,19 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 
     public class WpfTheoryTestCase : XunitTheoryTestCase
     {
-        public WpfTestSharedData SharedData { get; private set; }
-
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("Called by the de-serializer; should only be called by deriving classes for de-serialization purposes")]
-        public WpfTheoryTestCase() { }
+        [Obsolete("Called by the deserializer; should only be called by deriving classes for deserialization purposes")]
+        public WpfTheoryTestCase()
+        {
+        }
 
         public WpfTheoryTestCase(IMessageSink diagnosticMessageSink, TestMethodDisplay defaultMethodDisplay, ITestMethod testMethod)
             : base(diagnosticMessageSink, defaultMethodDisplay, testMethod)
         {
             SharedData = WpfTestSharedData.Instance;
         }
+
+        public WpfTestSharedData SharedData { get; private set; }
 
         public override void Deserialize(IXunitSerializationInfo data)
         {

@@ -15,17 +15,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 
     /// <summary>
     /// This type is actually responsible for spinning up the STA context to run all of the
-    /// tests. 
-    /// 
-    /// Overriding the <see cref="XunitTestInvoker"/> to setup the STA context is not the correct 
-    /// approach. That type begins constructing types before RunAsync and hence ctors end up 
+    /// tests.
+    ///
+    /// Overriding the <see cref="XunitTestInvoker"/> to setup the STA context is not the correct
+    /// approach. That type begins constructing types before RunAsync and hence constructors end up
     /// running on the current thread vs. the STA ones. Just completely wrapping the invocation
-    /// here is the best case. 
+    /// here is the best case.
     /// </summary>
     public sealed class WpfTestRunner : XunitTestRunner
     {
-        public WpfTestSharedData SharedData { get; }
-
         public WpfTestRunner(
             WpfTestSharedData sharedData,
             ITest test,
@@ -43,31 +41,37 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
             SharedData = sharedData;
         }
 
+        public WpfTestSharedData SharedData { get; }
+
         protected override Task<decimal> InvokeTestMethodAsync(ExceptionAggregator aggregator)
         {
             SharedData.ExecutingTest(TestMethod);
             var sta = StaTaskScheduler.DefaultSta;
-            var task = Task.Factory.StartNew(async () =>
-            {
-                Debug.Assert(sta.StaThread == Thread.CurrentThread);
-
-                using (await SharedData.TestSerializationGate.DisposableWaitAsync(CancellationToken.None))
+            var task = Task.Factory.StartNew(
+                async () =>
                 {
-                    try
-                    {
-                        Debug.Assert(SynchronizationContext.Current is DispatcherSynchronizationContext);
+                    Debug.Assert(sta.StaThread == Thread.CurrentThread, "Assertion failed: sta.StaThread == Thread.CurrentThread");
 
-                        // Just call back into the normal xUnit dispatch process now that we are on an STA Thread with no synchronization context.
-                        var invoker = new XunitTestInvoker(Test, MessageBus, TestClass, ConstructorArguments, TestMethod, TestMethodArguments, BeforeAfterAttributes, aggregator, CancellationTokenSource);
-                        return invoker.RunAsync().JoinUsingDispatcher(CancellationTokenSource.Token);
-                    }
-                    finally
+                    using (await SharedData.TestSerializationGate.DisposableWaitAsync(CancellationToken.None))
                     {
-                        // Cleanup the synchronization context even if the test is failing exceptionally
-                        SynchronizationContext.SetSynchronizationContext(null);
+                        try
+                        {
+                            Debug.Assert(SynchronizationContext.Current is DispatcherSynchronizationContext, "Assertion failed: SynchronizationContext.Current is DispatcherSynchronizationContext");
+
+                            // Just call back into the normal xUnit dispatch process now that we are on an STA Thread with no synchronization context.
+                            var invoker = new XunitTestInvoker(Test, MessageBus, TestClass, ConstructorArguments, TestMethod, TestMethodArguments, BeforeAfterAttributes, aggregator, CancellationTokenSource);
+                            return invoker.RunAsync().JoinUsingDispatcher(CancellationTokenSource.Token);
+                        }
+                        finally
+                        {
+                            // Cleanup the synchronization context even if the test is failing exceptionally
+                            SynchronizationContext.SetSynchronizationContext(null);
+                        }
                     }
-                }
-            }, CancellationTokenSource.Token, TaskCreationOptions.None, new SynchronizationContextTaskScheduler(sta.DispatcherSynchronizationContext));
+                },
+                CancellationTokenSource.Token,
+                TaskCreationOptions.None,
+                new SynchronizationContextTaskScheduler(sta.DispatcherSynchronizationContext));
 
             return task.Unwrap();
         }

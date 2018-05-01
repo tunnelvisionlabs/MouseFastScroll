@@ -9,16 +9,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 
     public sealed class StaTaskScheduler : IDisposable
     {
-        /// <summary>Gets a <see cref="StaTaskScheduler"/> for the current <see cref="AppDomain"/>.</summary>
-        /// <remarks>We use a count of 1, because the editor ends up re-using <see cref="DispatcherObject"/>
-        /// instances between tests, so we need to always use the same thread for our Sta tests.</remarks>
-        public static StaTaskScheduler DefaultSta { get; } = new StaTaskScheduler();
-
-        /// <summary>The STA threads used by the scheduler.</summary>
-        public Thread StaThread { get; }
-
-        public bool IsRunningInScheduler => StaThread.ManagedThreadId == Thread.CurrentThread.ManagedThreadId;
-
         /// <summary>Initializes a new instance of the <see cref="StaTaskScheduler"/> class.</summary>
         public StaTaskScheduler()
         {
@@ -30,7 +20,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
                     var oldContext = SynchronizationContext.Current;
                     try
                     {
-                        // All WPF Tests need a DispatcherSynchronizationContext and we dont want to block pending keyboard
+                        // All WPF Tests need a DispatcherSynchronizationContext and we don't want to block pending keyboard
                         // or mouse input from the user. So use background priority which is a single level below user input.
                         synchronizationContext = new DispatcherSynchronizationContext();
 
@@ -54,8 +44,18 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 
                 threadStartedEvent.Wait();
                 DispatcherSynchronizationContext = synchronizationContext;
-            };
+            }
         }
+
+        /// <summary>Gets a <see cref="StaTaskScheduler"/> for the current <see cref="AppDomain"/>.</summary>
+        /// <remarks>We use a count of 1, because the editor ends up re-using <see cref="DispatcherObject"/>
+        /// instances between tests, so we need to always use the same thread for our Sta tests.</remarks>
+        public static StaTaskScheduler DefaultSta { get; } = new StaTaskScheduler();
+
+        /// <summary>Gets the STA threads used by the scheduler.</summary>
+        public Thread StaThread { get; }
+
+        public bool IsRunningInScheduler => StaThread.ManagedThreadId == Thread.CurrentThread.ManagedThreadId;
 
         public DispatcherSynchronizationContext DispatcherSynchronizationContext
         {
