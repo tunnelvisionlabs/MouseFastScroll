@@ -9,16 +9,22 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System.Windows.Media;
     using Microsoft.VisualStudio.Text.Formatting;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading;
-    using WindowsInput;
     using WindowsInput.Native;
     using Xunit;
+    using Xunit.Abstractions;
     using vsSaveChanges = EnvDTE.vsSaveChanges;
 
     public abstract class TrivialIntegrationTest : AbstractIntegrationTest
     {
-        protected TrivialIntegrationTest(VisualStudioInstanceFactory instanceFactory, Version version)
+        protected TrivialIntegrationTest(ITestOutputHelper testOutputHelper, VisualStudioInstanceFactory instanceFactory, Version version)
             : base(instanceFactory, version)
         {
+            TestOutputHelper = testOutputHelper;
+        }
+
+        protected ITestOutputHelper TestOutputHelper
+        {
+            get;
         }
 
         [WpfFact]
@@ -75,9 +81,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.True(firstVisibleLine < lastVisibleLine);
 
             Point point = VisualStudio.Editor.GetCenterOfEditorOnScreen();
+            TestOutputHelper.WriteLine($"Moving mouse to ({point.X}, {point.Y}) and scrolling down.");
             int horizontalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CXSCREEN);
             int verticalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CYSCREEN);
             point = new ScaleTransform(65535.0 / horizontalResolution, 65535.0 / verticalResolution).Transform(point);
+            TestOutputHelper.WriteLine($"Screen resolution of ({horizontalResolution}, {verticalResolution}) translates mouse to ({point.X}, {point.Y}).");
 
             VisualStudio.SendKeys.Send(inputSimulator =>
             {
@@ -201,8 +209,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [VersionTrait(typeof(VS2012))]
         public sealed class VS2012 : TrivialIntegrationTest
         {
-            public VS2012(VisualStudioInstanceFactory instanceFactory)
-                : base(instanceFactory, Versions.VisualStudio2012)
+            public VS2012(ITestOutputHelper testOutputHelper, VisualStudioInstanceFactory instanceFactory)
+                : base(testOutputHelper, instanceFactory, Versions.VisualStudio2012)
             {
             }
         }
@@ -210,8 +218,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [VersionTrait(typeof(VS2013))]
         public sealed class VS2013 : TrivialIntegrationTest
         {
-            public VS2013(VisualStudioInstanceFactory instanceFactory)
-                : base(instanceFactory, Versions.VisualStudio2013)
+            public VS2013(ITestOutputHelper testOutputHelper, VisualStudioInstanceFactory instanceFactory)
+                : base(testOutputHelper, instanceFactory, Versions.VisualStudio2013)
             {
             }
         }
@@ -219,8 +227,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [VersionTrait(typeof(VS2015))]
         public sealed class VS2015 : TrivialIntegrationTest
         {
-            public VS2015(VisualStudioInstanceFactory instanceFactory)
-                : base(instanceFactory, Versions.VisualStudio2015)
+            public VS2015(ITestOutputHelper testOutputHelper, VisualStudioInstanceFactory instanceFactory)
+                : base(testOutputHelper, instanceFactory, Versions.VisualStudio2015)
             {
             }
         }
@@ -228,8 +236,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [VersionTrait(typeof(VS2017))]
         public sealed class VS2017 : TrivialIntegrationTest
         {
-            public VS2017(VisualStudioInstanceFactory instanceFactory)
-                : base(instanceFactory, Versions.VisualStudio2017)
+            public VS2017(ITestOutputHelper testOutputHelper, VisualStudioInstanceFactory instanceFactory)
+                : base(testOutputHelper, instanceFactory, Versions.VisualStudio2017)
             {
             }
         }
