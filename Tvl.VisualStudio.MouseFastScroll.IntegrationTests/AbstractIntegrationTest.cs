@@ -80,7 +80,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             {
                 try
                 {
-                    _visualStudioContext.Dispose();
+                    _visualStudioContext?.Dispose();
                 }
                 finally
                 {
