@@ -8,22 +8,29 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System.Windows;
     using System.Windows.Media;
     using Microsoft.VisualStudio.Text.Formatting;
-    using WindowsInput;
+    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading;
     using WindowsInput.Native;
     using Xunit;
+    using Xunit.Abstractions;
     using vsSaveChanges = EnvDTE.vsSaveChanges;
 
     public abstract class TrivialIntegrationTest : AbstractIntegrationTest
     {
-        protected TrivialIntegrationTest(VisualStudioInstanceFactory instanceFactory, Version version)
+        protected TrivialIntegrationTest(ITestOutputHelper testOutputHelper, VisualStudioInstanceFactory instanceFactory, Version version)
             : base(instanceFactory, version)
         {
+            TestOutputHelper = testOutputHelper;
         }
 
-        [Fact]
+        protected ITestOutputHelper TestOutputHelper
+        {
+            get;
+        }
+
+        [WpfFact]
         public void TestOpenAndCloseIDE()
         {
-            var currentVersion = VisualStudioInstance.RetryRpcCall(() => VisualStudio.Dte.Version);
+            var currentVersion = VisualStudio.Dte.Version;
             var expectedVersion = VisualStudio.Version;
             if (expectedVersion.Major >= 15)
             {
@@ -34,10 +41,10 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(expectedVersion.ToString(), currentVersion);
         }
 
-        [Fact]
+        [WpfFact]
         public void BasicScrollingBehavior()
         {
-            var window = VisualStudioInstance.RetryRpcCall(() => VisualStudio.Dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt"));
+            var window = VisualStudio.Dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt");
 
             string initialText = string.Join(string.Empty, Enumerable.Range(0, 400).Select(i => Guid.NewGuid() + Environment.NewLine));
             VisualStudio.Editor.SetText(initialText);
@@ -74,9 +81,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.True(firstVisibleLine < lastVisibleLine);
 
             Point point = VisualStudio.Editor.GetCenterOfEditorOnScreen();
+            TestOutputHelper.WriteLine($"Moving mouse to ({point.X}, {point.Y}) and scrolling down.");
             int horizontalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CXSCREEN);
             int verticalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CYSCREEN);
             point = new ScaleTransform(65535.0 / horizontalResolution, 65535.0 / verticalResolution).Transform(point);
+            TestOutputHelper.WriteLine($"Screen resolution of ({horizontalResolution}, {verticalResolution}) translates mouse to ({point.X}, {point.Y}).");
 
             VisualStudio.SendKeys.Send(inputSimulator =>
             {
@@ -123,16 +132,16 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(0, VisualStudio.Editor.GetCaretPosition());
             Assert.Equal(0, VisualStudio.Editor.GetFirstVisibleLine());
 
-            VisualStudioInstance.RetryRpcCall(() => window.Close(vsSaveChanges.vsSaveChangesNo));
+            window.Close(vsSaveChanges.vsSaveChangesNo);
         }
 
         /// <summary>
         /// Verifies that the Ctrl+Scroll operations do not change the zoom level in the editor.
         /// </summary>
-        [Fact]
+        [WpfFact]
         public void ZoomDisabled()
         {
-            var window = VisualStudioInstance.RetryRpcCall(() => VisualStudio.Dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt"));
+            var window = VisualStudio.Dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt");
 
             string initialText = string.Join(string.Empty, Enumerable.Range(0, 400).Select(i => Guid.NewGuid() + Environment.NewLine));
             VisualStudio.Editor.SetText(initialText);
@@ -194,14 +203,14 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(0, VisualStudio.Editor.GetFirstVisibleLine());
             Assert.Equal(zoomLevel, VisualStudio.Editor.GetZoomLevel());
 
-            VisualStudioInstance.RetryRpcCall(() => window.Close(vsSaveChanges.vsSaveChangesNo));
+            window.Close(vsSaveChanges.vsSaveChangesNo);
         }
 
         [VersionTrait(typeof(VS2012))]
         public sealed class VS2012 : TrivialIntegrationTest
         {
-            public VS2012(VisualStudioInstanceFactory instanceFactory)
-                : base(instanceFactory, Versions.VisualStudio2012)
+            public VS2012(ITestOutputHelper testOutputHelper, VisualStudioInstanceFactory instanceFactory)
+                : base(testOutputHelper, instanceFactory, Versions.VisualStudio2012)
             {
             }
         }
@@ -209,8 +218,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [VersionTrait(typeof(VS2013))]
         public sealed class VS2013 : TrivialIntegrationTest
         {
-            public VS2013(VisualStudioInstanceFactory instanceFactory)
-                : base(instanceFactory, Versions.VisualStudio2013)
+            public VS2013(ITestOutputHelper testOutputHelper, VisualStudioInstanceFactory instanceFactory)
+                : base(testOutputHelper, instanceFactory, Versions.VisualStudio2013)
             {
             }
         }
@@ -218,8 +227,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [VersionTrait(typeof(VS2015))]
         public sealed class VS2015 : TrivialIntegrationTest
         {
-            public VS2015(VisualStudioInstanceFactory instanceFactory)
-                : base(instanceFactory, Versions.VisualStudio2015)
+            public VS2015(ITestOutputHelper testOutputHelper, VisualStudioInstanceFactory instanceFactory)
+                : base(testOutputHelper, instanceFactory, Versions.VisualStudio2015)
             {
             }
         }
@@ -227,8 +236,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [VersionTrait(typeof(VS2017))]
         public sealed class VS2017 : TrivialIntegrationTest
         {
-            public VS2017(VisualStudioInstanceFactory instanceFactory)
-                : base(instanceFactory, Versions.VisualStudio2017)
+            public VS2017(ITestOutputHelper testOutputHelper, VisualStudioInstanceFactory instanceFactory)
+                : base(testOutputHelper, instanceFactory, Versions.VisualStudio2017)
             {
             }
         }
