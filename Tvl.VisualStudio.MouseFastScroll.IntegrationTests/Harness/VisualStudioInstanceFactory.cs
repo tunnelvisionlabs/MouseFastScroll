@@ -208,14 +208,24 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 
         private static Tuple<string, Version, ImmutableHashSet<string>, InstanceState> LocateVisualStudioInstance(Version version, ImmutableHashSet<string> requiredPackageIds)
         {
-            var vsInstallDir = Environment.GetEnvironmentVariable("VSInstallDir");
+            var vsInstallDir = Environment.GetEnvironmentVariable("__UNITTESTEXPLORER_VSINSTALLPATH__")
+                ?? Environment.GetEnvironmentVariable("VSAPPIDDIR");
+            if (vsInstallDir != null)
+            {
+                vsInstallDir = Path.GetFullPath(Path.Combine(vsInstallDir, @"..\.."));
+            }
+            else
+            {
+                vsInstallDir = Environment.GetEnvironmentVariable("VSInstallDir");
+            }
+
             var haveVsInstallDir = !string.IsNullOrEmpty(vsInstallDir);
 
             if (haveVsInstallDir)
             {
                 vsInstallDir = Path.GetFullPath(vsInstallDir);
                 vsInstallDir = vsInstallDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                Debug.WriteLine($"An environment variable named 'VSInstallDir' was found, adding this to the specified requirements. (VSInstallDir: {vsInstallDir})");
+                Debug.WriteLine($"An environment variable named 'VSInstallDir' (or equivalent) was found, adding this to the specified requirements. (VSInstallDir: {vsInstallDir})");
             }
 
             var instances = EnumerateVisualStudioInstances().Where((instance) =>
@@ -225,11 +235,12 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                     isMatch &= version.Major == instance.Item2.Major;
                     isMatch &= instance.Item2 >= version;
 
-                    if (haveVsInstallDir)
+                    if (haveVsInstallDir && version.Major == 15)
                     {
                         var installationPath = instance.Item1;
+                        installationPath = Path.GetFullPath(installationPath);
                         installationPath = installationPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                        ////isMatch &= installationPath.Equals(vsInstallDir, StringComparison.OrdinalIgnoreCase);
+                        isMatch &= installationPath.Equals(vsInstallDir, StringComparison.OrdinalIgnoreCase);
                     }
                 }
 
