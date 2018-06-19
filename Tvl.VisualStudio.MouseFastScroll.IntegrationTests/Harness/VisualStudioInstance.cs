@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE.txt in the project root for license information.
 
-namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
+namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 {
     using System;
     using System.Collections.Immutable;
     using System.Diagnostics;
-    using System.Runtime.InteropServices;
     using System.Runtime.Remoting.Channels;
     using System.Runtime.Remoting.Channels.Ipc;
-    using Microsoft.VisualStudio;
+    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess;
+    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.OutOfProcess;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTestService;
     using DTE = EnvDTE.DTE;
 
