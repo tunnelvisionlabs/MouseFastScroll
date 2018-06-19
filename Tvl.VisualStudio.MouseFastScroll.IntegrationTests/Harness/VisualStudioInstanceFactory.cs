@@ -124,17 +124,20 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                 hostProcess = StartNewVisualStudioProcess(installationPath, version);
 
                 // We wait until the DTE instance is up before we're good
-                dte = await IntegrationHelper.WaitForNotNullAsync(() => IntegrationHelper.TryLocateDteForProcess(hostProcess)).ConfigureAwait(false);
+                dte = await IntegrationHelper.WaitForNotNullAsync(() => IntegrationHelper.TryLocateDteForProcess(hostProcess)).ConfigureAwait(true);
             }
             else
             {
                 // We are going to reuse the currently running instance, so ensure that we grab the host Process and Dte
                 // before cleaning up any hooks or remoting services created by the previous instance. We will then
                 // create a new VisualStudioInstance from the previous to ensure that everything is in a 'clean' state.
+                //
+                // We create a new DTE instance in the current context since the COM object could have been separated
+                // from its RCW during the previous test.
                 Debug.Assert(_currentlyRunningInstance != null, "Assertion failed: _currentlyRunningInstance != null");
 
                 hostProcess = _currentlyRunningInstance.HostProcess;
-                dte = _currentlyRunningInstance.Dte;
+                dte = await IntegrationHelper.WaitForNotNullAsync(() => IntegrationHelper.TryLocateDteForProcess(hostProcess)).ConfigureAwait(true);
                 actualVersion = _currentlyRunningInstance.Version;
                 supportedPackageIds = _currentlyRunningInstance.SupportedPackageIds;
                 installationPath = _currentlyRunningInstance.InstallationPath;
