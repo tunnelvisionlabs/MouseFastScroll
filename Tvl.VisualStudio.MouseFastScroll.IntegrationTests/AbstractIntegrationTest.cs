@@ -90,7 +90,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             }
         }
 
-        protected class MessageFilter : IMessageFilter, IDisposable
+        protected internal class MessageFilter : IMessageFilter, IDisposable
         {
             protected const uint CancelCall = ~0U;
 

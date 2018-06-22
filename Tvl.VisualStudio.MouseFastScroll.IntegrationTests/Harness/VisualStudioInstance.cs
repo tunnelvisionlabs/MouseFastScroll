@@ -6,6 +6,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
     using System;
     using System.Collections.Immutable;
     using System.Diagnostics;
+    using System.Linq;
     using System.Runtime.Remoting.Channels;
     using System.Runtime.Remoting.Channels.Ipc;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess;
@@ -46,6 +47,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 
             SendKeys = new SendKeys(this);
             Editor = new Editor_OutOfProc(this);
+            TestInvoker = new TestInvoker_OutOfProc(this);
 
             // Ensure we are in a known 'good' state by cleaning up anything changed by the previous instance
             CleanUp();
@@ -89,6 +91,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         }
 
         public Editor_OutOfProc Editor
+        {
+            get;
+        }
+
+        public TestInvoker_OutOfProc TestInvoker
         {
             get;
         }
@@ -167,7 +174,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             }
             finally
             {
-                if (_integrationServiceChannel != null)
+                if (_integrationServiceChannel != null
+                    && ChannelServices.RegisteredChannels.Contains(_integrationServiceChannel))
                 {
                     ChannelServices.UnregisterChannel(_integrationServiceChannel);
                 }

@@ -9,6 +9,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
     using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.Remoting.Channels;
+    using System.Runtime.Remoting.Channels.Ipc;
+    using System.Runtime.Serialization.Formatters;
     using System.Threading.Tasks;
     using Microsoft.VisualStudio.ExtensionManager;
     using Microsoft.VisualStudio.Settings;
@@ -18,7 +21,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
     using File = System.IO.File;
     using Path = System.IO.Path;
 
-    public sealed class VisualStudioInstanceFactory : IDisposable
+    public sealed class VisualStudioInstanceFactory : MarshalByRefObject, IDisposable
     {
         public static readonly string VsLaunchArgs = $"{(string.IsNullOrWhiteSpace(Settings.Default.VsRootSuffix) ? "/log" : $"/rootsuffix {Settings.Default.VsRootSuffix}")} /log";
 
@@ -27,8 +30,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         /// </summary>
         private VisualStudioInstance _currentlyRunningInstance;
 
+        private IpcServerChannel _callbackChannel;
+
         private bool _hasCurrentlyActiveContext;
 
+        [Obsolete("This class should only be constructed as a collection fixture.", error: true)]
         public VisualStudioInstanceFactory()
         {
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolveHandler;
@@ -40,7 +46,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         // Depending on the manner in which the assembly was originally loaded, this may end up actually trying to load the assembly a second
         // time and it can fail if the standard assembly resolution logic fails. This ensures that we 'succeed' this secondary load by returning
         // the assembly that is already loaded.
-        private static Assembly AssemblyResolveHandler(object sender, ResolveEventArgs eventArgs)
+        internal static Assembly AssemblyResolveHandler(object sender, ResolveEventArgs eventArgs)
         {
             Debug.WriteLine($"'{eventArgs.RequestingAssembly}' is attempting to resolve '{eventArgs.Name}'");
             var resolvedAssembly = AppDomain.CurrentDomain.GetAssemblies().Where((assembly) => assembly.FullName.Equals(eventArgs.Name)).SingleOrDefault();
@@ -76,6 +82,17 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             {
                 _currentlyRunningInstance?.Close();
                 _currentlyRunningInstance = null;
+
+                if (_callbackChannel != null)
+                {
+                    if (ChannelServices.RegisteredChannels.Contains(_callbackChannel))
+                    {
+                        ChannelServices.UnregisterChannel(_callbackChannel);
+                    }
+
+                    _callbackChannel.StopListening(null);
+                    _callbackChannel = null;
+                }
             }
         }
 
@@ -146,6 +163,16 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             }
 
             _currentlyRunningInstance = new VisualStudioInstance(hostProcess, dte, actualVersion, supportedPackageIds, installationPath);
+
+            if (_callbackChannel == null)
+            {
+                _callbackChannel = new IpcServerChannel(
+                    name: $"Microsoft.VisualStudio.IntegrationTest.CallbackChannel_{Process.GetCurrentProcess().Id}",
+                    portName: $"{nameof(VisualStudioInstanceFactory)}_{Guid.NewGuid():b}",
+                    sinkProvider: new BinaryServerFormatterSinkProvider { TypeFilterLevel = TypeFilterLevel.Full });
+                ChannelServices.RegisterChannel(_callbackChannel, ensureSecurity: false);
+                _callbackChannel.StartListening(null);
+            }
         }
 
         private static IEnumerable<Tuple<string, Version, ImmutableHashSet<string>, InstanceState>> EnumerateVisualStudioInstances()
