@@ -4,6 +4,7 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
     using System;
+    using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
@@ -26,9 +27,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [IdeFact(MinVersion = VisualStudioVersion.VS2013)]
         public void TestOpenAndCloseIDE()
         {
+            Assert.Equal("devenv", Process.GetCurrentProcess().ProcessName);
             var dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(_DTE));
-            var currentVersion = dte.Version;
-            Assert.Equal(15, new Version(currentVersion).Major);
+            Assert.NotNull(dte);
         }
 
         [IdeFact(MaxVersion = VisualStudioVersion.VS2015)]
