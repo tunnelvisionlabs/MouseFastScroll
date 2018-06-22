@@ -7,6 +7,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
     using System.ComponentModel;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Win32;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
     using Xunit.Abstractions;
     using Xunit.Sdk;
@@ -26,6 +27,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
         {
             SharedData = WpfTestSharedData.Instance;
             _visualStudioVersion = visualStudioVersion;
+
+            if (!IsInstalled(visualStudioVersion))
+            {
+                SkipReason = $"{visualStudioVersion} is not installed";
+            }
         }
 
         public WpfTestSharedData SharedData
@@ -47,7 +53,17 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 
         public override Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink, IMessageBus messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource)
         {
-            var runner = new IdeTestCaseRunner(SharedData, _visualStudioVersion, this, DisplayName, SkipReason, constructorArguments, TestMethodArguments, messageBus, aggregator, cancellationTokenSource);
+            TestCaseRunner<IXunitTestCase> runner;
+            if (!string.IsNullOrEmpty(SkipReason))
+            {
+                // Use XunitTestCaseRunner so the skip gets reported without trying to open VS
+                runner = new XunitTestCaseRunner(this, DisplayName, SkipReason, constructorArguments, TestMethodArguments, messageBus, aggregator, cancellationTokenSource);
+            }
+            else
+            {
+                runner = new IdeTestCaseRunner(SharedData, _visualStudioVersion, this, DisplayName, SkipReason, constructorArguments, TestMethodArguments, messageBus, aggregator, cancellationTokenSource);
+            }
+
             return runner.RunAsync();
         }
 
@@ -55,13 +71,47 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
         {
             base.Serialize(data);
             data.AddValue(nameof(_visualStudioVersion), (int)_visualStudioVersion);
+            data.AddValue(nameof(SkipReason), SkipReason);
         }
 
         public override void Deserialize(IXunitSerializationInfo data)
         {
             base.Deserialize(data);
             _visualStudioVersion = (VisualStudioVersion)data.GetValue<int>(nameof(_visualStudioVersion));
+            SkipReason = data.GetValue<string>(nameof(SkipReason));
             SharedData = WpfTestSharedData.Instance;
+        }
+
+        private static bool IsInstalled(VisualStudioVersion visualStudioVersion)
+        {
+            string dteKey;
+
+            switch (visualStudioVersion)
+            {
+            case VisualStudioVersion.VS2012:
+                dteKey = "VisualStudio.DTE.11.0";
+                break;
+
+            case VisualStudioVersion.VS2013:
+                dteKey = "VisualStudio.DTE.12.0";
+                break;
+
+            case VisualStudioVersion.VS2015:
+                dteKey = "VisualStudio.DTE.14.0";
+                break;
+
+            case VisualStudioVersion.VS2017:
+                dteKey = "VisualStudio.DTE.15.0";
+                break;
+
+            default:
+                throw new ArgumentException();
+            }
+
+            using (var key = Registry.ClassesRoot.OpenSubKey(dteKey))
+            {
+                return key != null;
+            }
         }
     }
 }
