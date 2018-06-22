@@ -23,7 +23,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         {
         }
 
-        [IdeFact]
+        [IdeFact(MinVersion = VisualStudioVersion.VS2013)]
         public void TestOpenAndCloseIDE()
         {
             var dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(_DTE));
@@ -31,13 +31,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(15, new Version(currentVersion).Major);
         }
 
-        [IdeFact]
+        [IdeFact(MaxVersion = VisualStudioVersion.VS2015)]
         public void TestRunsOnUIThread()
         {
             Assert.True(ThreadHelper.CheckAccess());
         }
 
-        [IdeFact]
+        [IdeFact(MinVersion = VisualStudioVersion.VS2013, MaxVersion = VisualStudioVersion.VS2015)]
         public async Task TestRunsOnUIThreadAsync()
         {
             Assert.True(ThreadHelper.CheckAccess());

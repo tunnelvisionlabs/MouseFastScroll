@@ -4,6 +4,7 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 {
     using System;
+    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
     using Xunit;
     using Xunit.Sdk;
 
@@ -11,5 +12,22 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
     [XunitTestCaseDiscoverer("Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading.IdeFactDiscoverer", "Tvl.VisualStudio.MouseFastScroll.IntegrationTests")]
     public class IdeFactAttribute : FactAttribute
     {
+        public IdeFactAttribute()
+        {
+            MinVersion = VisualStudioVersion.VS2012;
+            MaxVersion = VisualStudioVersion.VS2017;
+        }
+
+        public VisualStudioVersion MinVersion
+        {
+            get;
+            set;
+        }
+
+        public VisualStudioVersion MaxVersion
+        {
+            get;
+            set;
+        }
     }
 }

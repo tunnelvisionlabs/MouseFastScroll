@@ -30,13 +30,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
     /// </summary>
     public sealed class IdeTestRunner : WpfTestRunner
     {
-        ////private static readonly IpcServerChannel ServiceChannel = new IpcServerChannel(
-        ////    name: $"Microsoft.VisualStudio.IntegrationTest.ServiceChannel_{Process.GetCurrentProcess().Id}",
-        ////    portName: $"{nameof(IdeTestRunner)}_{{{Process.GetCurrentProcess().Id}}}",
-        ////    sinkProvider: new BinaryServerFormatterSinkProvider { TypeFilterLevel = TypeFilterLevel.Full });
-
         public IdeTestRunner(
             WpfTestSharedData sharedData,
+            VisualStudioVersion visualStudioVersion,
             ITest test,
             IMessageBus messageBus,
             Type testClass,
@@ -49,6 +45,12 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
             CancellationTokenSource cancellationTokenSource)
             : base(sharedData, test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, skipReason, beforeAfterAttributes, aggregator, cancellationTokenSource)
         {
+            VisualStudioVersion = visualStudioVersion;
+        }
+
+        public VisualStudioVersion VisualStudioVersion
+        {
+            get;
         }
 
         protected override async Task<decimal> InvokeTestMethodAsync(ExceptionAggregator aggregator)
@@ -67,35 +69,45 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
                 using (var messageFilter = RegisterMessageFilter())
                 {
                     Automation.TransactionTimeout = 20000;
-                    var version = new Version(15, 0);
-                    using (var visualStudioContext = await instanceFactory.GetNewOrUsedInstanceAsync(version, SharedIntegrationHostFixture.RequiredPackageIds).ConfigureAwait(true))
+                    using (var visualStudioContext = await instanceFactory.GetNewOrUsedInstanceAsync(GetVersion(VisualStudioVersion), SharedIntegrationHostFixture.RequiredPackageIds).ConfigureAwait(true))
                     {
                         visualStudioContext.Instance.TestInvoker.LoadAssembly(typeof(ITest).Assembly.Location);
                         visualStudioContext.Instance.TestInvoker.LoadAssembly(typeof(Assert).Assembly.Location);
                         visualStudioContext.Instance.TestInvoker.LoadAssembly(typeof(TheoryAttribute).Assembly.Location);
                         visualStudioContext.Instance.TestInvoker.LoadAssembly(typeof(TestClass).Assembly.Location);
 
-                        ////ServiceChannel.StartListening(null);
-                        try
+                        Assert.Empty(BeforeAfterAttributes);
+                        var result = visualStudioContext.Instance.TestInvoker.InvokeTest(Test, new IpcMessageBus(MessageBus), TestClass, ConstructorArguments, TestMethod, TestMethodArguments);
+                        if (result.Item2 != null)
                         {
-                            ////ChannelServices.RegisterChannel(ServiceChannel, false);
-                            Assert.Empty(BeforeAfterAttributes);
-                            var result = visualStudioContext.Instance.TestInvoker.InvokeTest(Test, new IpcMessageBus(MessageBus), TestClass, ConstructorArguments, TestMethod, TestMethodArguments);
-                            if (result.Item2 != null)
-                            {
-                                aggregator.Add(result.Item2);
-                            }
+                            aggregator.Add(result.Item2);
+                        }
 
-                            return result.Item1;
-                        }
-                        finally
-                        {
-                            ////ChannelServices.UnregisterChannel(ServiceChannel);
-                            ////ServiceChannel.StopListening(null);
-                        }
+                        return result.Item1;
                     }
                 }
             };
+        }
+
+        private static Version GetVersion(VisualStudioVersion visualStudioVersion)
+        {
+            switch (visualStudioVersion)
+            {
+            case VisualStudioVersion.VS2012:
+                return new Version(11, 0);
+
+            case VisualStudioVersion.VS2013:
+                return new Version(12, 0);
+
+            case VisualStudioVersion.VS2015:
+                return new Version(14, 0);
+
+            case VisualStudioVersion.VS2017:
+                return new Version(15, 0);
+
+            default:
+                throw new ArgumentException();
+            }
         }
 
         private AbstractIntegrationTest.MessageFilter RegisterMessageFilter()

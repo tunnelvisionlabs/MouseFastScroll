@@ -7,6 +7,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
     using System.Collections.Generic;
     using System.Reflection;
     using System.Threading;
+    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
     using Xunit.Abstractions;
     using Xunit.Sdk;
 
@@ -14,6 +15,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
     {
         public IdeTestCaseRunner(
             WpfTestSharedData sharedData,
+            VisualStudioVersion visualStudioVersion,
             IXunitTestCase testCase,
             string displayName,
             string skipReason,
@@ -25,6 +27,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
             : base(testCase, displayName, skipReason, constructorArguments, testMethodArguments, messageBus, aggregator, cancellationTokenSource)
         {
             SharedData = sharedData;
+            VisualStudioVersion = visualStudioVersion;
         }
 
         public WpfTestSharedData SharedData
@@ -32,9 +35,14 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
             get;
         }
 
+        public VisualStudioVersion VisualStudioVersion
+        {
+            get;
+        }
+
         protected override XunitTestRunner CreateTestRunner(ITest test, IMessageBus messageBus, Type testClass, object[] constructorArguments, MethodInfo testMethod, object[] testMethodArguments, string skipReason, IReadOnlyList<BeforeAfterTestAttribute> beforeAfterAttributes, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource)
         {
-            var runner = new IdeTestRunner(SharedData, test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, skipReason, beforeAfterAttributes, aggregator, cancellationTokenSource);
+            var runner = new IdeTestRunner(SharedData, VisualStudioVersion, test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, skipReason, beforeAfterAttributes, aggregator, cancellationTokenSource);
             return runner;
         }
     }
