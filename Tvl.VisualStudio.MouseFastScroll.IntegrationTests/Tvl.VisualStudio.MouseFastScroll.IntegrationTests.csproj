@@ -3,7 +3,6 @@
 
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
-    <Platforms>x86</Platforms>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <Description>Mouse Fast Scroll extension for Visual Studio integration tests</Description>
@@ -17,7 +16,6 @@
     <PackageReference Include="InputSimulatorPlus" Version="1.0.6" />
     <PackageReference Include="VSSDK.ComponentModelHost.11" Version="11.0.4" />
     <PackageReference Include="VSSDK.DTE.8" Version="8.0.4" />
-    <PackageReference Include="VSSDK.Settings.11" Version="11.0.4" />
     <PackageReference Include="VSSDK.Shell.11" Version="11.0.4" />
     <PackageReference Include="System.Collections.Immutable" Version="1.1.36" />
     <PackageReference Include="Microsoft.VisualStudio.Setup.Configuration.Interop" Version="1.16.30" />
@@ -29,15 +27,16 @@
   <ItemGroup>
     <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll\Tvl.VisualStudio.MouseFastScroll.csproj" />
     <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.csproj" />
-
-    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.11\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.11.csproj" ReferenceOutputAssembly="False" OutputItemType="Content" CopyToOutputDirectory="PreserveNewest" Targets="Build;DebugSymbolsProjectOutputGroup" />
-    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.12\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.12.csproj" ReferenceOutputAssembly="False" OutputItemType="Content" CopyToOutputDirectory="PreserveNewest" Targets="Build;DebugSymbolsProjectOutputGroup" />
-    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14.csproj" ReferenceOutputAssembly="False" OutputItemType="Content" CopyToOutputDirectory="PreserveNewest" Targets="Build;DebugSymbolsProjectOutputGroup" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="..\Tvl.VisualStudio.MouseFastScroll\bin\$(Configuration)\net45\Tvl.VisualStudio.MouseFastScroll.vsix" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\bin\$(Configuration)\net45\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.vsix" CopyToOutputDirectory="PreserveNewest" />
+
+    <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.11\bin\x86\$(Configuration)\net452\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.11.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.12\bin\x86\$(Configuration)\net452\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.12.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14\bin\x86\$(Configuration)\net452\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15\bin\x86\$(Configuration)\net46\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

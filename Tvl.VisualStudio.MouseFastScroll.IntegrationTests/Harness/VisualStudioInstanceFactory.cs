@@ -313,29 +313,22 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         {
             var vsExeFile = Path.Combine(installationPath, @"Common7\IDE\devenv.exe");
 
-            if (version.Major >= 15)
+            var installerAssemblyDirectory = Path.GetDirectoryName(typeof(VisualStudioInstanceFactory).Assembly.CodeBase);
+            if (installerAssemblyDirectory.StartsWith("file:"))
             {
-                // Can't currently deploy to VS 2017, so assume that the projects were deployed during the build.
+                installerAssemblyDirectory = new Uri(installerAssemblyDirectory).LocalPath;
             }
-            else
-            {
-                var installerAssemblyDirectory = Path.GetDirectoryName(typeof(VisualStudioInstanceFactory).Assembly.CodeBase);
-                if (installerAssemblyDirectory.StartsWith("file:"))
-                {
-                    installerAssemblyDirectory = new Uri(installerAssemblyDirectory).LocalPath;
-                }
 
-                var installerAssemblyFile = $"Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.{version.Major}.dll";
-                var installerAssembly = Assembly.LoadFrom(Path.Combine(installerAssemblyDirectory, installerAssemblyFile));
-                var installerType = installerAssembly.GetType("Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.Installer");
-                var installMethod = installerType.GetMethod("Install");
+            var installerAssemblyFile = $"Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.{version.Major}.dll";
+            var installerAssembly = Assembly.LoadFrom(Path.Combine(installerAssemblyDirectory, installerAssemblyFile));
+            var installerType = installerAssembly.GetType("Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.Installer");
+            var installMethod = installerType.GetMethod("Install");
 
-                var install = (Action<IEnumerable<string>, string>)Delegate.CreateDelegate(typeof(Action<IEnumerable<string>, string>), installMethod);
+            var install = (Action<IEnumerable<string>, string, string>)Delegate.CreateDelegate(typeof(Action<IEnumerable<string>, string, string>), installMethod);
 
-                var extensions = new[] { "Tvl.VisualStudio.MouseFastScroll.vsix", "Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.vsix" };
-                var rootSuffix = Settings.Default.VsRootSuffix;
-                install(extensions, rootSuffix);
-            }
+            var extensions = new[] { "Tvl.VisualStudio.MouseFastScroll.vsix", "Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.vsix" };
+            var rootSuffix = Settings.Default.VsRootSuffix;
+            install(extensions, installationPath, rootSuffix);
 
             // BUG: Currently building with /p:DeployExtension=true does not always cause the MEF cache to recompose...
             //      So, run clearcache and updateconfiguration to workaround https://devdiv.visualstudio.com/DevDiv/_workitems?id=385351.

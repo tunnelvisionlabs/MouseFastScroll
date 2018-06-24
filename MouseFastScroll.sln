@@ -17,6 +17,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll", "Tvl.VisualStudio.MouseFastScroll\Tvl.VisualStudio.MouseFastScroll.csproj", "{7DFA0DD1-8052-464D-9A1A-5EADC10A84B0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.IntegrationTests", "Tvl.VisualStudio.MouseFastScroll.IntegrationTests\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.csproj", "{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EE93CB04-8AEB-4DA6-BB35-B1DE6292E925} = {EE93CB04-8AEB-4DA6-BB35-B1DE6292E925}
+		{AD2B4DA7-1361-48FF-928D-29C6BAF7338B} = {AD2B4DA7-1361-48FF-928D-29C6BAF7338B}
+		{54B103B1-DD88-4500-918F-B2F1AFD7984A} = {54B103B1-DD88-4500-918F-B2F1AFD7984A}
+		{DC749EFA-E310-4C80-A23B-BF23FC4494CC} = {DC749EFA-E310-4C80-A23B-BF23FC4494CC}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.IntegrationTestService", "Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.csproj", "{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}"
 EndProject
@@ -28,6 +34,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14", "Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14.csproj", "{54B103B1-DD88-4500-918F-B2F1AFD7984A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15", "Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15.csproj", "{EE93CB04-8AEB-4DA6-BB35-B1DE6292E925}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.Interop", "Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.Interop\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.Interop.csproj", "{734F5715-775D-4A1C-9D96-DE200C32F403}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,10 +48,10 @@ Global
 		{7DFA0DD1-8052-464D-9A1A-5EADC10A84B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DFA0DD1-8052-464D-9A1A-5EADC10A84B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DFA0DD1-8052-464D-9A1A-5EADC10A84B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Debug|Any CPU.Build.0 = Debug|x86
-		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Release|Any CPU.ActiveCfg = Release|x86
-		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Release|Any CPU.Build.0 = Release|x86
+		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -62,6 +72,14 @@ Global
 		{54B103B1-DD88-4500-918F-B2F1AFD7984A}.Debug|Any CPU.Build.0 = Debug|x86
 		{54B103B1-DD88-4500-918F-B2F1AFD7984A}.Release|Any CPU.ActiveCfg = Release|x86
 		{54B103B1-DD88-4500-918F-B2F1AFD7984A}.Release|Any CPU.Build.0 = Release|x86
+		{EE93CB04-8AEB-4DA6-BB35-B1DE6292E925}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{EE93CB04-8AEB-4DA6-BB35-B1DE6292E925}.Debug|Any CPU.Build.0 = Debug|x86
+		{EE93CB04-8AEB-4DA6-BB35-B1DE6292E925}.Release|Any CPU.ActiveCfg = Release|x86
+		{EE93CB04-8AEB-4DA6-BB35-B1DE6292E925}.Release|Any CPU.Build.0 = Release|x86
+		{734F5715-775D-4A1C-9D96-DE200C32F403}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{734F5715-775D-4A1C-9D96-DE200C32F403}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{734F5715-775D-4A1C-9D96-DE200C32F403}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{734F5715-775D-4A1C-9D96-DE200C32F403}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

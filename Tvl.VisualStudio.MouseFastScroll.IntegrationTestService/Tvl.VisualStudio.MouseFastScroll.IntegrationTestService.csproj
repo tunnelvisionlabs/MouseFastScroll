@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project>
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
 
@@ -15,14 +15,11 @@
     <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
     <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
     <CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
-  </PropertyGroup>
 
-  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
     <!--
-      This extension is deployed on-demand by the integration test harness for Visual Studio 2012-2015. The harness does
-      not yet support automatic deployment to Visual Studio 2017, so we deploy it during the build for coverage.
+      This extension is deployed on-demand by the integration test harness.
     -->
-    <DeployExtension Condition="'$(DeployExtension)' == ''">False</DeployExtension>
+    <DeployExtension>False</DeployExtension>
   </PropertyGroup>
 
   <ItemGroup>

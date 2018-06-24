@@ -7,43 +7,21 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.CompilerServices;
     using Microsoft.VisualStudio.ExtensionManager;
     using Microsoft.VisualStudio.Settings;
-    using Microsoft.Win32;
     using File = System.IO.File;
     using Path = System.IO.Path;
 
     public static class Installer
     {
-        public static void Install(IEnumerable<string> vsixFiles, string rootSuffix)
+        public static void Install(IEnumerable<string> vsixFiles, string installationPath, string rootSuffix)
         {
-            var installerAssemblyName = typeof(Installer).Assembly.GetName().Name;
-            var visualStudioMajorVersion = int.Parse(installerAssemblyName.Substring(installerAssemblyName.LastIndexOf('.') + 1));
-            var installationPath = EnumerateVisualStudioInstancesInRegistry().Single(x => x.Item2.Major == visualStudioMajorVersion).Item1;
             AppDomain.CurrentDomain.AssemblyResolve += HandleAssemblyResolve;
 
             try
             {
-                var vsExeFile = Path.Combine(installationPath, @"Common7\IDE\devenv.exe");
-
-                using (var settingsManager = ExternalSettingsManager.CreateForApplication(vsExeFile, rootSuffix))
-                {
-                    var extensions = vsixFiles.Select(ExtensionManagerService.CreateInstallableExtension).ToArray();
-                    var extensionManager = new ExtensionManagerService(settingsManager);
-
-                    foreach (var extension in extensions)
-                    {
-                        if (extensionManager.IsInstalled(extension))
-                        {
-                            extensionManager.Uninstall(extensionManager.GetInstalledExtension(extension.Header.Identifier));
-                        }
-                    }
-
-                    foreach (var extension in extensions)
-                    {
-                        extensionManager.Install(extension, perMachine: false);
-                    }
-                }
+                InstallImpl(vsixFiles, rootSuffix, installationPath);
             }
             finally
             {
@@ -60,30 +38,44 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller
                     return Assembly.LoadFrom(path);
                 }
 
+                path = Path.Combine(installationPath, @"Common7\IDE", new AssemblyName(args.Name).Name + ".dll");
+                if (File.Exists(path))
+                {
+                    return Assembly.LoadFrom(path);
+                }
+
+                path = Path.Combine(installationPath, @"Common7\IDE\PublicAssemblies", new AssemblyName(args.Name).Name + ".dll");
+                if (File.Exists(path))
+                {
+                    return Assembly.LoadFrom(path);
+                }
+
                 return null;
             }
         }
 
-        private static IEnumerable<Tuple<string, Version>> EnumerateVisualStudioInstancesInRegistry()
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void InstallImpl(IEnumerable<string> vsixFiles, string rootSuffix, string installationPath)
         {
-            using (var software = Registry.LocalMachine.OpenSubKey("SOFTWARE"))
-            using (var microsoft = software.OpenSubKey("Microsoft"))
-            using (var visualStudio = microsoft.OpenSubKey("VisualStudio"))
+            var vsExeFile = Path.Combine(installationPath, @"Common7\IDE\devenv.exe");
+
+            using (var settingsManager = ExternalSettingsManager.CreateForApplication(vsExeFile, rootSuffix))
             {
-                foreach (string versionKey in visualStudio.GetSubKeyNames())
+                var extensionManager = new ExtensionManagerService(settingsManager);
+                IVsExtensionManager vsExtensionManager = extensionManager;
+                var extensions = vsixFiles.Select(vsExtensionManager.CreateInstallableExtension).ToArray();
+
+                foreach (var extension in extensions)
                 {
-                    if (!Version.TryParse(versionKey, out var version))
+                    if (extensionManager.IsInstalled(extension))
                     {
-                        continue;
+                        extensionManager.Uninstall(extensionManager.GetInstalledExtension(extension.Header.Identifier));
                     }
+                }
 
-                    string path = Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\{versionKey}\Setup\VS", "ProductDir", null) as string;
-                    if (string.IsNullOrEmpty(path) || !File.Exists(Path.Combine(path, @"Common7\IDE\devenv.exe")))
-                    {
-                        continue;
-                    }
-
-                    yield return Tuple.Create(path, version);
+                foreach (var extension in extensions)
+                {
+                    extensionManager.Install(extension, perMachine: false);
                 }
             }
         }

@@ -4,6 +4,7 @@
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
     <Platforms>x86</Platforms>
+    <RootNamespace>Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller</RootNamespace>
 
     <Description>Mouse Fast Scroll extension for Visual Studio integration tests</Description>
   </PropertyGroup>
@@ -15,6 +16,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Settings.14.0" Version="14.3.25407" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.Interop\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.Interop.csproj" />
   </ItemGroup>
 
   <ItemGroup>
