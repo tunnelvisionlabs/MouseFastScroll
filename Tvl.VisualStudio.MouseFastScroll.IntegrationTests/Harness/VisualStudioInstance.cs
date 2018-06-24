@@ -20,7 +20,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
     {
         private readonly IntegrationService _integrationService;
         private readonly IpcChannel _integrationServiceChannel;
-        ////private readonly IpcServerChannel _integrationCallbackChannel;
         private readonly VisualStudio_InProc _inProc;
 
         public VisualStudioInstance(Process hostProcess, DTE dte, Version version, ImmutableHashSet<string> supportedPackageIds, string installationPath)
@@ -42,14 +41,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                 },
                 new BinaryClientFormatterSinkProvider(),
                 new BinaryServerFormatterSinkProvider { TypeFilterLevel = TypeFilterLevel.Full });
-            ////_integrationCallbackChannel = new IpcServerChannel(
-            ////    name: $"IPC callback server for {HostProcess.Id}",
-            ////    portName: $"{nameof(VisualStudioInstance)}_{{{HostProcess.Id}}}",
-            ////    sinkProvider: new BinaryServerFormatterSinkProvider());
 
             ChannelServices.RegisterChannel(_integrationServiceChannel, ensureSecurity: true);
-            ////ChannelServices.RegisterChannel(_integrationCallbackChannel, ensureSecurity: true);
-            ////_integrationCallbackChannel.StartListening(null);
 
             // Connect to a 'well defined, shouldn't conflict' IPC channel
             _integrationService = IntegrationService.GetInstanceFromHostProcess(hostProcess);
@@ -200,13 +193,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                 {
                     ChannelServices.UnregisterChannel(_integrationServiceChannel);
                 }
-
-                ////if (_integrationCallbackChannel != null
-                ////    /*&& ChannelServices.RegisteredChannels.Contains(_integrationCallbackChannel)*/)
-                ////{
-                ////    _integrationCallbackChannel.StopListening(null);
-                ////    ////ChannelServices.UnregisterChannel(_integrationCallbackChannel);
-                ////}
             }
         }
 

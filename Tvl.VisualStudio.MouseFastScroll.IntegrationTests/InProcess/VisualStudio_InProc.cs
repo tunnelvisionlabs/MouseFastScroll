@@ -37,7 +37,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
 
         public void AddCodeBaseDirectory(string directory)
         {
-            ////Debugger.Launch();
             AppDomain.CurrentDomain.AssemblyResolve += (sender, e) =>
             {
                 string path = Path.Combine(directory, new AssemblyName(e.Name).Name + ".dll");
