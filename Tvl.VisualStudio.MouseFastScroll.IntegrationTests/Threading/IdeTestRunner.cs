@@ -15,6 +15,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
     using System.Threading.Tasks;
     using System.Windows.Automation;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
+    using WindowsInput;
     using Xunit;
     using Xunit.Abstractions;
     using Xunit.Sdk;
@@ -71,6 +72,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
                     Automation.TransactionTimeout = 20000;
                     using (var visualStudioContext = await instanceFactory.GetNewOrUsedInstanceAsync(GetVersion(VisualStudioVersion), SharedIntegrationHostFixture.RequiredPackageIds).ConfigureAwait(true))
                     {
+                        visualStudioContext.Instance.TestInvoker.LoadAssembly(typeof(InputSimulator).Assembly.Location);
                         visualStudioContext.Instance.TestInvoker.LoadAssembly(typeof(ITest).Assembly.Location);
                         visualStudioContext.Instance.TestInvoker.LoadAssembly(typeof(Assert).Assembly.Location);
                         visualStudioContext.Instance.TestInvoker.LoadAssembly(typeof(TheoryAttribute).Assembly.Location);

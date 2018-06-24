@@ -4,7 +4,9 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.OutOfProcess
 {
     using System;
+    using System.Linq;
     using System.Reflection;
+    using System.Runtime.ExceptionServices;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess;
     using Xunit.Abstractions;
@@ -36,6 +38,21 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.OutOfProcess
             MethodInfo testMethod,
             object[] testMethodArguments)
         {
+            if (constructorArguments != null)
+            {
+                if (constructorArguments.OfType<ITestOutputHelper>().Any())
+                {
+                    constructorArguments = (object[])constructorArguments.Clone();
+                    for (int i = 0; i < constructorArguments.Length; i++)
+                    {
+                        if (constructorArguments[i] is ITestOutputHelper testOutputHelper)
+                        {
+                            constructorArguments[i] = new TestOutputHelperWrapper(testOutputHelper);
+                        }
+                    }
+                }
+            }
+
             return TestInvokerInProc.InvokeTest(
                 test,
                 messageBus,
@@ -43,6 +60,26 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.OutOfProcess
                 constructorArguments,
                 testMethod,
                 testMethodArguments);
+        }
+
+        private class TestOutputHelperWrapper : MarshalByRefObject, ITestOutputHelper
+        {
+            private readonly ITestOutputHelper _testOutputHelper;
+
+            public TestOutputHelperWrapper(ITestOutputHelper testOutputHelper)
+            {
+                _testOutputHelper = testOutputHelper;
+            }
+
+            public void WriteLine(string message)
+            {
+                _testOutputHelper.WriteLine(message);
+            }
+
+            public void WriteLine(string format, params object[] args)
+            {
+                _testOutputHelper.WriteLine(format, args);
+            }
         }
     }
 }

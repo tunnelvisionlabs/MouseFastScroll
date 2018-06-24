@@ -14,8 +14,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 
     public sealed class IdeTestCase : XunitTestCase
     {
-        private VisualStudioVersion _visualStudioVersion;
-
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("Called by the deserializer; should only be called by deriving classes for deserialization purposes")]
         public IdeTestCase()
@@ -26,12 +24,18 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
             : base(diagnosticMessageSink, defaultMethodDisplay, testMethod, testMethodArguments)
         {
             SharedData = WpfTestSharedData.Instance;
-            _visualStudioVersion = visualStudioVersion;
+            VisualStudioVersion = visualStudioVersion;
 
             if (!IsInstalled(visualStudioVersion))
             {
                 SkipReason = $"{visualStudioVersion} is not installed";
             }
+        }
+
+        public VisualStudioVersion VisualStudioVersion
+        {
+            get;
+            private set;
         }
 
         public WpfTestSharedData SharedData
@@ -43,12 +47,12 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
         protected override string GetDisplayName(IAttributeInfo factAttribute, string displayName)
         {
             var baseName = base.GetDisplayName(factAttribute, displayName);
-            return $"{baseName} ({_visualStudioVersion})";
+            return $"{baseName} ({VisualStudioVersion})";
         }
 
         protected override string GetUniqueID()
         {
-            return $"{base.GetUniqueID()}_{_visualStudioVersion}";
+            return $"{base.GetUniqueID()}_{VisualStudioVersion}";
         }
 
         public override Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink, IMessageBus messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource)
@@ -61,7 +65,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
             }
             else
             {
-                runner = new IdeTestCaseRunner(SharedData, _visualStudioVersion, this, DisplayName, SkipReason, constructorArguments, TestMethodArguments, messageBus, aggregator, cancellationTokenSource);
+                runner = new IdeTestCaseRunner(SharedData, VisualStudioVersion, this, DisplayName, SkipReason, constructorArguments, TestMethodArguments, messageBus, aggregator, cancellationTokenSource);
             }
 
             return runner.RunAsync();
@@ -70,14 +74,14 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
         public override void Serialize(IXunitSerializationInfo data)
         {
             base.Serialize(data);
-            data.AddValue(nameof(_visualStudioVersion), (int)_visualStudioVersion);
+            data.AddValue(nameof(VisualStudioVersion), (int)VisualStudioVersion);
             data.AddValue(nameof(SkipReason), SkipReason);
         }
 
         public override void Deserialize(IXunitSerializationInfo data)
         {
             base.Deserialize(data);
-            _visualStudioVersion = (VisualStudioVersion)data.GetValue<int>(nameof(_visualStudioVersion));
+            VisualStudioVersion = (VisualStudioVersion)data.GetValue<int>(nameof(VisualStudioVersion));
             SkipReason = data.GetValue<string>(nameof(SkipReason));
             SharedData = WpfTestSharedData.Instance;
         }
