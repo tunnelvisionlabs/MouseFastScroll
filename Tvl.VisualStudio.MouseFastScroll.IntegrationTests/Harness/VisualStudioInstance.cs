@@ -4,11 +4,13 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 {
     using System;
+    using System.Collections;
     using System.Collections.Immutable;
     using System.Diagnostics;
     using System.Linq;
     using System.Runtime.Remoting.Channels;
     using System.Runtime.Remoting.Channels.Ipc;
+    using System.Runtime.Serialization.Formatters;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.OutOfProcess;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTestService;
@@ -17,7 +19,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
     public class VisualStudioInstance
     {
         private readonly IntegrationService _integrationService;
-        private readonly IpcClientChannel _integrationServiceChannel;
+        private readonly IpcChannel _integrationServiceChannel;
+        ////private readonly IpcServerChannel _integrationCallbackChannel;
         private readonly VisualStudio_InProc _inProc;
 
         public VisualStudioInstance(Process hostProcess, DTE dte, Version version, ImmutableHashSet<string> supportedPackageIds, string installationPath)
@@ -30,8 +33,23 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 
             StartRemoteIntegrationService(dte);
 
-            _integrationServiceChannel = new IpcClientChannel($"IPC channel client for {HostProcess.Id}", sinkProvider: null);
+            string portName = $"IPC channel client for {HostProcess.Id}";
+            _integrationServiceChannel = new IpcChannel(
+                new Hashtable
+                {
+                    { "name", portName },
+                    { "portName", portName },
+                },
+                new BinaryClientFormatterSinkProvider(),
+                new BinaryServerFormatterSinkProvider { TypeFilterLevel = TypeFilterLevel.Full });
+            ////_integrationCallbackChannel = new IpcServerChannel(
+            ////    name: $"IPC callback server for {HostProcess.Id}",
+            ////    portName: $"{nameof(VisualStudioInstance)}_{{{HostProcess.Id}}}",
+            ////    sinkProvider: new BinaryServerFormatterSinkProvider());
+
             ChannelServices.RegisterChannel(_integrationServiceChannel, ensureSecurity: true);
+            ////ChannelServices.RegisterChannel(_integrationCallbackChannel, ensureSecurity: true);
+            ////_integrationCallbackChannel.StartListening(null);
 
             // Connect to a 'well defined, shouldn't conflict' IPC channel
             _integrationService = IntegrationService.GetInstanceFromHostProcess(hostProcess);
@@ -182,6 +200,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                 {
                     ChannelServices.UnregisterChannel(_integrationServiceChannel);
                 }
+
+                ////if (_integrationCallbackChannel != null
+                ////    /*&& ChannelServices.RegisteredChannels.Contains(_integrationCallbackChannel)*/)
+                ////{
+                ////    _integrationCallbackChannel.StopListening(null);
+                ////    ////ChannelServices.UnregisterChannel(_integrationCallbackChannel);
+                ////}
             }
         }
 

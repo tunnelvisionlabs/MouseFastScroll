@@ -45,6 +45,12 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             GC.SuppressFinalize(this);
         }
 
+        public override object InitializeLifetimeService()
+        {
+            // This object can live forever
+            return null;
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

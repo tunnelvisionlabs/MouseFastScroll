@@ -32,7 +32,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         private readonly HashSet<Version> _hasCurrentlyActiveContext =
             new HashSet<Version>();
 
-        private IpcServerChannel _callbackChannel;
+        ////private IpcServerChannel _callbackChannel;
 
         [Obsolete("This class should only be constructed as a collection fixture.", error: true)]
         public VisualStudioInstanceFactory()
@@ -88,16 +88,16 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                 currentlyRunningInstance?.Close();
                 _currentlyRunningInstance.Remove(version);
 
-                if (_callbackChannel != null)
-                {
-                    if (ChannelServices.RegisteredChannels.Contains(_callbackChannel))
-                    {
-                        ChannelServices.UnregisterChannel(_callbackChannel);
-                    }
+                ////if (_callbackChannel != null)
+                ////{
+                ////    if (ChannelServices.RegisteredChannels.Contains(_callbackChannel))
+                ////    {
+                ////        ChannelServices.UnregisterChannel(_callbackChannel);
+                ////    }
 
-                    _callbackChannel.StopListening(null);
-                    _callbackChannel = null;
-                }
+                ////    _callbackChannel.StopListening(null);
+                ////    _callbackChannel = null;
+                ////}
             }
         }
 
@@ -181,15 +181,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                 _currentlyRunningInstance[version].AddCodeBaseDirectory(harnessAssemblyDirectory);
             }
 
-            if (_callbackChannel == null)
-            {
-                _callbackChannel = new IpcServerChannel(
-                    name: $"Microsoft.VisualStudio.IntegrationTest.CallbackChannel_{Process.GetCurrentProcess().Id}",
-                    portName: $"{nameof(VisualStudioInstanceFactory)}_{Guid.NewGuid():b}",
-                    sinkProvider: new BinaryServerFormatterSinkProvider { TypeFilterLevel = TypeFilterLevel.Full });
-                ChannelServices.RegisterChannel(_callbackChannel, ensureSecurity: false);
-                _callbackChannel.StartListening(null);
-            }
+            ////if (_callbackChannel == null)
+            ////{
+            ////    _callbackChannel = new IpcServerChannel(
+            ////        name: $"Microsoft.VisualStudio.IntegrationTest.CallbackChannel_{Process.GetCurrentProcess().Id}",
+            ////        portName: $"{nameof(VisualStudioInstanceFactory)}_{Guid.NewGuid():b}",
+            ////        sinkProvider: new BinaryServerFormatterSinkProvider { TypeFilterLevel = TypeFilterLevel.Full });
+            ////    ChannelServices.RegisterChannel(_callbackChannel, ensureSecurity: false);
+            ////    _callbackChannel.StartListening(null);
+            ////}
         }
 
         private static IEnumerable<Tuple<string, Version, ImmutableHashSet<string>, InstanceState>> EnumerateVisualStudioInstances()
