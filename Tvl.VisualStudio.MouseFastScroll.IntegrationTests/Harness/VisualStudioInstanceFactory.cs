@@ -23,11 +23,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         /// <summary>
         /// The instance that has already been launched by this factory and can be reused.
         /// </summary>
-        private readonly Dictionary<Version, VisualStudioInstance> _currentlyRunningInstance =
-            new Dictionary<Version, VisualStudioInstance>();
+        private VisualStudioInstance _currentlyRunningInstance;
 
-        private readonly HashSet<Version> _hasCurrentlyActiveContext =
-            new HashSet<Version>();
+        private bool _hasCurrentlyActiveContext;
 
         [Obsolete("This class should only be constructed as a collection fixture.", error: true)]
         public VisualStudioInstanceFactory()
@@ -62,26 +60,24 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         /// </summary>
         public async Task<VisualStudioInstanceContext> GetNewOrUsedInstanceAsync(Version version, ImmutableHashSet<string> requiredPackageIds)
         {
-            ThrowExceptionIfAlreadyHasActiveContext(version);
+            ThrowExceptionIfAlreadyHasActiveContext();
 
             bool shouldStartNewInstance = ShouldStartNewInstance(version, requiredPackageIds);
             await UpdateCurrentlyRunningInstanceAsync(version, requiredPackageIds, shouldStartNewInstance).ConfigureAwait(false);
 
-            _currentlyRunningInstance.TryGetValue(version, out var currentlyRunningInstance);
-            return new VisualStudioInstanceContext(currentlyRunningInstance, this);
+            return new VisualStudioInstanceContext(_currentlyRunningInstance, this);
         }
 
-        internal void NotifyCurrentInstanceContextDisposed(Version version, bool canReuse)
+        internal void NotifyCurrentInstanceContextDisposed(bool canReuse)
         {
-            ThrowExceptionIfAlreadyHasActiveContext(version);
+            ThrowExceptionIfAlreadyHasActiveContext();
 
-            _hasCurrentlyActiveContext.Remove(version);
+            _hasCurrentlyActiveContext = false;
 
             if (!canReuse)
             {
-                _currentlyRunningInstance.TryGetValue(version, out var currentlyRunningInstance);
-                currentlyRunningInstance?.Close();
-                _currentlyRunningInstance.Remove(version);
+                _currentlyRunningInstance?.Close();
+                _currentlyRunningInstance = null;
             }
         }
 
@@ -92,15 +88,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             //  * The current instance is not the correct version -or-
             //  * The current instance does not support all the required packages -or-
             //  * The current instance is no longer running
-            return !_currentlyRunningInstance.TryGetValue(version, out var currentlyRunningInstance)
-                || currentlyRunningInstance.Version.Major != version.Major
-                || (!requiredPackageIds.All(id => currentlyRunningInstance.SupportedPackageIds.Contains(id)))
-                || !currentlyRunningInstance.IsRunning;
+            return _currentlyRunningInstance == null
+                || _currentlyRunningInstance.Version.Major != version.Major
+                || (!requiredPackageIds.All(id => _currentlyRunningInstance.SupportedPackageIds.Contains(id)))
+                || !_currentlyRunningInstance.IsRunning;
         }
 
-        private void ThrowExceptionIfAlreadyHasActiveContext(Version version)
+        private void ThrowExceptionIfAlreadyHasActiveContext()
         {
-            if (_hasCurrentlyActiveContext.Contains(version))
+            if (_hasCurrentlyActiveContext)
             {
                 throw new Exception($"The previous integration test failed to call {nameof(VisualStudioInstanceContext)}.{nameof(Dispose)}. Ensure that test does that to ensure the Visual Studio instance is correctly cleaned up.");
             }
@@ -117,12 +113,10 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             ImmutableHashSet<string> supportedPackageIds;
             string installationPath;
 
-            _currentlyRunningInstance.TryGetValue(version, out var currentlyRunningInstance);
-
             if (shouldStartNewInstance)
             {
                 // We are starting a new instance, so ensure we close the currently running instance, if it exists
-                currentlyRunningInstance?.Close();
+                _currentlyRunningInstance?.Close();
 
                 var instance = LocateVisualStudioInstance(version, requiredPackageIds);
                 supportedPackageIds = instance.Item3;
@@ -142,18 +136,18 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                 //
                 // We create a new DTE instance in the current context since the COM object could have been separated
                 // from its RCW during the previous test.
-                Debug.Assert(currentlyRunningInstance != null, "Assertion failed: currentlyRunningInstance != null");
+                Debug.Assert(_currentlyRunningInstance != null, "Assertion failed: _currentlyRunningInstance != null");
 
-                hostProcess = currentlyRunningInstance.HostProcess;
+                hostProcess = _currentlyRunningInstance.HostProcess;
                 dte = await IntegrationHelper.WaitForNotNullAsync(() => IntegrationHelper.TryLocateDteForProcess(hostProcess)).ConfigureAwait(true);
-                actualVersion = currentlyRunningInstance.Version;
-                supportedPackageIds = currentlyRunningInstance.SupportedPackageIds;
-                installationPath = currentlyRunningInstance.InstallationPath;
+                actualVersion = _currentlyRunningInstance.Version;
+                supportedPackageIds = _currentlyRunningInstance.SupportedPackageIds;
+                installationPath = _currentlyRunningInstance.InstallationPath;
 
-                currentlyRunningInstance.Close(exitHostProcess: false);
+                _currentlyRunningInstance.Close(exitHostProcess: false);
             }
 
-            _currentlyRunningInstance[version] = new VisualStudioInstance(hostProcess, dte, actualVersion, supportedPackageIds, installationPath);
+            _currentlyRunningInstance = new VisualStudioInstance(hostProcess, dte, actualVersion, supportedPackageIds, installationPath);
             if (shouldStartNewInstance)
             {
                 var harnessAssemblyDirectory = Path.GetDirectoryName(typeof(VisualStudioInstanceFactory).Assembly.CodeBase);
@@ -162,7 +156,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                     harnessAssemblyDirectory = new Uri(harnessAssemblyDirectory).LocalPath;
                 }
 
-                _currentlyRunningInstance[version].AddCodeBaseDirectory(harnessAssemblyDirectory);
+                _currentlyRunningInstance.AddCodeBaseDirectory(harnessAssemblyDirectory);
             }
         }
 
@@ -346,14 +340,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 
         public void Dispose()
         {
-            foreach (var instance in _currentlyRunningInstance.ToArray())
-            {
-                instance.Value.Close();
-                _currentlyRunningInstance.Remove(instance.Key);
+            _currentlyRunningInstance?.Close();
+            _currentlyRunningInstance = null;
 
-                // We want to make sure everybody cleaned up their contexts by the end of everything
-                ThrowExceptionIfAlreadyHasActiveContext(instance.Key);
-            }
+            // We want to make sure everybody cleaned up their contexts by the end of everything
+            ThrowExceptionIfAlreadyHasActiveContext();
 
             AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolveHandler;
         }

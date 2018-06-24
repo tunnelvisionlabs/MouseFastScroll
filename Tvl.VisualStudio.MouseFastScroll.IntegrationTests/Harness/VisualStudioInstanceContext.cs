@@ -30,13 +30,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             try
             {
                 Instance.CleanUp();
-                _instanceFactory.NotifyCurrentInstanceContextDisposed(Instance.Version, canReuse: true);
+                _instanceFactory.NotifyCurrentInstanceContextDisposed(canReuse: true);
             }
             catch (Exception)
             {
                 // If the cleanup process fails, we want to make sure the next test gets a new instance. However,
                 // we still want to raise this exception to fail this test
-                _instanceFactory.NotifyCurrentInstanceContextDisposed(Instance.Version, canReuse: false);
+                _instanceFactory.NotifyCurrentInstanceContextDisposed(canReuse: false);
                 throw;
             }
         }
