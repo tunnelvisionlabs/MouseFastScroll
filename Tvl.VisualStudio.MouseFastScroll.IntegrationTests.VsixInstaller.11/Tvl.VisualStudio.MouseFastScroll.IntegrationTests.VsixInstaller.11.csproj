@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net452</TargetFramework>
+    <Platforms>x86</Platforms>
+
+    <Description>Mouse Fast Scroll extension for Visual Studio integration tests</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.ExtensionManager" HintPath="..\lib\11\Microsoft.VisualStudio.ExtensionManager.dll" Private="false" />
+    <Reference Include="Microsoft.VisualStudio.ExtensionManager.Implementation" HintPath="..\lib\11\Microsoft.VisualStudio.ExtensionManager.Implementation.dll" Private="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="VSSDK.Settings.11" Version="11.0.4" />
+  </ItemGroup>
+
+</Project>

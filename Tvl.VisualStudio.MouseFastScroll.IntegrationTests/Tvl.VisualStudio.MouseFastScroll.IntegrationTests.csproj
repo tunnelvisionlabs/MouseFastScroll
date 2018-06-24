@@ -14,13 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.ExtensionManager" HintPath="..\lib\Microsoft.VisualStudio.ExtensionManager.dll" />
-    <Reference Include="Microsoft.VisualStudio.ExtensionManager.Implementation" HintPath="..\lib\Microsoft.VisualStudio.ExtensionManager.Implementation.dll" />
-    <Reference Include="Microsoft.VisualStudio.CommonIDE" HintPath="..\lib\Microsoft.VisualStudio.CommonIDE.dll" />
-    <Reference Include="Microsoft.VisualStudio.Zip.11.0" HintPath="..\lib\Microsoft.VisualStudio.Zip.11.0.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="InputSimulatorPlus" Version="1.0.6" />
     <PackageReference Include="VSSDK.ComponentModelHost.11" Version="11.0.4" />
     <PackageReference Include="VSSDK.DTE.8" Version="8.0.4" />
@@ -36,6 +29,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll\Tvl.VisualStudio.MouseFastScroll.csproj" />
     <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.csproj" />
+
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.11\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.11.csproj" ReferenceOutputAssembly="False" OutputItemType="Content" CopyToOutputDirectory="PreserveNewest" Targets="Build;DebugSymbolsProjectOutputGroup" />
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.12\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.12.csproj" ReferenceOutputAssembly="False" OutputItemType="Content" CopyToOutputDirectory="PreserveNewest" Targets="Build;DebugSymbolsProjectOutputGroup" />
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14.csproj" ReferenceOutputAssembly="False" OutputItemType="Content" CopyToOutputDirectory="PreserveNewest" Targets="Build;DebugSymbolsProjectOutputGroup" />
   </ItemGroup>
 
   <ItemGroup>

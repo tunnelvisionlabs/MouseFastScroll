@@ -13,8 +13,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
     using System.Runtime.Remoting.Channels.Ipc;
     using System.Runtime.Serialization.Formatters;
     using System.Threading.Tasks;
-    using Microsoft.VisualStudio.ExtensionManager;
-    using Microsoft.VisualStudio.Settings;
     using Microsoft.VisualStudio.Setup.Configuration;
     using Microsoft.Win32;
     using DTE = EnvDTE.DTE;
@@ -321,25 +319,22 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             }
             else
             {
-                using (var settingsManager = ExternalSettingsManager.CreateForApplication(vsExeFile, Settings.Default.VsRootSuffix))
+                var installerAssemblyDirectory = Path.GetDirectoryName(typeof(VisualStudioInstanceFactory).Assembly.CodeBase);
+                if (installerAssemblyDirectory.StartsWith("file:"))
                 {
-                    var extensionVsix = ExtensionManagerService.CreateInstallableExtension("Tvl.VisualStudio.MouseFastScroll.vsix");
-                    var testServiceVsix = ExtensionManagerService.CreateInstallableExtension("Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.vsix");
-                    var extensionManager = new ExtensionManagerService(settingsManager);
-
-                    if (extensionManager.IsInstalled(testServiceVsix))
-                    {
-                        extensionManager.Uninstall(extensionManager.GetInstalledExtension(testServiceVsix.Header.Identifier));
-                    }
-
-                    if (extensionManager.IsInstalled(extensionVsix))
-                    {
-                        extensionManager.Uninstall(extensionManager.GetInstalledExtension(extensionVsix.Header.Identifier));
-                    }
-
-                    extensionManager.Install(extensionVsix, perMachine: false);
-                    extensionManager.Install(testServiceVsix, perMachine: false);
+                    installerAssemblyDirectory = new Uri(installerAssemblyDirectory).LocalPath;
                 }
+
+                var installerAssemblyFile = $"Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.{version.Major}.dll";
+                var installerAssembly = Assembly.LoadFrom(Path.Combine(installerAssemblyDirectory, installerAssemblyFile));
+                var installerType = installerAssembly.GetType("Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.Installer");
+                var installMethod = installerType.GetMethod("Install");
+
+                var install = (Action<IEnumerable<string>, string>)Delegate.CreateDelegate(typeof(Action<IEnumerable<string>, string>), installMethod);
+
+                var extensions = new[] { "Tvl.VisualStudio.MouseFastScroll.vsix", "Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.vsix" };
+                var rootSuffix = Settings.Default.VsRootSuffix;
+                install(extensions, rootSuffix);
             }
 
             // BUG: Currently building with /p:DeployExtension=true does not always cause the MEF cache to recompose...
