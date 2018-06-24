@@ -5,6 +5,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Reflection;
     using System.Threading;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
@@ -42,8 +43,16 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
 
         protected override XunitTestRunner CreateTestRunner(ITest test, IMessageBus messageBus, Type testClass, object[] constructorArguments, MethodInfo testMethod, object[] testMethodArguments, string skipReason, IReadOnlyList<BeforeAfterTestAttribute> beforeAfterAttributes, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource)
         {
-            var runner = new IdeTestRunner(SharedData, VisualStudioVersion, test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, skipReason, beforeAfterAttributes, aggregator, cancellationTokenSource);
-            return runner;
+            if (Process.GetCurrentProcess().ProcessName == "devenv")
+            {
+                // We are already running inside Visual Studio
+                // TODO: Verify version under test
+                return new InProcessIdeTestRunner(test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, skipReason, beforeAfterAttributes, aggregator, cancellationTokenSource);
+            }
+            else
+            {
+                return new IdeTestRunner(SharedData, VisualStudioVersion, test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, skipReason, beforeAfterAttributes, aggregator, cancellationTokenSource);
+            }
         }
     }
 }

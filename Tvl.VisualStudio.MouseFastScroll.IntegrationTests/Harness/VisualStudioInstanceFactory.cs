@@ -37,7 +37,10 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         [Obsolete("This class should only be constructed as a collection fixture.", error: true)]
         public VisualStudioInstanceFactory()
         {
-            AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolveHandler;
+            if (Process.GetCurrentProcess().ProcessName != "devenv")
+            {
+                AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolveHandler;
+            }
         }
 
         // This looks like it is pointless (since we are returning an assembly that is already loaded) but it is actually required.
@@ -167,6 +170,16 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             }
 
             _currentlyRunningInstance[version] = new VisualStudioInstance(hostProcess, dte, actualVersion, supportedPackageIds, installationPath);
+            if (shouldStartNewInstance)
+            {
+                var harnessAssemblyDirectory = Path.GetDirectoryName(typeof(VisualStudioInstanceFactory).Assembly.CodeBase);
+                if (harnessAssemblyDirectory.StartsWith("file:"))
+                {
+                    harnessAssemblyDirectory = new Uri(harnessAssemblyDirectory).LocalPath;
+                }
+
+                _currentlyRunningInstance[version].AddCodeBaseDirectory(harnessAssemblyDirectory);
+            }
 
             if (_callbackChannel == null)
             {

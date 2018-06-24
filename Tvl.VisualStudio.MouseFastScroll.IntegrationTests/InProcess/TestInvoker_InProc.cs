@@ -30,6 +30,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
             var assembly = Assembly.LoadFrom(codeBase);
         }
 
+        public InProcessIdeTestAssemblyRunner CreateTestAssemblyRunner(ITestAssembly testAssembly, IXunitTestCase[] testCases, IMessageSink diagnosticMessageSink, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions)
+        {
+            return new InProcessIdeTestAssemblyRunner(testAssembly, testCases, diagnosticMessageSink, executionMessageSink, executionOptions);
+        }
+
         public Tuple<decimal, Exception> InvokeTest(
             ITest test,
             IMessageBus messageBus,

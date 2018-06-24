@@ -39,4 +39,8 @@
     <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15\bin\x86\$(Configuration)\net46\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="$(NuGetPackageRoot)xunit.runner.visualstudio\2.3.1\build\net20\..\_common\xunit.abstractions.dll" />
+  </ItemGroup>
+
 </Project>

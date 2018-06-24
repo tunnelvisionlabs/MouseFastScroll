@@ -38,6 +38,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
             private set;
         }
 
+        public new TestMethodDisplay DefaultMethodDisplay => base.DefaultMethodDisplay;
+
         public WpfTestSharedData SharedData
         {
             get;

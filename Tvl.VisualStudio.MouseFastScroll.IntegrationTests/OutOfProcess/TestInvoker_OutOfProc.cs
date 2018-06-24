@@ -6,7 +6,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.OutOfProcess
     using System;
     using System.Linq;
     using System.Reflection;
-    using System.Runtime.ExceptionServices;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess;
     using Xunit.Abstractions;
@@ -28,6 +27,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.OutOfProcess
         public void LoadAssembly(string codeBase)
         {
             TestInvokerInProc.LoadAssembly(codeBase);
+        }
+
+        public InProcessIdeTestAssemblyRunner CreateTestAssemblyRunner(ITestAssembly testAssembly, IXunitTestCase[] testCases, IMessageSink diagnosticMessageSink, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions)
+        {
+            return TestInvokerInProc.CreateTestAssemblyRunner(testAssembly, testCases, diagnosticMessageSink, executionMessageSink, executionOptions);
         }
 
         public Tuple<decimal, Exception> InvokeTest(

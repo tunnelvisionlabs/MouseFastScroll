@@ -6,9 +6,12 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Reflection;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
     using Command = EnvDTE.Command;
     using DTE2 = EnvDTE80.DTE2;
+    using File = System.IO.File;
+    using Path = System.IO.Path;
     using vsBuildErrorLevel = EnvDTE80.vsBuildErrorLevel;
 
     internal partial class VisualStudio_InProc : InProcComponent
@@ -31,6 +34,21 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
 
         public new void ExecuteCommand(string commandName, string args = "")
             => InProcComponent.ExecuteCommand(commandName, args);
+
+        public void AddCodeBaseDirectory(string directory)
+        {
+            ////Debugger.Launch();
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, e) =>
+            {
+                string path = Path.Combine(directory, new AssemblyName(e.Name).Name + ".dll");
+                if (File.Exists(path))
+                {
+                    return Assembly.LoadFrom(path);
+                }
+
+                return null;
+            };
+        }
 
         public string[] GetAvailableCommands()
         {

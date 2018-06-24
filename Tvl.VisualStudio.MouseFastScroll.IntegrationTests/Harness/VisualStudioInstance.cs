@@ -133,6 +133,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         public bool IsCommandAvailable(string commandName)
             => _inProc.IsCommandAvailable(commandName);
 
+        public void AddCodeBaseDirectory(string directory)
+            => _inProc.AddCodeBaseDirectory(directory);
+
         public string[] GetAvailableCommands()
             => _inProc.GetAvailableCommands();
 
