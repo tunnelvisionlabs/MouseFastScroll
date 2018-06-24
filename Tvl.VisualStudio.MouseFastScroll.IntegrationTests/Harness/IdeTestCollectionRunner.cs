@@ -3,7 +3,6 @@
 
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -22,16 +21,23 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             _diagnosticMessageSink = diagnosticMessageSink;
         }
 
-        protected override async Task<RunSummary> RunTestClassAsync(ITestClass testClass, IReflectionTypeInfo @class, IEnumerable<IXunitTestCase> testCases)
+        protected override async Task<RunSummary> RunTestClassesAsync()
         {
-            var runSummary = new RunSummary();
-            foreach (var group in testCases.GroupBy(GetVisualStudioVersionForTestCase))
+            var summary = new RunSummary();
+
+            foreach (var testCasesByTargetVersion in TestCases.GroupBy(GetVisualStudioVersionForTestCase))
             {
-                var groupSummary = await new XunitTestClassRunner(testClass, @class, testCases, _diagnosticMessageSink, MessageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), CancellationTokenSource, CollectionFixtureMappings).RunAsync();
-                runSummary.Aggregate(groupSummary);
+                foreach (var testCasesByClass in testCasesByTargetVersion.GroupBy(tc => tc.TestMethod.TestClass, TestClassComparer.Instance))
+                {
+                    summary.Aggregate(await RunTestClassAsync(testCasesByClass.Key, (IReflectionTypeInfo)testCasesByClass.Key.Class, testCasesByClass));
+                    if (CancellationTokenSource.IsCancellationRequested)
+                    {
+                        break;
+                    }
+                }
             }
 
-            return runSummary;
+            return summary;
         }
 
         private VisualStudioVersion GetVisualStudioVersionForTestCase(IXunitTestCase testCase)

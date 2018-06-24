@@ -3,12 +3,7 @@
 
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
-    using System.Text;
-    using System.Threading.Tasks;
     using Xunit.Abstractions;
     using Xunit.Sdk;
 
@@ -19,14 +14,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         {
         }
 
-        protected override ITestFrameworkDiscoverer CreateDiscoverer(IAssemblyInfo assemblyInfo)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override ITestFrameworkExecutor CreateExecutor(AssemblyName assemblyName)
         {
-            throw new NotImplementedException();
+            return new IdeTestFrameworkExecutor(assemblyName, SourceInformationProvider, DiagnosticMessageSink);
         }
     }
 }
