@@ -84,7 +84,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                 var foreground = GetForegroundWindow();
                 await Task.Run(() => _visualStudio.ActivateMainWindow());
 
-                actions(new InputSimulator());
+                await Task.Run(() => actions(new InputSimulator()));
             }
             finally
             {
