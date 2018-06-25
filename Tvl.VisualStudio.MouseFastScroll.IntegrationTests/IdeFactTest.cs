@@ -3,7 +3,6 @@
 
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
-    using System;
     using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
@@ -17,8 +16,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using ServiceProvider = Microsoft.VisualStudio.Shell.ServiceProvider;
     using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
-    [Collection(nameof(SharedIntegrationHostFixture))]
-    public class IdeFactTest
+    public class IdeFactTest : AbstractIdeIntegrationTest
     {
         [IdeFact(MinVersion = VisualStudioVersion.VS2013)]
         public void TestOpenAndCloseIDE()

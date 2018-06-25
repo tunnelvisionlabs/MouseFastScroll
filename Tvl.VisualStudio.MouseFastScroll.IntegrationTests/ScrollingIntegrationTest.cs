@@ -20,8 +20,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using ServiceProvider = Microsoft.VisualStudio.Shell.ServiceProvider;
     using vsSaveChanges = EnvDTE.vsSaveChanges;
 
-    [Collection(nameof(SharedIntegrationHostFixture))]
-    public class ScrollingIntegrationTest
+    public class ScrollingIntegrationTest : AbstractIdeIntegrationTest
     {
         public ScrollingIntegrationTest(ITestOutputHelper testOutputHelper)
         {
