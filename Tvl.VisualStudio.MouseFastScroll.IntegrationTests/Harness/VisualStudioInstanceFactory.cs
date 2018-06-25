@@ -10,15 +10,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using Microsoft.VisualStudio.ExtensionManager;
-    using Microsoft.VisualStudio.Settings;
     using Microsoft.VisualStudio.Setup.Configuration;
     using Microsoft.Win32;
     using DTE = EnvDTE.DTE;
     using File = System.IO.File;
     using Path = System.IO.Path;
 
-    public sealed class VisualStudioInstanceFactory : IDisposable
+    public sealed class VisualStudioInstanceFactory : MarshalByRefObject, IDisposable
     {
         public static readonly string VsLaunchArgs = $"{(string.IsNullOrWhiteSpace(Settings.Default.VsRootSuffix) ? "/log" : $"/rootsuffix {Settings.Default.VsRootSuffix}")} /log";
 
@@ -29,9 +27,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 
         private bool _hasCurrentlyActiveContext;
 
+        [Obsolete("This class should only be constructed as a collection fixture.", error: true)]
         public VisualStudioInstanceFactory()
         {
-            AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolveHandler;
+            if (Process.GetCurrentProcess().ProcessName != "devenv")
+            {
+                AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolveHandler;
+            }
         }
 
         // This looks like it is pointless (since we are returning an assembly that is already loaded) but it is actually required.
@@ -40,7 +42,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         // Depending on the manner in which the assembly was originally loaded, this may end up actually trying to load the assembly a second
         // time and it can fail if the standard assembly resolution logic fails. This ensures that we 'succeed' this secondary load by returning
         // the assembly that is already loaded.
-        private static Assembly AssemblyResolveHandler(object sender, ResolveEventArgs eventArgs)
+        internal static Assembly AssemblyResolveHandler(object sender, ResolveEventArgs eventArgs)
         {
             Debug.WriteLine($"'{eventArgs.RequestingAssembly}' is attempting to resolve '{eventArgs.Name}'");
             var resolvedAssembly = AppDomain.CurrentDomain.GetAssemblies().Where((assembly) => assembly.FullName.Equals(eventArgs.Name)).SingleOrDefault();
@@ -146,6 +148,16 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             }
 
             _currentlyRunningInstance = new VisualStudioInstance(hostProcess, dte, actualVersion, supportedPackageIds, installationPath);
+            if (shouldStartNewInstance)
+            {
+                var harnessAssemblyDirectory = Path.GetDirectoryName(typeof(VisualStudioInstanceFactory).Assembly.CodeBase);
+                if (harnessAssemblyDirectory.StartsWith("file:"))
+                {
+                    harnessAssemblyDirectory = new Uri(harnessAssemblyDirectory).LocalPath;
+                }
+
+                _currentlyRunningInstance.AddCodeBaseDirectory(harnessAssemblyDirectory);
+            }
         }
 
         private static IEnumerable<Tuple<string, Version, ImmutableHashSet<string>, InstanceState>> EnumerateVisualStudioInstances()
@@ -282,32 +294,22 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         {
             var vsExeFile = Path.Combine(installationPath, @"Common7\IDE\devenv.exe");
 
-            if (version.Major >= 15)
+            var installerAssemblyDirectory = Path.GetDirectoryName(typeof(VisualStudioInstanceFactory).Assembly.CodeBase);
+            if (installerAssemblyDirectory.StartsWith("file:"))
             {
-                // Can't currently deploy to VS 2017, so assume that the projects were deployed during the build.
+                installerAssemblyDirectory = new Uri(installerAssemblyDirectory).LocalPath;
             }
-            else
-            {
-                using (var settingsManager = ExternalSettingsManager.CreateForApplication(vsExeFile, Settings.Default.VsRootSuffix))
-                {
-                    var extensionVsix = ExtensionManagerService.CreateInstallableExtension("Tvl.VisualStudio.MouseFastScroll.vsix");
-                    var testServiceVsix = ExtensionManagerService.CreateInstallableExtension("Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.vsix");
-                    var extensionManager = new ExtensionManagerService(settingsManager);
 
-                    if (extensionManager.IsInstalled(testServiceVsix))
-                    {
-                        extensionManager.Uninstall(extensionManager.GetInstalledExtension(testServiceVsix.Header.Identifier));
-                    }
+            var installerAssemblyFile = $"Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.{version.Major}.dll";
+            var installerAssembly = Assembly.LoadFrom(Path.Combine(installerAssemblyDirectory, installerAssemblyFile));
+            var installerType = installerAssembly.GetType("Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.Installer");
+            var installMethod = installerType.GetMethod("Install");
 
-                    if (extensionManager.IsInstalled(extensionVsix))
-                    {
-                        extensionManager.Uninstall(extensionManager.GetInstalledExtension(extensionVsix.Header.Identifier));
-                    }
+            var install = (Action<IEnumerable<string>, string, string>)Delegate.CreateDelegate(typeof(Action<IEnumerable<string>, string, string>), installMethod);
 
-                    extensionManager.Install(extensionVsix, perMachine: false);
-                    extensionManager.Install(testServiceVsix, perMachine: false);
-                }
-            }
+            var extensions = new[] { "Tvl.VisualStudio.MouseFastScroll.vsix", "Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.vsix" };
+            var rootSuffix = Settings.Default.VsRootSuffix;
+            install(extensions, installationPath, rootSuffix);
 
             // BUG: Currently building with /p:DeployExtension=true does not always cause the MEF cache to recompose...
             //      So, run clearcache and updateconfiguration to workaround https://devdiv.visualstudio.com/DevDiv/_workitems?id=385351.

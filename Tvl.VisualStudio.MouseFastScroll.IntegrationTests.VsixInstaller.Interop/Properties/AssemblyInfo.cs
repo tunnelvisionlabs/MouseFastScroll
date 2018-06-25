@@ -3,7 +3,6 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Xunit;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -15,4 +14,4 @@ using Xunit;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
-[assembly: TestFramework("Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness.IdeTestFramework", "Tvl.VisualStudio.MouseFastScroll.IntegrationTests")]
+[assembly: PrimaryInteropAssembly(12, 0)]

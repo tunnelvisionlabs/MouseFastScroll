@@ -4,10 +4,13 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 {
     using System;
+    using System.Collections;
     using System.Collections.Immutable;
     using System.Diagnostics;
+    using System.Linq;
     using System.Runtime.Remoting.Channels;
     using System.Runtime.Remoting.Channels.Ipc;
+    using System.Runtime.Serialization.Formatters;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.OutOfProcess;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTestService;
@@ -16,7 +19,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
     public class VisualStudioInstance
     {
         private readonly IntegrationService _integrationService;
-        private readonly IpcClientChannel _integrationServiceChannel;
+        private readonly IpcChannel _integrationServiceChannel;
         private readonly VisualStudio_InProc _inProc;
 
         public VisualStudioInstance(Process hostProcess, DTE dte, Version version, ImmutableHashSet<string> supportedPackageIds, string installationPath)
@@ -27,9 +30,28 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             SupportedPackageIds = supportedPackageIds;
             InstallationPath = installationPath;
 
+            if (Debugger.IsAttached)
+            {
+                // If a Visual Studio debugger is attached to the test process, attach it to the instance running
+                // integration tests as well.
+                var debuggerHostDte = GetDebuggerHostDte();
+                int targetProcessId = Process.GetCurrentProcess().Id;
+                var localProcess = debuggerHostDte?.Debugger.LocalProcesses.OfType<EnvDTE80.Process2>().FirstOrDefault(p => p.ProcessID == hostProcess.Id);
+                localProcess?.Attach2("Managed");
+            }
+
             StartRemoteIntegrationService(dte);
 
-            _integrationServiceChannel = new IpcClientChannel($"IPC channel client for {HostProcess.Id}", sinkProvider: null);
+            string portName = $"IPC channel client for {HostProcess.Id}";
+            _integrationServiceChannel = new IpcChannel(
+                new Hashtable
+                {
+                    { "name", portName },
+                    { "portName", portName },
+                },
+                new BinaryClientFormatterSinkProvider(),
+                new BinaryServerFormatterSinkProvider { TypeFilterLevel = TypeFilterLevel.Full });
+
             ChannelServices.RegisterChannel(_integrationServiceChannel, ensureSecurity: true);
 
             // Connect to a 'well defined, shouldn't conflict' IPC channel
@@ -46,6 +68,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 
             SendKeys = new SendKeys(this);
             Editor = new Editor_OutOfProc(this);
+            TestInvoker = new TestInvoker_OutOfProc(this);
 
             // Ensure we are in a known 'good' state by cleaning up anything changed by the previous instance
             CleanUp();
@@ -93,10 +116,30 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             get;
         }
 
+        public TestInvoker_OutOfProc TestInvoker
+        {
+            get;
+        }
+
         public int ErrorListErrorCount
             => _inProc.GetErrorListErrorCount();
 
         public bool IsRunning => !HostProcess.HasExited;
+
+        private static DTE GetDebuggerHostDte()
+        {
+            var currentProcessId = Process.GetCurrentProcess().Id;
+            foreach (var process in Process.GetProcessesByName("devenv"))
+            {
+                var dte = IntegrationHelper.TryLocateDteForProcess(process);
+                if (dte?.Debugger?.DebuggedProcesses?.OfType<EnvDTE.Process>().Any(p => p.ProcessID == currentProcessId) ?? false)
+                {
+                    return dte;
+                }
+            }
+
+            return null;
+        }
 
         public void ExecuteInHostProcess(Type type, string methodName)
         {
@@ -125,6 +168,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 
         public bool IsCommandAvailable(string commandName)
             => _inProc.IsCommandAvailable(commandName);
+
+        public void AddCodeBaseDirectory(string directory)
+            => _inProc.AddCodeBaseDirectory(directory);
 
         public string[] GetAvailableCommands()
             => _inProc.GetAvailableCommands();
@@ -156,7 +202,10 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         private void CloseHostProcess()
         {
             _inProc.Quit();
-            IntegrationHelper.KillProcess(HostProcess);
+            if (!HostProcess.WaitForExit(milliseconds: 10000))
+            {
+                IntegrationHelper.KillProcess(HostProcess);
+            }
         }
 
         private void CloseRemotingService()
@@ -167,7 +216,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             }
             finally
             {
-                if (_integrationServiceChannel != null)
+                if (_integrationServiceChannel != null
+                    && ChannelServices.RegisteredChannels.Contains(_integrationServiceChannel))
                 {
                     ChannelServices.UnregisterChannel(_integrationServiceChannel);
                 }

@@ -6,10 +6,18 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Reflection;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
     using Command = EnvDTE.Command;
     using DTE2 = EnvDTE80.DTE2;
+    using ErrorHandler = Microsoft.VisualStudio.ErrorHandler;
+    using File = System.IO.File;
+    using IVsUIShell = Microsoft.VisualStudio.Shell.Interop.IVsUIShell;
+    using OLECMDEXECOPT = Microsoft.VisualStudio.OLE.Interop.OLECMDEXECOPT;
+    using Path = System.IO.Path;
+    using SVsUIShell = Microsoft.VisualStudio.Shell.Interop.SVsUIShell;
     using vsBuildErrorLevel = EnvDTE80.vsBuildErrorLevel;
+    using VSConstants = Microsoft.VisualStudio.VSConstants;
 
     internal partial class VisualStudio_InProc : InProcComponent
     {
@@ -31,6 +39,20 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
 
         public new void ExecuteCommand(string commandName, string args = "")
             => InProcComponent.ExecuteCommand(commandName, args);
+
+        public void AddCodeBaseDirectory(string directory)
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, e) =>
+            {
+                string path = Path.Combine(directory, new AssemblyName(e.Name).Name + ".dll");
+                if (File.Exists(path))
+                {
+                    return Assembly.LoadFrom(path);
+                }
+
+                return null;
+            };
+        }
 
         public string[] GetAvailableCommands()
         {
@@ -112,6 +134,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
         }
 
         public void Quit()
-            => GetDTE().Quit();
+        {
+            BeginInvokeOnUIThread(() =>
+            {
+                var shell = GetGlobalService<SVsUIShell, IVsUIShell>();
+                var cmdGroup = VSConstants.GUID_VSStandardCommandSet97;
+                var cmdId = VSConstants.VSStd97CmdID.Exit;
+                var cmdExecOpt = OLECMDEXECOPT.OLECMDEXECOPT_DONTPROMPTUSER;
+                ErrorHandler.ThrowOnFailure(shell.PostExecCommand(cmdGroup, (uint)cmdId, (uint)cmdExecOpt, pvaIn: null));
+            });
+        }
     }
 }

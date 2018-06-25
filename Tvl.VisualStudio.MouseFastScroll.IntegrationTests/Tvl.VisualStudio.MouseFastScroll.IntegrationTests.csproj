@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net452</TargetFramework>
-    <Platforms>x86</Platforms>
+    <TargetFramework>net46</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <Description>Mouse Fast Scroll extension for Visual Studio integration tests</Description>
   </PropertyGroup>
@@ -13,17 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.ExtensionManager" HintPath="..\lib\Microsoft.VisualStudio.ExtensionManager.dll" />
-    <Reference Include="Microsoft.VisualStudio.ExtensionManager.Implementation" HintPath="..\lib\Microsoft.VisualStudio.ExtensionManager.Implementation.dll" />
-    <Reference Include="Microsoft.VisualStudio.CommonIDE" HintPath="..\lib\Microsoft.VisualStudio.CommonIDE.dll" />
-    <Reference Include="Microsoft.VisualStudio.Zip.11.0" HintPath="..\lib\Microsoft.VisualStudio.Zip.11.0.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="InputSimulatorPlus" Version="1.0.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="14.1.131" />
     <PackageReference Include="VSSDK.ComponentModelHost.11" Version="11.0.4" />
     <PackageReference Include="VSSDK.DTE.8" Version="8.0.4" />
-    <PackageReference Include="VSSDK.Settings.11" Version="11.0.4" />
     <PackageReference Include="VSSDK.Shell.11" Version="11.0.4" />
     <PackageReference Include="System.Collections.Immutable" Version="1.1.36" />
     <PackageReference Include="Microsoft.VisualStudio.Setup.Configuration.Interop" Version="1.16.30" />
@@ -35,11 +28,31 @@
   <ItemGroup>
     <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll\Tvl.VisualStudio.MouseFastScroll.csproj" />
     <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.csproj" />
+
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.11\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.11.csproj" ReferenceOutputAssembly="False" />
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.12\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.12.csproj" ReferenceOutputAssembly="False" />
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14.csproj" ReferenceOutputAssembly="False" />
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15.csproj" ReferenceOutputAssembly="False" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="..\Tvl.VisualStudio.MouseFastScroll\bin\$(Configuration)\net45\Tvl.VisualStudio.MouseFastScroll.vsix" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\bin\$(Configuration)\net45\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.vsix" CopyToOutputDirectory="PreserveNewest" />
+
+    <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.11\bin\x86\$(Configuration)\net452\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.11.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.12\bin\x86\$(Configuration)\net452\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.12.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14\bin\x86\$(Configuration)\net452\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15\bin\x86\$(Configuration)\net46\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="$(NuGetPackageRoot)xunit.runner.visualstudio\2.3.1\build\net20\..\_common\xunit.abstractions.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

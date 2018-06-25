@@ -4,8 +4,10 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTestService
 {
     using System;
+    using System.Collections;
     using System.ComponentModel.Design;
     using System.Diagnostics;
+    using System.Linq;
     using System.Runtime.Remoting;
     using System.Runtime.Remoting.Channels;
     using System.Runtime.Remoting.Channels.Ipc;
@@ -30,7 +32,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTestService
         private readonly MenuCommand _stopMenuCmd;
 
         private IntegrationService _service;
-        private IpcServerChannel _serviceChannel;
+        private IpcChannel _serviceChannel;
         private ObjRef _marshalledService;
 
         private IntegrationTestServiceCommands(Package package)
@@ -81,15 +83,20 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTestService
             {
                 _service = new IntegrationService();
 
-                _serviceChannel = new IpcServerChannel(
-                    name: $"Microsoft.VisualStudio.IntegrationTest.ServiceChannel_{Process.GetCurrentProcess().Id}",
-                    portName: _service.PortName,
-                    sinkProvider: DefaultSinkProvider);
+                _serviceChannel = new IpcChannel(
+                    new Hashtable
+                    {
+                        { "name", $"Microsoft.VisualStudio.IntegrationTest.ServiceChannel_{Process.GetCurrentProcess().Id}" },
+                        { "portName", _service.PortName },
+                    },
+                    clientSinkProvider: new BinaryClientFormatterSinkProvider(),
+                    serverSinkProvider: DefaultSinkProvider);
 
                 var serviceType = typeof(IntegrationService);
                 _marshalledService = RemotingServices.Marshal(_service, serviceType.FullName, serviceType);
 
                 _serviceChannel.StartListening(null);
+                ChannelServices.RegisterChannel(_serviceChannel, ensureSecurity: true);
 
                 SwapAvailableCommands(_startMenuCmd, _stopMenuCmd);
             }
@@ -102,6 +109,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTestService
             {
                 if (_serviceChannel != null)
                 {
+                    if (ChannelServices.RegisteredChannels.Contains(_serviceChannel))
+                    {
+                        ChannelServices.UnregisterChannel(_serviceChannel);
+                    }
+
                     _serviceChannel.StopListening(null);
                     _serviceChannel = null;
                 }
