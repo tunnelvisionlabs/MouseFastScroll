@@ -17,9 +17,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 
         protected override async void RunTestCases(IEnumerable<IXunitTestCase> testCases, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions)
         {
-            using (var assemblyRunner = new IdeTestAssemblyRunner(TestAssembly, testCases, DiagnosticMessageSink, executionMessageSink, executionOptions))
+            try
             {
-                await assemblyRunner.RunAsync();
+                using (var assemblyRunner = new IdeTestAssemblyRunner(TestAssembly, testCases, DiagnosticMessageSink, executionMessageSink, executionOptions))
+                {
+                    await assemblyRunner.RunAsync();
+                }
+            }
+            catch
+            {
             }
         }
     }
