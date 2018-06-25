@@ -4,26 +4,68 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.VisualStudio.ComponentModelHost;
+    using Microsoft.VisualStudio.Threading;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
     using Xunit;
+    using ServiceProvider = Microsoft.VisualStudio.Shell.ServiceProvider;
 
     [CaptureTestName]
     [Collection(nameof(SharedIntegrationHostFixture))]
     public abstract class AbstractIdeIntegrationTest : IAsyncLifetime, IDisposable
     {
+        private JoinableTaskContext _joinableTaskContext;
+        private JoinableTaskCollection _joinableTaskCollection;
+        private JoinableTaskFactory _joinableTaskFactory;
+
         protected AbstractIdeIntegrationTest()
         {
+            var componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
+            JoinableTaskContext = componentModel.GetExtensions<JoinableTaskContext>().SingleOrDefault() ?? new JoinableTaskContext();
         }
+
+        protected JoinableTaskContext JoinableTaskContext
+        {
+            get
+            {
+                return _joinableTaskContext ?? throw new InvalidOperationException();
+            }
+
+            private set
+            {
+                if (value == _joinableTaskContext)
+                {
+                    return;
+                }
+
+                if (value is null)
+                {
+                    _joinableTaskContext = null;
+                    _joinableTaskCollection = null;
+                    _joinableTaskFactory = null;
+                }
+                else
+                {
+                    _joinableTaskContext = value;
+                    _joinableTaskCollection = value.CreateCollection();
+                    _joinableTaskFactory = value.CreateFactory(_joinableTaskCollection);
+                }
+            }
+        }
+
+        protected JoinableTaskFactory JoinableTaskFactory => _joinableTaskFactory ?? throw new InvalidOperationException();
 
         public virtual Task InitializeAsync()
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task DisposeAsync()
+        public virtual async Task DisposeAsync()
         {
-            return Task.CompletedTask;
+            await _joinableTaskCollection.JoinTillEmptyAsync();
+            JoinableTaskContext = null;
         }
 
         public void Dispose()

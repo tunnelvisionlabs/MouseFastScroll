@@ -8,7 +8,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Threading;
-    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
+    using Microsoft.VisualStudio.Threading;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading;
     using Xunit;
     using _DTE = EnvDTE._DTE;
@@ -18,7 +18,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 
     public class IdeFactTest : AbstractIdeIntegrationTest
     {
-        [IdeFact(MinVersion = VisualStudioVersion.VS2013)]
+        [IdeFact]
         public void TestOpenAndCloseIDE()
         {
             Assert.Equal("devenv", Process.GetCurrentProcess().ProcessName);
@@ -26,13 +26,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.NotNull(dte);
         }
 
-        [IdeFact(MaxVersion = VisualStudioVersion.VS2015)]
+        [IdeFact]
         public void TestRunsOnUIThread()
         {
             Assert.True(ThreadHelper.CheckAccess());
         }
 
-        [IdeFact(MinVersion = VisualStudioVersion.VS2013, MaxVersion = VisualStudioVersion.VS2015)]
+        [IdeFact]
         public async Task TestRunsOnUIThreadAsync()
         {
             Assert.True(ThreadHelper.CheckAccess());
@@ -50,6 +50,22 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                 TaskCreationOptions.None,
                 new SynchronizationContextTaskScheduler(new DispatcherSynchronizationContext(Application.Current.Dispatcher)));
             Assert.True(ThreadHelper.CheckAccess());
+        }
+
+        [IdeFact]
+        public async Task TestJoinableTaskFactoryAsync()
+        {
+            Assert.NotNull(JoinableTaskContext);
+            Assert.NotNull(JoinableTaskFactory);
+            Assert.True(JoinableTaskContext.IsOnMainThread);
+
+            await TaskScheduler.Default;
+
+            Assert.False(JoinableTaskContext.IsOnMainThread);
+
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            Assert.True(JoinableTaskContext.IsOnMainThread);
         }
     }
 }
