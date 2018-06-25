@@ -25,7 +25,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         public ScrollingIntegrationTest(ITestOutputHelper testOutputHelper)
         {
             TestOutputHelper = testOutputHelper;
-            Editor = Editor_InProc.Create();
+            Editor = new Editor_InProc2(JoinableTaskFactory);
             SendKeys = new IdeSendKeys();
         }
 
@@ -34,7 +34,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             get;
         }
 
-        private Editor_InProc Editor
+        private Editor_InProc2 Editor
         {
             get;
         }
@@ -51,23 +51,23 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             var window = dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt");
 
             string initialText = string.Join(string.Empty, Enumerable.Range(0, 400).Select(i => Guid.NewGuid() + Environment.NewLine));
-            await Task.Run(() => Editor.SetText(initialText));
+            await Editor.SetTextAsync(initialText);
 
             string additionalTypedText = Guid.NewGuid().ToString() + "\n" + Guid.NewGuid().ToString();
-            await Task.Run(() => Editor.Activate());
+            await Editor.ActivateAsync();
             await SendKeys.SendAsync(additionalTypedText);
 
             string expected = initialText + additionalTypedText.Replace("\n", Environment.NewLine);
-            Assert.Equal(expected, await Task.Run(() => Editor.GetText()));
+            Assert.Equal(expected, await Editor.GetTextAsync());
 
-            Assert.Equal(expected.Length, await Task.Run(() => Editor.GetCaretPosition()));
+            Assert.Equal(expected.Length, await Editor.GetCaretPositionAsync());
 
             // Move the caret and verify the final position. Note that the MoveCaret operation does not scroll the view.
-            int firstVisibleLine = await Task.Run(() => Editor.GetFirstVisibleLine());
+            int firstVisibleLine = await Editor.GetFirstVisibleLineAsync();
             Assert.True(firstVisibleLine > 0, "Expected the view to start after the first line at this point.");
-            await Task.Run(() => Editor.MoveCaret(0));
-            Assert.Equal(0, await Task.Run(() => Editor.GetCaretPosition()));
-            Assert.Equal(firstVisibleLine, await Task.Run(() => Editor.GetFirstVisibleLine()));
+            await Editor.MoveCaretAsync(0);
+            Assert.Equal(0, await Editor.GetCaretPositionAsync());
+            Assert.Equal(firstVisibleLine, await Editor.GetFirstVisibleLineAsync());
 
             await SendKeys.SendAsync(inputSimulator =>
             {
@@ -77,15 +77,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                     .KeyUp(VirtualKeyCode.CONTROL);
             });
 
-            Assert.True(await Task.Run(() => Editor.IsCaretOnScreen()));
-            firstVisibleLine = await Task.Run(() => Editor.GetFirstVisibleLine());
+            Assert.True(await Editor.IsCaretOnScreenAsync());
+            firstVisibleLine = await Editor.GetFirstVisibleLineAsync();
             Assert.Equal(0, firstVisibleLine);
 
-            int lastVisibleLine = await Task.Run(() => Editor.GetLastVisibleLine());
-            var lastVisibleLineState = (VisibilityState)await Task.Run(() => Editor.GetLastVisibleLineState());
+            int lastVisibleLine = await Editor.GetLastVisibleLineAsync();
+            var lastVisibleLineState = await Editor.GetLastVisibleLineStateAsync();
             Assert.True(firstVisibleLine < lastVisibleLine);
 
-            Point point = await Task.Run(() => Editor.GetCenterOfEditorOnScreen());
+            Point point = await Editor.GetCenterOfEditorOnScreenAsync();
             TestOutputHelper.WriteLine($"Moving mouse to ({point.X}, {point.Y}) and scrolling down.");
             int horizontalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CXSCREEN);
             int verticalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CYSCREEN);
@@ -99,8 +99,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                     .VerticalScroll(-1);
             });
 
-            Assert.Equal(0, await Task.Run(() => Editor.GetCaretPosition()));
-            Assert.Equal(3, await Task.Run(() => Editor.GetFirstVisibleLine()));
+            Assert.Equal(0, await Editor.GetCaretPositionAsync());
+            Assert.Equal(3, await Editor.GetFirstVisibleLineAsync());
 
             await SendKeys.SendAsync(inputSimulator =>
             {
@@ -109,8 +109,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                     .VerticalScroll(1);
             });
 
-            Assert.Equal(0, await Task.Run(() => Editor.GetCaretPosition()));
-            Assert.Equal(0, await Task.Run(() => Editor.GetFirstVisibleLine()));
+            Assert.Equal(0, await Editor.GetCaretPositionAsync());
+            Assert.Equal(0, await Editor.GetFirstVisibleLineAsync());
 
             await SendKeys.SendAsync(inputSimulator =>
             {
@@ -122,8 +122,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             });
 
             int expectedLastVisibleLine = lastVisibleLine + (lastVisibleLineState == VisibilityState.FullyVisible ? 1 : 0);
-            Assert.Equal(0, await Task.Run(() => Editor.GetCaretPosition()));
-            Assert.Equal(expectedLastVisibleLine, await Task.Run(() => Editor.GetFirstVisibleLine()));
+            Assert.Equal(0, await Editor.GetCaretPositionAsync());
+            Assert.Equal(expectedLastVisibleLine, await Editor.GetFirstVisibleLineAsync());
 
             await SendKeys.SendAsync(inputSimulator =>
             {
@@ -134,8 +134,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                     .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
             });
 
-            Assert.Equal(0, await Task.Run(() => Editor.GetCaretPosition()));
-            Assert.Equal(0, await Task.Run(() => Editor.GetFirstVisibleLine()));
+            Assert.Equal(0, await Editor.GetCaretPositionAsync());
+            Assert.Equal(0, await Editor.GetFirstVisibleLineAsync());
 
             window.Close(vsSaveChanges.vsSaveChangesNo);
         }
@@ -150,15 +150,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             var window = dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt");
 
             string initialText = string.Join(string.Empty, Enumerable.Range(0, 400).Select(i => Guid.NewGuid() + Environment.NewLine));
-            await Task.Run(() => Editor.SetText(initialText));
+            await Editor.SetTextAsync(initialText);
 
             string additionalTypedText = Guid.NewGuid().ToString() + "\n" + Guid.NewGuid().ToString();
             await SendKeys.SendAsync(additionalTypedText);
 
             string expected = initialText + additionalTypedText.Replace("\n", Environment.NewLine);
-            Assert.Equal(expected, await Task.Run(() => Editor.GetText()));
+            Assert.Equal(expected, await Editor.GetTextAsync());
 
-            Assert.Equal(expected.Length, await Task.Run(() => Editor.GetCaretPosition()));
+            Assert.Equal(expected.Length, await Editor.GetCaretPositionAsync());
 
             await SendKeys.SendAsync(inputSimulator =>
             {
@@ -168,16 +168,16 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                     .KeyUp(VirtualKeyCode.CONTROL);
             });
 
-            int firstVisibleLine = await Task.Run(() => Editor.GetFirstVisibleLine());
+            int firstVisibleLine = await Editor.GetFirstVisibleLineAsync();
             Assert.Equal(0, firstVisibleLine);
 
-            int lastVisibleLine = await Task.Run(() => Editor.GetLastVisibleLine());
-            var lastVisibleLineState = (VisibilityState)await Task.Run(() => Editor.GetLastVisibleLineState());
+            int lastVisibleLine = await Editor.GetLastVisibleLineAsync();
+            var lastVisibleLineState = await Editor.GetLastVisibleLineStateAsync();
             Assert.True(firstVisibleLine < lastVisibleLine);
 
-            double zoomLevel = await Task.Run(() => Editor.GetZoomLevel());
+            double zoomLevel = await Editor.GetZoomLevelAsync();
 
-            Point point = await Task.Run(() => Editor.GetCenterOfEditorOnScreen());
+            Point point = await Editor.GetCenterOfEditorOnScreenAsync();
             int horizontalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CXSCREEN);
             int verticalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CYSCREEN);
             point = new ScaleTransform(65535.0 / horizontalResolution, 65535.0 / verticalResolution).Transform(point);
@@ -192,9 +192,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             });
 
             int expectedLastVisibleLine = lastVisibleLine + (lastVisibleLineState == VisibilityState.FullyVisible ? 1 : 0);
-            Assert.Equal(0, await Task.Run(() => Editor.GetCaretPosition()));
-            Assert.Equal(expectedLastVisibleLine, await Task.Run(() => Editor.GetFirstVisibleLine()));
-            Assert.Equal(zoomLevel, await Task.Run(() => Editor.GetZoomLevel()));
+            Assert.Equal(0, await Editor.GetCaretPositionAsync());
+            Assert.Equal(expectedLastVisibleLine, await Editor.GetFirstVisibleLineAsync());
+            Assert.Equal(zoomLevel, await Editor.GetZoomLevelAsync());
 
             await SendKeys.SendAsync(inputSimulator =>
             {
@@ -205,9 +205,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                     .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
             });
 
-            Assert.Equal(0, await Task.Run(() => Editor.GetCaretPosition()));
-            Assert.Equal(0, await Task.Run(() => Editor.GetFirstVisibleLine()));
-            Assert.Equal(zoomLevel, await Task.Run(() => Editor.GetZoomLevel()));
+            Assert.Equal(0, await Editor.GetCaretPositionAsync());
+            Assert.Equal(0, await Editor.GetFirstVisibleLineAsync());
+            Assert.Equal(zoomLevel, await Editor.GetZoomLevelAsync());
 
             window.Close(vsSaveChanges.vsSaveChangesNo);
         }
