@@ -23,7 +23,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     [Collection(nameof(SharedIntegrationHostFixture))]
     public class ScrollingIntegrationTest
     {
-        public ScrollingIntegrationTest(ITestOutputHelper testOutputHelper, VisualStudioInstanceFactory instanceFactory)
+        public ScrollingIntegrationTest(ITestOutputHelper testOutputHelper)
         {
             TestOutputHelper = testOutputHelper;
             Editor = Editor_InProc.Create();

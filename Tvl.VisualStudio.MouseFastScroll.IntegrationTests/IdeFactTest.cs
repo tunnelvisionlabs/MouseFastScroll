@@ -20,10 +20,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     [Collection(nameof(SharedIntegrationHostFixture))]
     public class IdeFactTest
     {
-        public IdeFactTest(VisualStudioInstanceFactory instanceFactory)
-        {
-        }
-
         [IdeFact(MinVersion = VisualStudioVersion.VS2013)]
         public void TestOpenAndCloseIDE()
         {
