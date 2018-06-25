@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>net46</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <Description>Mouse Fast Scroll extension for Visual Studio integration tests</Description>
@@ -27,6 +27,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll\Tvl.VisualStudio.MouseFastScroll.csproj" />
     <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.csproj" />
+
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.11\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.11.csproj" ReferenceOutputAssembly="False" />
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.12\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.12.csproj" ReferenceOutputAssembly="False" />
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.14.csproj" ReferenceOutputAssembly="False" />
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.VsixInstaller.15.csproj" ReferenceOutputAssembly="False" />
   </ItemGroup>
 
   <ItemGroup>

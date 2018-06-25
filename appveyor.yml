@@ -15,7 +15,7 @@ build:
 test_script:
 - ps: |
     $unitTestAssembly = "Tvl.VisualStudio.MouseFastScroll.UnitTests\bin\$env:CONFIGURATION\net452\Tvl.VisualStudio.MouseFastScroll.UnitTests.dll"
-    $integrationTestAssembly = "Tvl.VisualStudio.MouseFastScroll.IntegrationTests\bin\x86\$env:CONFIGURATION\net452\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.dll"
+    $integrationTestAssembly = "Tvl.VisualStudio.MouseFastScroll.IntegrationTests\bin\$env:CONFIGURATION\net46\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.dll"
     $buildProperties = [xml](Get-Content Directory.Build.props)
     $openCoverVersion = $buildProperties.SelectSingleNode('/Project/ItemGroup/PackageReference[@Include="OpenCover"]').Version
     $openCoverConsole = Join-Path (Join-Path $env:UserProfile '.nuget\packages\') "opencover\$openCoverVersion\tools\OpenCover.Console.exe"
