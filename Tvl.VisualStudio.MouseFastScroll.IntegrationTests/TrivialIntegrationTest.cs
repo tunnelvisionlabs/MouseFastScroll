@@ -8,6 +8,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System.Windows;
     using System.Windows.Media;
     using Microsoft.VisualStudio.Text.Formatting;
+    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading;
     using WindowsInput.Native;
     using Xunit;

@@ -10,6 +10,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System.Windows.Automation;
     using Microsoft.VisualStudio;
     using Microsoft.Win32.SafeHandles;
+    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
     using Xunit;
     using IMessageFilter = Microsoft.VisualStudio.OLE.Interop.IMessageFilter;
     using INTERFACEINFO = Microsoft.VisualStudio.OLE.Interop.INTERFACEINFO;
