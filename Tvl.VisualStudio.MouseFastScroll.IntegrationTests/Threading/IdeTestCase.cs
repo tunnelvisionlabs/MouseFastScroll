@@ -88,7 +88,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading
             SharedData = WpfTestSharedData.Instance;
         }
 
-        private static bool IsInstalled(VisualStudioVersion visualStudioVersion)
+        internal static bool IsInstalled(VisualStudioVersion visualStudioVersion)
         {
             string dteKey;
 

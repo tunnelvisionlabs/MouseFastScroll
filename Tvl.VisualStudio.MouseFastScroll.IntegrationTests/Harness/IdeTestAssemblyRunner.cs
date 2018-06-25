@@ -101,6 +101,12 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 
         protected virtual Task<Tuple<RunSummary, ITestAssemblyFinished>> RunTestCollectionForVersionAsync(VisualStudioVersion visualStudioVersion, HashSet<string> completedTestCaseIds, IMessageBus messageBus, ITestCollection testCollection, IEnumerable<IXunitTestCase> testCases, CancellationTokenSource cancellationTokenSource)
         {
+            if (visualStudioVersion == VisualStudioVersion.Unspecified
+                || !IdeTestCase.IsInstalled(visualStudioVersion))
+            {
+                return RunTestCollectionForUnspecifiedVersionAsync(completedTestCaseIds, messageBus, testCollection, testCases, cancellationTokenSource);
+            }
+
             DispatcherSynchronizationContext synchronizationContext = null;
             Dispatcher dispatcher = null;
             Thread staThread;
@@ -166,6 +172,18 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                         staThread.Join(HangMitigatingTimeout);
                     }
                 });
+        }
+
+        private async Task<Tuple<RunSummary, ITestAssemblyFinished>> RunTestCollectionForUnspecifiedVersionAsync(HashSet<string> completedTestCaseIds, IMessageBus messageBus, ITestCollection testCollection, IEnumerable<IXunitTestCase> testCases, CancellationTokenSource cancellationTokenSource)
+        {
+            // These tests just run in the current process, but we still need to hook the assembly and collection events
+            // to work correctly in mixed-testing scenarios.
+            var executionMessageSinkFilter = new IpcMessageSink(ExecutionMessageSink, completedTestCaseIds, cancellationTokenSource.Token);
+            using (var runner = new XunitTestAssemblyRunner(TestAssembly, testCases, DiagnosticMessageSink, executionMessageSinkFilter, ExecutionOptions))
+            {
+                var runSummary = await runner.RunAsync();
+                return Tuple.Create(runSummary, executionMessageSinkFilter.TestAssemblyFinished);
+            }
         }
 
         private Func<Task<Tuple<RunSummary, ITestAssemblyFinished>>> CreateTestCollectionInvoker(VisualStudioVersion visualStudioVersion, HashSet<string> completedTestCaseIds, IMessageBus messageBus, ITestCollection testCollection, IEnumerable<IXunitTestCase> testCases, CancellationTokenSource cancellationTokenSource)
