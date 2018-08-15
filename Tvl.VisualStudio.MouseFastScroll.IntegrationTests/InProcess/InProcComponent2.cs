@@ -26,18 +26,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
             get;
         }
 
-        protected async Task InvokeOnUIThreadAsync(Func<Task> action)
-        {
-            await JoinableTaskFactory.SwitchToMainThreadAsync();
-            await action();
-        }
-
-        protected async Task<T> InvokeOnUIThreadAsync<T>(Func<Task<T>> action)
-        {
-            await JoinableTaskFactory.SwitchToMainThreadAsync();
-            return await action();
-        }
-
         protected async Task<TInterface> GetGlobalServiceAsync<TService, TInterface>()
             where TService : class
             where TInterface : class

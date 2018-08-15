@@ -3,7 +3,6 @@
 
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
 {
-    using System;
     using System.Threading.Tasks;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
@@ -22,35 +21,12 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
 
         public async Task<int> GetCaretPositionAsync()
         {
-            return await ExecuteOnActiveViewAsync(
-                async view =>
-                {
-                    var subjectBuffer = await GetBufferContainingCaretAsync(view);
-                    var bufferPosition = view.Caret.Position.BufferPosition;
-                    return bufferPosition.Position;
-                });
-        }
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
 
-        protected async Task<T> ExecuteOnActiveViewAsync<T>(Func<IWpfTextView, Task<T>> action)
-        {
-            return await InvokeOnUIThreadAsync(
-                async () =>
-                {
-                    var view = await GetActiveTextViewAsync();
-                    return await action(view);
-                });
-        }
-
-        protected async Task ExecuteOnActiveViewAsync(Func<IWpfTextView, Task> action)
-            => await InvokeOnUIThreadAsync(GetExecuteOnActionViewCallback(action));
-
-        protected Func<Task> GetExecuteOnActionViewCallback(Func<IWpfTextView, Task> action)
-        {
-            return async () =>
-            {
-                var view = await GetActiveTextViewAsync();
-                await action(view);
-            };
+            var view = await GetActiveTextViewAsync();
+            var subjectBuffer = await GetBufferContainingCaretAsync(view);
+            var bufferPosition = view.Caret.Position.BufferPosition;
+            return bufferPosition.Position;
         }
     }
 }

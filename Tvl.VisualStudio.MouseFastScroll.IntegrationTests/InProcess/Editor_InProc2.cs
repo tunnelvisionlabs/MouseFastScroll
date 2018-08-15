@@ -62,46 +62,44 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
 
         public async Task<string> GetTextAsync()
         {
-            return await ExecuteOnActiveViewAsync(view => Task.FromResult(view.TextSnapshot.GetText()));
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var view = await GetActiveTextViewAsync();
+            return view.TextSnapshot.GetText();
         }
 
         public async Task SetTextAsync(string text)
         {
-            await ExecuteOnActiveViewAsync(
-                view =>
-                {
-                    var textSnapshot = view.TextSnapshot;
-                    var replacementSpan = new SnapshotSpan(textSnapshot, 0, textSnapshot.Length);
-                    view.TextBuffer.Replace(replacementSpan, text);
-                    return Task.CompletedTask;
-                });
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var view = await GetActiveTextViewAsync();
+            var textSnapshot = view.TextSnapshot;
+            var replacementSpan = new SnapshotSpan(textSnapshot, 0, textSnapshot.Length);
+            view.TextBuffer.Replace(replacementSpan, text);
         }
 
         public async Task MoveCaretAsync(int position)
         {
-            await ExecuteOnActiveViewAsync(
-                view =>
-                {
-                    var subjectBuffer = view.GetBufferContainingCaret();
-                    var point = new SnapshotPoint(subjectBuffer.CurrentSnapshot, position);
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                    view.Caret.MoveTo(point);
+            var view = await GetActiveTextViewAsync();
+            var subjectBuffer = view.GetBufferContainingCaret();
+            var point = new SnapshotPoint(subjectBuffer.CurrentSnapshot, position);
 
-                    return Task.CompletedTask;
-                });
+            view.Caret.MoveTo(point);
         }
 
         public async Task<bool> IsCaretOnScreenAsync()
         {
-            return await ExecuteOnActiveViewAsync(
-                view =>
-                {
-                    var caret = view.Caret;
-                    return Task.FromResult(caret.Left >= view.ViewportLeft
-                        && caret.Right <= view.ViewportRight
-                        && caret.Top >= view.ViewportTop
-                        && caret.Bottom <= view.ViewportBottom);
-                });
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var view = await GetActiveTextViewAsync();
+            var caret = view.Caret;
+
+            return caret.Left >= view.ViewportLeft
+                && caret.Right <= view.ViewportRight
+                && caret.Top >= view.ViewportTop
+                && caret.Bottom <= view.ViewportBottom;
         }
 
         protected override Task<ITextBuffer> GetBufferContainingCaretAsync(IWpfTextView view)
@@ -111,30 +109,43 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
 
         public async Task<int> GetFirstVisibleLineAsync()
         {
-            return await ExecuteOnActiveViewAsync(view => Task.FromResult(view.TextViewLines.FirstVisibleLine.Start.GetContainingLine().LineNumber));
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var view = await GetActiveTextViewAsync();
+            return view.TextViewLines.FirstVisibleLine.Start.GetContainingLine().LineNumber;
         }
 
         public async Task<int> GetLastVisibleLineAsync()
         {
-            return await ExecuteOnActiveViewAsync(view => Task.FromResult(view.TextViewLines.LastVisibleLine.Start.GetContainingLine().LineNumber));
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var view = await GetActiveTextViewAsync();
+            return view.TextViewLines.LastVisibleLine.Start.GetContainingLine().LineNumber;
         }
 
         public async Task<VisibilityState> GetLastVisibleLineStateAsync()
         {
-            return await ExecuteOnActiveViewAsync(view => Task.FromResult(view.TextViewLines.LastVisibleLine.VisibilityState));
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var view = await GetActiveTextViewAsync();
+            return view.TextViewLines.LastVisibleLine.VisibilityState;
         }
 
         public async Task<Point> GetCenterOfEditorOnScreenAsync()
         {
-            return await ExecuteOnActiveViewAsync(
-                view =>
-                {
-                    var center = new Point(view.VisualElement.ActualWidth / 2, view.VisualElement.ActualHeight / 2);
-                    return Task.FromResult(view.VisualElement.PointToScreen(center));
-                });
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var view = await GetActiveTextViewAsync();
+            var center = new Point(view.VisualElement.ActualWidth / 2, view.VisualElement.ActualHeight / 2);
+            return view.VisualElement.PointToScreen(center);
         }
 
         public async Task<double> GetZoomLevelAsync()
-            => await ExecuteOnActiveViewAsync(view => Task.FromResult(view.ZoomLevel));
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var view = await GetActiveTextViewAsync();
+            return view.ZoomLevel;
+        }
     }
 }
