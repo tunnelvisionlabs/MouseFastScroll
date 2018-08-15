@@ -4,13 +4,11 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 {
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
     using System.Windows;
-    using Microsoft.VisualStudio.ComponentModelHost;
+    using Microsoft.VisualStudio.Shell.Interop;
     using Microsoft.VisualStudio.Threading;
     using Xunit;
-    using ServiceProvider = Microsoft.VisualStudio.Shell.ServiceProvider;
 
     [VsTestSettings(UIThread = true)]
     public abstract class AbstractIdeIntegrationTest : IAsyncLifetime, IDisposable
@@ -23,9 +21,17 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         {
             Assert.True(Application.Current.Dispatcher.CheckAccess());
 
-            var componentModel = (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
-            JoinableTaskContext = componentModel.GetExtensions<JoinableTaskContext>().SingleOrDefault() ?? new JoinableTaskContext();
+            if (ServiceProvider.GetService(typeof(SVsTaskSchedulerService)) is IVsTaskSchedulerService2 taskSchedulerService)
+            {
+                JoinableTaskContext = (JoinableTaskContext)taskSchedulerService.GetAsyncTaskContext();
+            }
+            else
+            {
+                JoinableTaskContext = new JoinableTaskContext();
+            }
         }
+
+        protected static IServiceProvider ServiceProvider => Microsoft.VisualStudio.Shell.ServiceProvider.GlobalProvider;
 
         protected JoinableTaskContext JoinableTaskContext
         {

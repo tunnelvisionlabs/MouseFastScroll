@@ -16,7 +16,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using Xunit.Abstractions;
     using _DTE = EnvDTE._DTE;
     using DTE = EnvDTE.DTE;
-    using ServiceProvider = Microsoft.VisualStudio.Shell.ServiceProvider;
     using vsSaveChanges = EnvDTE.vsSaveChanges;
 
     public class ScrollingIntegrationTest : AbstractIdeIntegrationTest
@@ -46,7 +45,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [VsFact]
         public async Task BasicScrollingBehaviorAsync()
         {
-            var dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(_DTE));
+            var dte = (DTE)ServiceProvider.GetService(typeof(_DTE));
             var window = dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt");
 
             string initialText = string.Join(string.Empty, Enumerable.Range(0, 400).Select(i => Guid.NewGuid() + Environment.NewLine));
@@ -145,7 +144,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [VsFact]
         public async Task ZoomDisabledAsync()
         {
-            var dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(_DTE));
+            var dte = (DTE)ServiceProvider.GetService(typeof(_DTE));
             var window = dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt");
 
             string initialText = string.Join(string.Empty, Enumerable.Range(0, 400).Select(i => Guid.NewGuid() + Environment.NewLine));
