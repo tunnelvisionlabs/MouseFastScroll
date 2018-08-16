@@ -5,21 +5,24 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
 {
     using System;
     using System.Runtime.InteropServices;
+    using System.Threading.Tasks;
+    using Microsoft.VisualStudio.Threading;
+    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess;
     using WindowsInput;
     using WindowsInput.Native;
 
-    public class SendKeys
+    public class IdeSendKeys
     {
-        private readonly VisualStudioInstance _visualStudioInstance;
+        private readonly VisualStudio_InProc2 _visualStudio;
 
-        public SendKeys(VisualStudioInstance visualStudioInstance)
+        public IdeSendKeys(JoinableTaskFactory joinableTaskFactory)
         {
-            _visualStudioInstance = visualStudioInstance;
+            _visualStudio = new VisualStudio_InProc2(joinableTaskFactory);
         }
 
-        internal void Send(object[] keys)
+        internal async Task SendAsync(params object[] keys)
         {
-            Send(inputSimulator =>
+            await SendAsync(inputSimulator =>
             {
                 foreach (var key in keys)
                 {
@@ -68,7 +71,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             });
         }
 
-        internal void Send(Action<InputSimulator> actions)
+        internal async Task SendAsync(Action<InputSimulator> actions)
         {
             if (actions == null)
             {
@@ -80,9 +83,9 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             try
             {
                 var foreground = GetForegroundWindow();
-                _visualStudioInstance.ActivateMainWindow();
+                await _visualStudio.ActivateMainWindowAsync();
 
-                actions(new InputSimulator());
+                await Task.Run(() => actions(new InputSimulator()));
             }
             finally
             {
@@ -92,7 +95,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                 }
             }
 
-            _visualStudioInstance.WaitForApplicationIdle();
+            await InProcComponent2.WaitForApplicationIdleAsync();
         }
 
         private static bool AttachThreadInput(uint idAttach, uint idAttachTo)

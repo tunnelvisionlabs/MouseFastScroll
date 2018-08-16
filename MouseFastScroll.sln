@@ -18,8 +18,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.IntegrationTests", "Tvl.VisualStudio.MouseFastScroll.IntegrationTests\Tvl.VisualStudio.MouseFastScroll.IntegrationTests.csproj", "{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.IntegrationTestService", "Tvl.VisualStudio.MouseFastScroll.IntegrationTestService\Tvl.VisualStudio.MouseFastScroll.IntegrationTestService.csproj", "{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.UnitTests", "Tvl.VisualStudio.MouseFastScroll.UnitTests\Tvl.VisualStudio.MouseFastScroll.UnitTests.csproj", "{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}"
 EndProject
 Global
@@ -32,14 +30,10 @@ Global
 		{7DFA0DD1-8052-464D-9A1A-5EADC10A84B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DFA0DD1-8052-464D-9A1A-5EADC10A84B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DFA0DD1-8052-464D-9A1A-5EADC10A84B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Debug|Any CPU.Build.0 = Debug|x86
-		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Release|Any CPU.ActiveCfg = Release|x86
-		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Release|Any CPU.Build.0 = Release|x86
-		{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0366D6B8-8F75-47C2-A11E-1E69F1B9380C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05BCF25F-BC5C-40AC-8A2C-66EB3969F0FB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}.Release|Any CPU.ActiveCfg = Release|Any CPU

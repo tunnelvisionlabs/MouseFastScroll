@@ -81,56 +81,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         [DllImport(Kernel32)]
         public static extern uint GetCurrentThreadId();
 
-        [DllImport(Ole32, PreserveSig = false)]
-        public static extern void CreateBindCtx(int reserved, [MarshalAs(UnmanagedType.Interface)] out IBindCtx bindContext);
-
-        [DllImport(Ole32, PreserveSig = false)]
-        public static extern void GetRunningObjectTable(int reserved, [MarshalAs(UnmanagedType.Interface)] out IRunningObjectTable runningObjectTable);
-
         [DllImport(User32, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, [MarshalAs(UnmanagedType.Bool)] bool fAttach);
 
-        [DllImport(User32, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool BlockInput([MarshalAs(UnmanagedType.Bool)] bool fBlockIt);
-
-        [DllImport(User32, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool EnumWindows([MarshalAs(UnmanagedType.FunctionPtr)] WNDENUMPROC lpEnumFunc, IntPtr lParam);
-
-        [DllImport(User32)]
-        public static extern IntPtr GetAncestor(IntPtr hWnd, uint gaFlags);
-
-        [DllImport(User32)]
-        public static extern IntPtr GetDesktopWindow();
-
         [DllImport(User32)]
         public static extern IntPtr GetForegroundWindow();
 
-        [DllImport(User32, SetLastError = true)]
-        public static extern IntPtr GetParent(IntPtr hWnd);
-
-        [DllImport(User32, SetLastError = true)]
-        public static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
-
-        [DllImport(User32)]
-        public static extern IntPtr GetWindowDC(IntPtr hWnd);
-
         [DllImport(User32)]
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, [Optional] IntPtr lpdwProcessId);
-
-        [DllImport(User32)]
-        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, [Optional] out uint lpdwProcessId);
-
-        [DllImport(User32, SetLastError = true)]
-        public static extern uint SendInput(uint nInputs, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] INPUT[] pInputs, int cbSize);
-
-        [DllImport(User32, CharSet = CharSet.Unicode, SetLastError = true)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport(User32, CharSet = CharSet.Unicode, SetLastError = true)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, uint uMsg, IntPtr wParam, [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder lParam);
 
         [DllImport(User32, SetLastError = true)]
         public static extern IntPtr SetActiveWindow(IntPtr hWnd);
@@ -147,13 +106,27 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         public static extern bool SetWindowPos(IntPtr hWnd, [Optional] IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
         [DllImport(User32, CharSet = CharSet.Unicode)]
-        public static extern short VkKeyScan(char ch);
-
-        [DllImport(User32, CharSet = CharSet.Unicode)]
-        public static extern uint MapVirtualKey(uint uCode, uint uMapType);
-
-        [DllImport(User32, CharSet = CharSet.Unicode)]
         public static extern int GetSystemMetrics(int nIndex);
+
+        [DllImport(User32, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetCursorPos(out POINT point);
+
+        public static System.Windows.Point GetCursorPos()
+        {
+            if (!GetCursorPos(out var point))
+            {
+                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+            }
+
+            return new System.Windows.Point(point.x.ToInt64(), point.y.ToInt64());
+        }
+
+        public struct POINT
+        {
+            public IntPtr x;
+            public IntPtr y;
+        }
 
         [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Unicode, Pack = 8)]
         public struct INPUT
