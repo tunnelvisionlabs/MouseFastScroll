@@ -40,7 +40,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
         /// <summary>
         /// Waiting for the application to 'idle' means that it is done pumping messages (including WM_PAINT).
         /// </summary>
-        protected static async Task WaitForApplicationIdleAsync()
+        protected internal static async Task WaitForApplicationIdleAsync()
         {
             await Application.Current.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
         }

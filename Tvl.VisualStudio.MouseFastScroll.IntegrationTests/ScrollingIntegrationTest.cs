@@ -24,7 +24,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         {
             TestOutputHelper = testOutputHelper;
             Editor = new Editor_InProc2(JoinableTaskFactory);
-            SendKeys = new IdeSendKeys();
+            SendKeys = new IdeSendKeys(JoinableTaskFactory);
         }
 
         protected ITestOutputHelper TestOutputHelper

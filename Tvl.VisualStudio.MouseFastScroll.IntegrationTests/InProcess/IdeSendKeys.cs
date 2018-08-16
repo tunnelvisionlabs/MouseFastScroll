@@ -6,17 +6,18 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
     using System;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
+    using Microsoft.VisualStudio.Threading;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess;
     using WindowsInput;
     using WindowsInput.Native;
 
     public class IdeSendKeys
     {
-        private readonly VisualStudio_InProc _visualStudio;
+        private readonly VisualStudio_InProc2 _visualStudio;
 
-        public IdeSendKeys()
+        public IdeSendKeys(JoinableTaskFactory joinableTaskFactory)
         {
-            _visualStudio = VisualStudio_InProc.Create();
+            _visualStudio = new VisualStudio_InProc2(joinableTaskFactory);
         }
 
         internal async Task SendAsync(params object[] keys)
@@ -82,7 +83,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
             try
             {
                 var foreground = GetForegroundWindow();
-                await Task.Run(() => _visualStudio.ActivateMainWindow());
+                await _visualStudio.ActivateMainWindowAsync();
 
                 await Task.Run(() => actions(new InputSimulator()));
             }
@@ -94,7 +95,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
                 }
             }
 
-            await Task.Run(() => _visualStudio.WaitForApplicationIdle());
+            await InProcComponent2.WaitForApplicationIdleAsync();
         }
 
         private static bool AttachThreadInput(uint idAttach, uint idAttachTo)
