@@ -8,7 +8,10 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
     using System.Windows;
     using System.Windows.Threading;
     using Microsoft.VisualStudio.Threading;
+    using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
     using DTE = EnvDTE.DTE;
+    using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.Interop.IAsyncServiceProvider;
+    using SAsyncServiceProvider = Microsoft.VisualStudio.Shell.Interop.SAsyncServiceProvider;
     using SDTE = Microsoft.VisualStudio.Shell.Interop.SDTE;
     using ServiceProvider = Microsoft.VisualStudio.Shell.ServiceProvider;
 
@@ -29,7 +32,15 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
             where TInterface : class
         {
             await JoinableTaskFactory.SwitchToMainThreadAsync();
-            return (TInterface)ServiceProvider.GlobalProvider.GetService(typeof(TService));
+
+            if (ServiceProvider.GlobalProvider.GetService(typeof(SAsyncServiceProvider)) is IAsyncServiceProvider asyncServiceProvider)
+            {
+                return (TInterface)await asyncServiceProvider.QueryServiceAsync(typeof(TService).GUID);
+            }
+            else
+            {
+                return (TInterface)ServiceProvider.GlobalProvider.GetService(typeof(TService));
+            }
         }
 
         protected async Task<DTE> GetDTEAsync()
