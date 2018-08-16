@@ -6,8 +6,10 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System;
     using System.Threading.Tasks;
     using System.Windows;
+    using System.Windows.Threading;
     using Microsoft.VisualStudio.Shell.Interop;
     using Microsoft.VisualStudio.Threading;
+    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading;
     using Xunit;
 
     [VsTestSettings(UIThread = true)]
@@ -57,7 +59,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
                 {
                     _joinableTaskContext = value;
                     _joinableTaskCollection = value.CreateCollection();
-                    _joinableTaskFactory = value.CreateFactory(_joinableTaskCollection);
+                    _joinableTaskFactory = value.CreateFactory(_joinableTaskCollection).WithPriority(Application.Current.Dispatcher, DispatcherPriority.Background);
                 }
             }
         }
