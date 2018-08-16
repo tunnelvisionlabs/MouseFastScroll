@@ -4,12 +4,10 @@
 namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
 {
     using System;
-    using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Threading;
     using Microsoft.VisualStudio.Threading;
-    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading;
     using DTE = EnvDTE.DTE;
     using SDTE = Microsoft.VisualStudio.Shell.Interop.SDTE;
     using ServiceProvider = Microsoft.VisualStudio.Shell.ServiceProvider;
@@ -44,13 +42,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess
         /// </summary>
         protected static async Task WaitForApplicationIdleAsync()
         {
-            var synchronizationContext = new DispatcherSynchronizationContext(Application.Current.Dispatcher, DispatcherPriority.ApplicationIdle);
-            var taskScheduler = new SynchronizationContextTaskScheduler(synchronizationContext);
-            await Task.Factory.StartNew(
-                () => { },
-                CancellationToken.None,
-                TaskCreationOptions.None,
-                taskScheduler);
+            await Application.Current.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
         }
     }
 }

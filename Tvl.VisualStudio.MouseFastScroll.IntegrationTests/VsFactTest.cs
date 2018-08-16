@@ -44,11 +44,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         public async Task TestYieldsToWorkAsync()
         {
             Assert.True(Application.Current.Dispatcher.CheckAccess());
-            await Task.Factory.StartNew(
-                () => { },
-                CancellationToken.None,
-                TaskCreationOptions.None,
-                new SynchronizationContextTaskScheduler(new DispatcherSynchronizationContext(Application.Current.Dispatcher)));
+
+            var task = Application.Current.Dispatcher.InvokeAsync(() => { }).Task;
+            Assert.False(task.IsCompleted);
+            await task;
+
             Assert.True(Application.Current.Dispatcher.CheckAccess());
         }
 
