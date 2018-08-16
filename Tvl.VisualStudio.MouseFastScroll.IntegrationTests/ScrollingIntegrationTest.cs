@@ -84,36 +84,23 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.True(firstVisibleLine < lastVisibleLine);
 
             Point point = await Editor.GetCenterOfEditorOnScreenAsync();
-            TestOutputHelper.WriteLine($"Moving mouse to ({point.X}, {point.Y}) and scrolling down.");
-            int horizontalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CXSCREEN);
-            int verticalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CYSCREEN);
-            point = new ScaleTransform(65535.0 / horizontalResolution, 65535.0 / verticalResolution).Transform(point);
-            TestOutputHelper.WriteLine($"Screen resolution of ({horizontalResolution}, {verticalResolution}) translates mouse to ({point.X}, {point.Y}).");
 
-            await SendKeys.SendAsync(inputSimulator =>
-            {
-                inputSimulator.Mouse
-                    .MoveMouseTo(point.X, point.Y)
-                    .VerticalScroll(-1);
-            });
+            await MoveMouseAsync(point);
+            await SendKeys.SendAsync(inputSimulator => inputSimulator.Mouse.VerticalScroll(-1));
 
             Assert.Equal(0, await Editor.GetCaretPositionAsync());
             Assert.Equal(3, await Editor.GetFirstVisibleLineAsync());
 
-            await SendKeys.SendAsync(inputSimulator =>
-            {
-                inputSimulator.Mouse
-                    .MoveMouseTo(point.X, point.Y)
-                    .VerticalScroll(1);
-            });
+            await MoveMouseAsync(point);
+            await SendKeys.SendAsync(inputSimulator => inputSimulator.Mouse.VerticalScroll(1));
 
             Assert.Equal(0, await Editor.GetCaretPositionAsync());
             Assert.Equal(0, await Editor.GetFirstVisibleLineAsync());
 
+            await MoveMouseAsync(point);
             await SendKeys.SendAsync(inputSimulator =>
             {
                 inputSimulator
-                    .Mouse.MoveMouseTo(point.X, point.Y)
                     .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
                     .Mouse.VerticalScroll(-1)
                     .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
@@ -123,10 +110,10 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(0, await Editor.GetCaretPositionAsync());
             Assert.Equal(expectedLastVisibleLine, await Editor.GetFirstVisibleLineAsync());
 
+            await MoveMouseAsync(point);
             await SendKeys.SendAsync(inputSimulator =>
             {
                 inputSimulator
-                    .Mouse.MoveMouseTo(point.X, point.Y)
                     .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
                     .Mouse.VerticalScroll(1)
                     .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
@@ -176,14 +163,11 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             double zoomLevel = await Editor.GetZoomLevelAsync();
 
             Point point = await Editor.GetCenterOfEditorOnScreenAsync();
-            int horizontalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CXSCREEN);
-            int verticalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CYSCREEN);
-            point = new ScaleTransform(65535.0 / horizontalResolution, 65535.0 / verticalResolution).Transform(point);
 
+            await MoveMouseAsync(point);
             await SendKeys.SendAsync(inputSimulator =>
             {
                 inputSimulator
-                    .Mouse.MoveMouseTo(point.X, point.Y)
                     .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
                     .Mouse.VerticalScroll(-1)
                     .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
@@ -194,10 +178,10 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(expectedLastVisibleLine, await Editor.GetFirstVisibleLineAsync());
             Assert.Equal(zoomLevel, await Editor.GetZoomLevelAsync());
 
+            await MoveMouseAsync(point);
             await SendKeys.SendAsync(inputSimulator =>
             {
                 inputSimulator
-                    .Mouse.MoveMouseTo(point.X, point.Y)
                     .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
                     .Mouse.VerticalScroll(1)
                     .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
@@ -208,6 +192,22 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(zoomLevel, await Editor.GetZoomLevelAsync());
 
             window.Close(vsSaveChanges.vsSaveChangesNo);
+        }
+
+        private async Task MoveMouseAsync(Point point)
+        {
+            TestOutputHelper.WriteLine($"Moving mouse to ({point.X}, {point.Y}).");
+            int horizontalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CXSCREEN);
+            int verticalResolution = NativeMethods.GetSystemMetrics(NativeMethods.SM_CYSCREEN);
+            var virtualPoint = new ScaleTransform(65535.0 / horizontalResolution, 65535.0 / verticalResolution).Transform(point);
+            TestOutputHelper.WriteLine($"Screen resolution of ({horizontalResolution}, {verticalResolution}) translates mouse to ({virtualPoint.X}, {virtualPoint.Y}).");
+
+            await SendKeys.SendAsync(inputSimulator => inputSimulator.Mouse.MoveMouseTo(virtualPoint.X, virtualPoint.Y));
+
+            // ⚠ The call to GetCursorPos is required for correct behavior.
+            var actualPoint = NativeMethods.GetCursorPos();
+            Assert.True(Math.Abs(actualPoint.X - point.X) <= 1);
+            Assert.True(Math.Abs(actualPoint.Y - point.Y) <= 1);
         }
     }
 }

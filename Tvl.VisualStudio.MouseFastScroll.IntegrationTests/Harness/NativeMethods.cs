@@ -108,6 +108,26 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness
         [DllImport(User32, CharSet = CharSet.Unicode)]
         public static extern int GetSystemMetrics(int nIndex);
 
+        [DllImport(User32, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetCursorPos(out POINT point);
+
+        public static System.Windows.Point GetCursorPos()
+        {
+            if (!GetCursorPos(out var point))
+            {
+                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+            }
+
+            return new System.Windows.Point(point.x.ToInt64(), point.y.ToInt64());
+        }
+
+        public struct POINT
+        {
+            public IntPtr x;
+            public IntPtr y;
+        }
+
         [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Unicode, Pack = 8)]
         public struct INPUT
         {
