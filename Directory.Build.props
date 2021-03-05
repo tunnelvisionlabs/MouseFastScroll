@@ -4,9 +4,9 @@
   <PropertyGroup>
     <Company>Tunnel Vision Laboratories, LLC</Company>
     <Copyright>Copyright © Sam Harwell 2014</Copyright>
-    <Version>4.3.0.0</Version>
-    <FileVersion>4.3.0.0</FileVersion>
-    <InformationalVersion>4.3.0</InformationalVersion>
+    <Version>4.4.0.0</Version>
+    <FileVersion>4.4.0.0</FileVersion>
+    <InformationalVersion>4.4.0-dev</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup>
