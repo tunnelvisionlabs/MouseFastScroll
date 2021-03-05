@@ -6,7 +6,7 @@
     <Copyright>Copyright © Sam Harwell 2014</Copyright>
     <Version>4.3.0.0</Version>
     <FileVersion>4.3.0.0</FileVersion>
-    <InformationalVersion>4.3.0-dev</InformationalVersion>
+    <InformationalVersion>4.3.0</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup>
