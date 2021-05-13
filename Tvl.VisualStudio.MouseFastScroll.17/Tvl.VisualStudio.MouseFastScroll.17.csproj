@@ -1,0 +1,28 @@
+<Project>
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <Description>Mouse Fast Scroll extension for Visual Studio 2022</Description>
+    <RootNamespace>Tvl.VisualStudio.MouseFastScroll</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePkgDefFile>false</GeneratePkgDefFile>
+    <CreateVsixContainer>false</CreateVsixContainer>
+    <DeployExtension>false</DeployExtension>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.2155-preview2" PrivateAssets="all" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta006" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Sdk" Version="17.0.0-previews-1-31310-052" PrivateAssets="all" />
+  </ItemGroup>
+
+  <Import Project="..\Tvl.VisualStudio.MouseFastScroll.Shared\Tvl.VisualStudio.MouseFastScroll.Shared.projitems" Label="Shared" />
+
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+
+  <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
+
+</Project>

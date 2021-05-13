@@ -1,11 +1,11 @@
 version: 1.0.{build}
-image: Visual Studio 2017
+image: Visual Studio 2019
 configuration: Release
 platform: Any CPU
 init:
 - git config --global core.autocrlf true
-install:
-- nuget restore
+before_build:
+- echo /restore /bl >> msbuild.rsp
 build:
   verbosity: minimal
 test_script:
@@ -28,19 +28,21 @@ test_script:
         -target:"$env:xunit20\xunit.console.x86.exe" `
         -targetargs:"$unitTestAssembly -appveyor -noshadow"
     if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
-    &$openCoverConsole `
-        -register:user `
-        -returntargetcode `
-        -hideskipped:All `
-        -filter:"+[Tvl*]*" `
-        -excludebyattribute:*.ExcludeFromCodeCoverage* `
-        -excludebyfile:*\*Designer.cs `
-        -searchdirs:"Tvl.VisualStudio.MouseFastScroll.UnitTests\bin\$env:CONFIGURATION\net452" `
-        -output:OpenCover.MouseFastScroll.IntegrationTests.xml `
-        -target:"$env:xunit20\xunit.console.x86.exe" `
-        -targetargs:"$integrationTestAssembly -appveyor -noshadow"
-    if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+    #&$openCoverConsole `
+    #    -register:user `
+    #    -returntargetcode `
+    #    -hideskipped:All `
+    #    -filter:"+[Tvl*]*" `
+    #    -excludebyattribute:*.ExcludeFromCodeCoverage* `
+    #    -excludebyfile:*\*Designer.cs `
+    #    -searchdirs:"Tvl.VisualStudio.MouseFastScroll.UnitTests\bin\$env:CONFIGURATION\net452" `
+    #    -output:OpenCover.MouseFastScroll.IntegrationTests.xml `
+    #    -target:"$env:xunit20\xunit.console.x86.exe" `
+    #    -targetargs:"$integrationTestAssembly -appveyor -noshadow"
+    #if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
     &$codecov -f OpenCover.MouseFastScroll.UnitTests.xml --flag unit
-    &$codecov -f OpenCover.MouseFastScroll.IntegrationTests.xml --flag integration
+    #&$codecov -f OpenCover.MouseFastScroll.IntegrationTests.xml --flag integration
 artifacts:
 - path: 'Tvl.VisualStudio.MouseFastScroll\**\*.vsix'
+- path: '\msbuild.binlog'
+  name: build log

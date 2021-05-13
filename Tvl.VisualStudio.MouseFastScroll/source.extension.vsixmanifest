@@ -14,13 +14,21 @@
     <Tags>mouse, scroll, zoom</Tags>
   </Metadata>
   <Installation>
-    <InstallationTarget Version="[11.0,18.0)" Id="Microsoft.VisualStudio.Community" />
-    <InstallationTarget Version="[11.0,18.0)" Id="Microsoft.VisualStudio.Pro" />
+    <InstallationTarget Version="[11.0,17.0)" Id="Microsoft.VisualStudio.Community" />
+    <InstallationTarget Version="[11.0,17.0)" Id="Microsoft.VisualStudio.Pro" />
+    <!-- This will work for x86 targets, but these are not currently supported by the marketplace. -->
+    <!--<InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Community">
+      <ProductArchitecture>x86</ProductArchitecture>
+    </InstallationTarget>-->
+    <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Community">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
   </Installation>
   <Prerequisites>
     <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,18.0)" DisplayName="Visual Studio core editor" />
   </Prerequisites>
   <Assets>
-    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="Tvl.VisualStudio.MouseFastScroll.11" TargetVersion="[11.0,17.0)" Path="|Tvl.VisualStudio.MouseFastScroll.11|" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="Tvl.VisualStudio.MouseFastScroll.17" TargetVersion="[17.0,18.0)" Path="|Tvl.VisualStudio.MouseFastScroll.17|" />
   </Assets>
 </PackageManifest>

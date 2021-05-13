@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll\Tvl.VisualStudio.MouseFastScroll.csproj" />
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll.11\Tvl.VisualStudio.MouseFastScroll.11.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Runtime.Remoting" />
   </ItemGroup>
 
@@ -20,13 +21,14 @@
     <PackageReference Include="VSSDK.ComponentModelHost.11" Version="11.0.4" />
     <PackageReference Include="VSSDK.DTE.8" Version="8.0.4" />
     <PackageReference Include="VSSDK.Shell.11" Version="11.0.4" />
-    <PackageReference Include="VsixTesting.Xunit" Version="0.1.4-beta" />
+    <PackageReference Include="VSSDK.Text" Version="11.0.4" />
+    <PackageReference Include="VsixTesting.Xunit" Version="0.1.54-beta" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll\Tvl.VisualStudio.MouseFastScroll.csproj" CopyVsix="true" />
+    <ProjectReference Include="..\Tvl.VisualStudio.MouseFastScroll\Tvl.VisualStudio.MouseFastScroll.csproj" ReferenceOutputAssembly="false" CopyVsix="true" />
   </ItemGroup>
 
   <Target Name="PrepareVsixProjectReferences"
@@ -34,9 +36,9 @@
           DependsOnTargets="PrepareProjectReferences">
     <MSBuild
         Projects="@(_MSBuildProjectReferenceExistent)"
-        Targets="CreateVsixContainer;VSIXContainerProjectOutputGroup"
+        Targets="Build;VSIXContainerProjectOutputGroup"
         BuildInParallel="$(BuildInParallel)"
-        Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform); %(_MSBuildProjectReferenceExistent.SetTargetFramework); CreateVsixContainer=true"
+        Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform); %(_MSBuildProjectReferenceExistent.SetTargetFramework)"
         Condition="'%(_MSBuildProjectReferenceExistent.CopyVsix)' == 'true'"
         ContinueOnError="!$(BuildingProject)"
         RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)">
