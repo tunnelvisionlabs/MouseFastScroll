@@ -12,7 +12,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading;
     using Xunit;
 
-    [VsTestSettings(UIThread = true)]
     public abstract class AbstractIdeIntegrationTest : IAsyncLifetime, IDisposable
     {
         private JoinableTaskContext _joinableTaskContext;

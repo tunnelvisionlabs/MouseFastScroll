@@ -42,7 +42,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             get;
         }
 
-        [VsFact]
+        [IdeFact]
         public async Task BasicScrollingBehaviorAsync()
         {
             var dte = (DTE)ServiceProvider.GetService(typeof(_DTE));
@@ -128,7 +128,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         /// <summary>
         /// Verifies that the Ctrl+Scroll operations do not change the zoom level in the editor.
         /// </summary>
-        [VsFact]
+        [IdeFact]
         public async Task ZoomDisabledAsync()
         {
             var dte = (DTE)ServiceProvider.GetService(typeof(_DTE));
