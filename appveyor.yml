@@ -1,11 +1,11 @@
 version: 1.0.{build}
-image: Visual Studio 2017
+image: Visual Studio 2019
 configuration: Release
 platform: Any CPU
 init:
 - git config --global core.autocrlf true
-install:
-- nuget restore
+before_build:
+- echo /restore /bl >> msbuild.rsp
 build:
   verbosity: minimal
 test_script:
@@ -18,7 +18,7 @@ test_script:
     $codecovVersion = $buildProperties.SelectSingleNode('/Project/ItemGroup/PackageReference[@Include="Codecov"]').Version
     $codecov = Join-Path (Join-Path $env:UserProfile '.nuget\packages\') "codecov\$codecovVersion\tools\codecov.exe"
     &$openCoverConsole `
-        -register:user `
+        -register:machine `
         -returntargetcode `
         -hideskipped:All `
         -filter:"+[Tvl*]*" `
@@ -29,7 +29,7 @@ test_script:
         -targetargs:"$unitTestAssembly -appveyor -noshadow"
     if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
     &$openCoverConsole `
-        -register:user `
+        -register:machine `
         -returntargetcode `
         -hideskipped:All `
         -filter:"+[Tvl*]*" `
@@ -44,3 +44,9 @@ test_script:
     &$codecov -f OpenCover.MouseFastScroll.IntegrationTests.xml --flag integration
 artifacts:
 - path: 'Tvl.VisualStudio.MouseFastScroll\**\*.vsix'
+- path: '\msbuild.binlog'
+  name: build log
+- path: '\OpenCover.MouseFastScroll.UnitTests.xml'
+  name: Unit test coverage
+- path: '\OpenCover.MouseFastScroll.IntegrationTests.xml'
+  name: Integration test coverage

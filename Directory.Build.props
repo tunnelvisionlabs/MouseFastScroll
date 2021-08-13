@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Codecov" Version="1.0.3" IncludeAssets="none" PrivateAssets="all" />
+    <PackageReference Include="Codecov" Version="1.12.4" IncludeAssets="none" PrivateAssets="all" />
     <PackageReference Include="OpenCover" Version="4.6.519" IncludeAssets="none" PrivateAssets="all" />
   </ItemGroup>
 

@@ -16,9 +16,11 @@ flags:
     auto_apply: true
     paths:
       - Tvl.VisualStudio.MouseFastScroll/
+      - Tvl.VisualStudio.MouseFastScroll.11/
+      - Tvl.VisualStudio.MouseFastScroll.17/
+      - Tvl.VisualStudio.MouseFastScroll.Shared/
   test:
     auto_apply: true
     paths:
       - Tvl.VisualStudio.MouseFastScroll.IntegrationTests/
-      - Tvl.VisualStudio.MouseFastScroll.IntegrationTestService/
       - Tvl.VisualStudio.MouseFastScroll.UnitTests/

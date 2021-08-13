@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31220.325
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7939456F-2CC6-4242-96AB-E1C8D75C0D79}"
 	ProjectSection(SolutionItems) = preProject
@@ -20,7 +20,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.UnitTests", "Tvl.VisualStudio.MouseFastScroll.UnitTests\Tvl.VisualStudio.MouseFastScroll.UnitTests.csproj", "{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Tvl.VisualStudio.MouseFastScroll.Shared", "Tvl.VisualStudio.MouseFastScroll.Shared\Tvl.VisualStudio.MouseFastScroll.Shared.shproj", "{65C82E6D-9D7B-4EAB-AE31-697F75FB65F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.11", "Tvl.VisualStudio.MouseFastScroll.11\Tvl.VisualStudio.MouseFastScroll.11.csproj", "{58D0B05E-C7DE-42EC-8B81-C579E3A8DA8E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tvl.VisualStudio.MouseFastScroll.17", "Tvl.VisualStudio.MouseFastScroll.17\Tvl.VisualStudio.MouseFastScroll.17.csproj", "{E6D531AA-3538-4AAC-91CF-2CEE9243B6D8}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Tvl.VisualStudio.MouseFastScroll.Shared\Tvl.VisualStudio.MouseFastScroll.Shared.projitems*{58d0b05e-c7de-42ec-8b81-c579e3a8da8e}*SharedItemsImports = 5
+		Tvl.VisualStudio.MouseFastScroll.Shared\Tvl.VisualStudio.MouseFastScroll.Shared.projitems*{65c82e6d-9d7b-4eab-ae31-697f75fb65f0}*SharedItemsImports = 13
+		Tvl.VisualStudio.MouseFastScroll.Shared\Tvl.VisualStudio.MouseFastScroll.Shared.projitems*{e6d531aa-3538-4aac-91cf-2cee9243b6d8}*SharedItemsImports = 5
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -38,6 +49,14 @@ Global
 		{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5630A9D3-6B83-473B-BCE7-FFEB6D2E1063}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58D0B05E-C7DE-42EC-8B81-C579E3A8DA8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58D0B05E-C7DE-42EC-8B81-C579E3A8DA8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58D0B05E-C7DE-42EC-8B81-C579E3A8DA8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58D0B05E-C7DE-42EC-8B81-C579E3A8DA8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6D531AA-3538-4AAC-91CF-2CEE9243B6D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6D531AA-3538-4AAC-91CF-2CEE9243B6D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6D531AA-3538-4AAC-91CF-2CEE9243B6D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6D531AA-3538-4AAC-91CF-2CEE9243B6D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,6 @@
 # Per-user files
 *.csproj.user
+*.shproj.user
 
 # Temporary files created by the IDE
 .vs/

@@ -7,18 +7,16 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
-    using System.Windows.Threading;
     using Microsoft.VisualStudio.Shell.Interop;
     using Microsoft.VisualStudio.Threading;
-    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Threading;
     using Xunit;
     using _DTE = EnvDTE._DTE;
     using DTE = EnvDTE.DTE;
     using ServiceProvider = Microsoft.VisualStudio.Shell.ServiceProvider;
 
-    public class VsFactTest : AbstractIdeIntegrationTest
+    public class IdeFactTest : AbstractIdeIntegrationTest
     {
-        [VsFact]
+        [IdeFact]
         public void TestOpenAndCloseIDE()
         {
             Assert.Equal("devenv", Process.GetCurrentProcess().ProcessName);
@@ -26,13 +24,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.NotNull(dte);
         }
 
-        [VsFact]
+        [IdeFact]
         public void TestRunsOnUIThread()
         {
             Assert.True(Application.Current.Dispatcher.CheckAccess());
         }
 
-        [VsFact]
+        [IdeFact]
         public async Task TestRunsOnUIThreadAsync()
         {
             Assert.True(Application.Current.Dispatcher.CheckAccess());
@@ -40,7 +38,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.True(Application.Current.Dispatcher.CheckAccess());
         }
 
-        [VsFact]
+        [IdeFact]
         public async Task TestYieldsToWorkAsync()
         {
             Assert.True(Application.Current.Dispatcher.CheckAccess());
@@ -52,7 +50,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.True(Application.Current.Dispatcher.CheckAccess());
         }
 
-        [VsFact]
+        [IdeFact]
         public async Task TestJoinableTaskFactoryAsync()
         {
             Assert.NotNull(JoinableTaskContext);
@@ -68,8 +66,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             Assert.Equal(Thread.CurrentThread, JoinableTaskContext.MainThread);
         }
 
-#if DEBUG // https://github.com/josetr/VsixTesting/issues/3
-        [VsFact(Version = "2012")]
+        [IdeFact(MinVersion = VisualStudioVersion.VS2012, MaxVersion = VisualStudioVersion.VS2012)]
         public void TestJoinableTaskFactoryProvidedByTest()
         {
             var taskSchedulerServiceObject = ServiceProvider.GetService(typeof(SVsTaskSchedulerService));
@@ -83,9 +80,8 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
 
             Assert.NotNull(JoinableTaskContext);
         }
-#endif
 
-        [VsFact(Version = "2013-")]
+        [IdeFact(MinVersion = VisualStudioVersion.VS2013)]
         public void TestJoinableTaskFactoryObtainedFromEnvironment()
         {
             var taskSchedulerServiceObject = ServiceProvider.GetService(typeof(SVsTaskSchedulerService));
