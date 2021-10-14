@@ -17,11 +17,17 @@
     <InstallationTarget Version="[11.0,17.0)" Id="Microsoft.VisualStudio.Community" />
     <InstallationTarget Version="[11.0,17.0)" Id="Microsoft.VisualStudio.Pro" />
     <!-- This will work for x86 targets, but these are not currently supported by the marketplace. -->
-    <!--<InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Community">
+    <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Community">
       <ProductArchitecture>x86</ProductArchitecture>
-    </InstallationTarget>-->
+    </InstallationTarget>
     <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Community">
       <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Pro">
+	    <ProductArchitecture>x86</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Version="[17.0,18.0)" Id="Microsoft.VisualStudio.Pro">
+	    <ProductArchitecture>amd64</ProductArchitecture>
     </InstallationTarget>
   </Installation>
   <Prerequisites>
