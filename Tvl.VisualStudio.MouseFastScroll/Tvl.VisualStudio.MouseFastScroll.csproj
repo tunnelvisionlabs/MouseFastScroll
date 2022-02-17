@@ -48,4 +48,10 @@
     <ProjectReference Update="@(ProjectReference)" Name="%(Filename)" />
   </ItemGroup>
 
+  <Target Name="GetVsixVersion" Returns="$(VsixVersion)">
+    <PropertyGroup>
+      <VsixVersion Condition="'$(VsixVersion)' == ''">$(BuildVersionSimple)</VsixVersion>
+    </PropertyGroup>
+  </Target>
+
 </Project>
