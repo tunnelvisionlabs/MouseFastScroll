@@ -1,0 +1,8 @@
+{
+  "version": "5.0",
+  "cloudBuild": {
+    "buildNumber": {
+      "enabled": true
+    }
+  }
+}

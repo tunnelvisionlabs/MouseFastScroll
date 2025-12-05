@@ -1,0 +1,5 @@
+root = true
+
+[*.cs]
+csharp_using_directive_placement = inside_namespace:none
+dotnet_sort_system_directives_first = true

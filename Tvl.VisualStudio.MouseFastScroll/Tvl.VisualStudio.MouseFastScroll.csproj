@@ -17,14 +17,13 @@
     <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
-    <!-- This property disables extension deployment for command line builds; required for AppVeyor -->
-    <DeployExtension Condition="'$(DeployExtension)' == ''">False</DeployExtension>
+  <PropertyGroup>
+    <!-- Extension deployment occurs as part of integration tests -->
+    <DeployExtension>false</DeployExtension>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.2155-preview2" PrivateAssets="all" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta006" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.5234" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,5 +46,11 @@
     <!-- https://github.com/Microsoft/extendvs/issues/57 -->
     <ProjectReference Update="@(ProjectReference)" Name="%(Filename)" />
   </ItemGroup>
+
+  <Target Name="GetVsixVersion" Returns="$(VsixVersion)">
+    <PropertyGroup>
+      <VsixVersion Condition="'$(VsixVersion)' == ''">$(BuildVersionSimple)</VsixVersion>
+    </PropertyGroup>
+  </Target>
 
 </Project>
