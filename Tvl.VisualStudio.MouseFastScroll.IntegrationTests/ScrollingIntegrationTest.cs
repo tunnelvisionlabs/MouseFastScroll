@@ -8,13 +8,13 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Media;
+    using Microsoft.VisualStudio.Extensibility.Testing;
+    using Microsoft.VisualStudio.Shell.Interop;
     using Microsoft.VisualStudio.Text.Formatting;
     using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.Harness;
-    using Tvl.VisualStudio.MouseFastScroll.IntegrationTests.InProcess;
     using WindowsInput.Native;
     using Xunit;
     using Xunit.Abstractions;
-    using _DTE = EnvDTE._DTE;
     using DTE = EnvDTE.DTE;
     using vsSaveChanges = EnvDTE.vsSaveChanges;
 
@@ -23,8 +23,6 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         public ScrollingIntegrationTest(ITestOutputHelper testOutputHelper)
         {
             TestOutputHelper = testOutputHelper;
-            Editor = new Editor_InProc2(JoinableTaskFactory);
-            SendKeys = new IdeSendKeys(JoinableTaskFactory);
         }
 
         protected ITestOutputHelper TestOutputHelper
@@ -32,95 +30,91 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             get;
         }
 
-        private Editor_InProc2 Editor
-        {
-            get;
-        }
-
-        private IdeSendKeys SendKeys
-        {
-            get;
-        }
-
         [IdeFact]
         public async Task BasicScrollingBehaviorAsync()
         {
-            var dte = (DTE)ServiceProvider.GetService(typeof(_DTE));
+            var dte = await TestServices.Shell.GetRequiredGlobalServiceAsync<SDTE, DTE>(HangMitigatingCancellationToken);
             var window = dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt");
 
             string initialText = string.Join(string.Empty, Enumerable.Range(0, 400).Select(i => Guid.NewGuid() + Environment.NewLine));
-            await Editor.SetTextAsync(initialText);
+            await TestServices.Editor.SetTextAsync(initialText, HangMitigatingCancellationToken);
 
             string additionalTypedText = Guid.NewGuid().ToString() + "\n" + Guid.NewGuid().ToString();
-            await Editor.ActivateAsync();
-            await SendKeys.SendAsync(additionalTypedText);
+            await TestServices.Editor.ActivateAsync(HangMitigatingCancellationToken);
+            await TestServices.IdeSendKeys.SendAsync(additionalTypedText);
 
             string expected = initialText + additionalTypedText.Replace("\n", Environment.NewLine);
-            Assert.Equal(expected, await Editor.GetTextAsync());
+            Assert.Equal(expected, await TestServices.Editor.GetTextAsync(HangMitigatingCancellationToken));
 
-            Assert.Equal(expected.Length, await Editor.GetCaretPositionAsync());
+            Assert.Equal(expected.Length, await TestServices.Editor.GetCaretPositionAsync(HangMitigatingCancellationToken));
 
             // Move the caret and verify the final position. Note that the MoveCaret operation does not scroll the view.
-            int firstVisibleLine = await Editor.GetFirstVisibleLineAsync();
+            int firstVisibleLine = await TestServices.Editor.GetFirstVisibleLineAsync(HangMitigatingCancellationToken);
             Assert.True(firstVisibleLine > 0, "Expected the view to start after the first line at this point.");
-            await Editor.MoveCaretAsync(0);
-            Assert.Equal(0, await Editor.GetCaretPositionAsync());
-            Assert.Equal(firstVisibleLine, await Editor.GetFirstVisibleLineAsync());
+            await TestServices.Editor.MoveCaretAsync(0, HangMitigatingCancellationToken);
+            Assert.Equal(0, await TestServices.Editor.GetCaretPositionAsync(HangMitigatingCancellationToken));
+            Assert.Equal(firstVisibleLine, await TestServices.Editor.GetFirstVisibleLineAsync(HangMitigatingCancellationToken));
 
-            await SendKeys.SendAsync(inputSimulator =>
-            {
-                inputSimulator.Keyboard
-                    .KeyDown(VirtualKeyCode.CONTROL)
-                    .KeyPress(VirtualKeyCode.HOME)
-                    .KeyUp(VirtualKeyCode.CONTROL);
-            });
+            await TestServices.IdeSendKeys.SendAsync(
+                inputSimulator =>
+                {
+                    inputSimulator.Keyboard
+                        .KeyDown(VirtualKeyCode.CONTROL)
+                        .KeyPress(VirtualKeyCode.HOME)
+                        .KeyUp(VirtualKeyCode.CONTROL);
+                },
+                HangMitigatingCancellationToken);
 
-            Assert.True(await Editor.IsCaretOnScreenAsync());
-            firstVisibleLine = await Editor.GetFirstVisibleLineAsync();
+            Assert.True(await TestServices.Editor.IsCaretOnScreenAsync(HangMitigatingCancellationToken));
+            firstVisibleLine = await TestServices.Editor.GetFirstVisibleLineAsync(HangMitigatingCancellationToken);
             Assert.Equal(0, firstVisibleLine);
 
-            int lastVisibleLine = await Editor.GetLastVisibleLineAsync();
-            var lastVisibleLineState = await Editor.GetLastVisibleLineStateAsync();
+            int lastVisibleLine = await TestServices.Editor.GetLastVisibleLineAsync(HangMitigatingCancellationToken);
+            var lastVisibleLineState = await TestServices.Editor.GetLastVisibleLineStateAsync(HangMitigatingCancellationToken);
             Assert.True(firstVisibleLine < lastVisibleLine);
 
-            Point point = await Editor.GetCenterOfEditorOnScreenAsync();
+            Point point = await TestServices.Editor.GetCenterOfEditorOnScreenAsync(HangMitigatingCancellationToken);
 
             await MoveMouseAsync(point);
-            await SendKeys.SendAsync(inputSimulator => inputSimulator.Mouse.VerticalScroll(-1));
+            await TestServices.IdeSendKeys.SendAsync(inputSimulator => inputSimulator.Mouse.VerticalScroll(-1), HangMitigatingCancellationToken);
 
-            Assert.Equal(0, await Editor.GetCaretPositionAsync());
-            Assert.Equal(3, await Editor.GetFirstVisibleLineAsync());
-
-            await MoveMouseAsync(point);
-            await SendKeys.SendAsync(inputSimulator => inputSimulator.Mouse.VerticalScroll(1));
-
-            Assert.Equal(0, await Editor.GetCaretPositionAsync());
-            Assert.Equal(0, await Editor.GetFirstVisibleLineAsync());
+            Assert.Equal(0, await TestServices.Editor.GetCaretPositionAsync(HangMitigatingCancellationToken));
+            Assert.Equal(3, await TestServices.Editor.GetFirstVisibleLineAsync(HangMitigatingCancellationToken));
 
             await MoveMouseAsync(point);
-            await SendKeys.SendAsync(inputSimulator =>
-            {
-                inputSimulator
-                    .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
-                    .Mouse.VerticalScroll(-1)
-                    .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
-            });
+            await TestServices.IdeSendKeys.SendAsync(inputSimulator => inputSimulator.Mouse.VerticalScroll(1), HangMitigatingCancellationToken);
+
+            Assert.Equal(0, await TestServices.Editor.GetCaretPositionAsync(HangMitigatingCancellationToken));
+            Assert.Equal(0, await TestServices.Editor.GetFirstVisibleLineAsync(HangMitigatingCancellationToken));
+
+            await MoveMouseAsync(point);
+            await TestServices.IdeSendKeys.SendAsync(
+                inputSimulator =>
+                {
+                    inputSimulator
+                        .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
+                        .Mouse.VerticalScroll(-1)
+                        .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
+                },
+                HangMitigatingCancellationToken);
 
             int expectedLastVisibleLine = lastVisibleLine + (lastVisibleLineState == VisibilityState.FullyVisible ? 1 : 0);
-            Assert.Equal(0, await Editor.GetCaretPositionAsync());
-            Assert.Equal(expectedLastVisibleLine, await Editor.GetFirstVisibleLineAsync());
+            Assert.Equal(0, await TestServices.Editor.GetCaretPositionAsync(HangMitigatingCancellationToken));
+            Assert.Equal(expectedLastVisibleLine, await TestServices.Editor.GetFirstVisibleLineAsync(HangMitigatingCancellationToken));
 
             await MoveMouseAsync(point);
-            await SendKeys.SendAsync(inputSimulator =>
-            {
-                inputSimulator
-                    .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
-                    .Mouse.VerticalScroll(1)
-                    .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
-            });
+            await TestServices.IdeSendKeys.SendAsync(
+                inputSimulator =>
+                {
+                    inputSimulator
+                        .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
+                        .Mouse.VerticalScroll(1)
+                        .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
+                },
+                HangMitigatingCancellationToken);
 
-            Assert.Equal(0, await Editor.GetCaretPositionAsync());
-            Assert.Equal(0, await Editor.GetFirstVisibleLineAsync());
+            Assert.Equal(0, await TestServices.Editor.GetCaretPositionAsync(HangMitigatingCancellationToken));
+            Assert.Equal(0, await TestServices.Editor.GetFirstVisibleLineAsync(HangMitigatingCancellationToken));
 
             window.Close(vsSaveChanges.vsSaveChangesNo);
         }
@@ -131,65 +125,71 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
         [IdeFact]
         public async Task ZoomDisabledAsync()
         {
-            var dte = (DTE)ServiceProvider.GetService(typeof(_DTE));
+            var dte = await TestServices.Shell.GetRequiredGlobalServiceAsync<SDTE, DTE>(HangMitigatingCancellationToken);
             var window = dte.ItemOperations.NewFile(Name: Guid.NewGuid() + ".txt");
 
             string initialText = string.Join(string.Empty, Enumerable.Range(0, 400).Select(i => Guid.NewGuid() + Environment.NewLine));
-            await Editor.SetTextAsync(initialText);
+            await TestServices.Editor.SetTextAsync(initialText, HangMitigatingCancellationToken);
 
             string additionalTypedText = Guid.NewGuid().ToString() + "\n" + Guid.NewGuid().ToString();
-            await SendKeys.SendAsync(additionalTypedText);
+            await TestServices.IdeSendKeys.SendAsync(additionalTypedText);
 
             string expected = initialText + additionalTypedText.Replace("\n", Environment.NewLine);
-            Assert.Equal(expected, await Editor.GetTextAsync());
+            Assert.Equal(expected, await TestServices.Editor.GetTextAsync(HangMitigatingCancellationToken));
 
-            Assert.Equal(expected.Length, await Editor.GetCaretPositionAsync());
+            Assert.Equal(expected.Length, await TestServices.Editor.GetCaretPositionAsync(HangMitigatingCancellationToken));
 
-            await SendKeys.SendAsync(inputSimulator =>
-            {
-                inputSimulator.Keyboard
-                    .KeyDown(VirtualKeyCode.CONTROL)
-                    .KeyPress(VirtualKeyCode.HOME)
-                    .KeyUp(VirtualKeyCode.CONTROL);
-            });
+            await TestServices.IdeSendKeys.SendAsync(
+                inputSimulator =>
+                {
+                    inputSimulator.Keyboard
+                        .KeyDown(VirtualKeyCode.CONTROL)
+                        .KeyPress(VirtualKeyCode.HOME)
+                        .KeyUp(VirtualKeyCode.CONTROL);
+                },
+                HangMitigatingCancellationToken);
 
-            int firstVisibleLine = await Editor.GetFirstVisibleLineAsync();
+            int firstVisibleLine = await TestServices.Editor.GetFirstVisibleLineAsync(HangMitigatingCancellationToken);
             Assert.Equal(0, firstVisibleLine);
 
-            int lastVisibleLine = await Editor.GetLastVisibleLineAsync();
-            var lastVisibleLineState = await Editor.GetLastVisibleLineStateAsync();
+            int lastVisibleLine = await TestServices.Editor.GetLastVisibleLineAsync(HangMitigatingCancellationToken);
+            var lastVisibleLineState = await TestServices.Editor.GetLastVisibleLineStateAsync(HangMitigatingCancellationToken);
             Assert.True(firstVisibleLine < lastVisibleLine);
 
-            double zoomLevel = await Editor.GetZoomLevelAsync();
+            double zoomLevel = await TestServices.Editor.GetZoomLevelAsync(HangMitigatingCancellationToken);
 
-            Point point = await Editor.GetCenterOfEditorOnScreenAsync();
+            Point point = await TestServices.Editor.GetCenterOfEditorOnScreenAsync(HangMitigatingCancellationToken);
 
             await MoveMouseAsync(point);
-            await SendKeys.SendAsync(inputSimulator =>
-            {
-                inputSimulator
-                    .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
-                    .Mouse.VerticalScroll(-1)
-                    .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
-            });
+            await TestServices.IdeSendKeys.SendAsync(
+                inputSimulator =>
+                {
+                    inputSimulator
+                        .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
+                        .Mouse.VerticalScroll(-1)
+                        .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
+                },
+                HangMitigatingCancellationToken);
 
             int expectedLastVisibleLine = lastVisibleLine + (lastVisibleLineState == VisibilityState.FullyVisible ? 1 : 0);
-            Assert.Equal(0, await Editor.GetCaretPositionAsync());
-            Assert.Equal(expectedLastVisibleLine, await Editor.GetFirstVisibleLineAsync());
-            Assert.Equal(zoomLevel, await Editor.GetZoomLevelAsync());
+            Assert.Equal(0, await TestServices.Editor.GetCaretPositionAsync(HangMitigatingCancellationToken));
+            Assert.Equal(expectedLastVisibleLine, await TestServices.Editor.GetFirstVisibleLineAsync(HangMitigatingCancellationToken));
+            Assert.Equal(zoomLevel, await TestServices.Editor.GetZoomLevelAsync(HangMitigatingCancellationToken));
 
             await MoveMouseAsync(point);
-            await SendKeys.SendAsync(inputSimulator =>
-            {
-                inputSimulator
-                    .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
-                    .Mouse.VerticalScroll(1)
-                    .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
-            });
+            await TestServices.IdeSendKeys.SendAsync(
+                inputSimulator =>
+                {
+                    inputSimulator
+                        .Keyboard.KeyDown(VirtualKeyCode.CONTROL)
+                        .Mouse.VerticalScroll(1)
+                        .Keyboard.Sleep(10).KeyUp(VirtualKeyCode.CONTROL);
+                },
+                HangMitigatingCancellationToken);
 
-            Assert.Equal(0, await Editor.GetCaretPositionAsync());
-            Assert.Equal(0, await Editor.GetFirstVisibleLineAsync());
-            Assert.Equal(zoomLevel, await Editor.GetZoomLevelAsync());
+            Assert.Equal(0, await TestServices.Editor.GetCaretPositionAsync(HangMitigatingCancellationToken));
+            Assert.Equal(0, await TestServices.Editor.GetFirstVisibleLineAsync(HangMitigatingCancellationToken));
+            Assert.Equal(zoomLevel, await TestServices.Editor.GetZoomLevelAsync(HangMitigatingCancellationToken));
 
             window.Close(vsSaveChanges.vsSaveChangesNo);
         }
@@ -202,7 +202,7 @@ namespace Tvl.VisualStudio.MouseFastScroll.IntegrationTests
             var virtualPoint = new ScaleTransform(65535.0 / horizontalResolution, 65535.0 / verticalResolution).Transform(point);
             TestOutputHelper.WriteLine($"Screen resolution of ({horizontalResolution}, {verticalResolution}) translates mouse to ({virtualPoint.X}, {virtualPoint.Y}).");
 
-            await SendKeys.SendAsync(inputSimulator => inputSimulator.Mouse.MoveMouseTo(virtualPoint.X, virtualPoint.Y));
+            await TestServices.IdeSendKeys.SendAsync(inputSimulator => inputSimulator.Mouse.MoveMouseTo(virtualPoint.X, virtualPoint.Y), HangMitigatingCancellationToken);
 
             // ⚠ The call to GetCursorPos is required for correct behavior.
             var actualPoint = NativeMethods.GetCursorPos();
